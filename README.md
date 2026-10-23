@@ -1,4 +1,4 @@
-# Mendeleyev 3D — Interaktiv davriy jadval
+# Kolvo — Interaktiv 3D kimyo platformasi
 
 Interaktiv 3D kimyo platformasi: har bir elementning atom modeli va moddaning realistik 3D ko'rinishi, uch tilda (O'zbek / English / Русский) ma'lumotlar, Mendeleyev va davriy jadval haqida bo'lim.
 
