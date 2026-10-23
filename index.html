@@ -291,7 +291,7 @@
             <div style="position:absolute;left:14px;right:132px;bottom:12px;display:flex;flex-wrap:wrap;gap:3px 13px;font-size:10.5px;font-family:'IBM Plex Mono';pointer-events:none">
               <span style="color:#ff5d6e">● {{ ui.proton }} {{ selected.z }}</span>
               <span style="color:#6f9eff">● {{ ui.neutron }} {{ selected.neutrons }}</span>
-              <span style="color:#f2f5ff">● {{ ui.electron }} {{ selected.z }}</span>
+              <span style="display:inline-flex;align-items:center;gap:5px;color:#e6ebf7"><span style="width:8px;height:8px;border-radius:50%;background:conic-gradient(#ff8a5c,#ffd24d,#7ee787,#4dd2ff,#6f8bff,#c08bff,#ff7ad9,#ff8a5c)"></span>{{ ui.electron }} {{ selected.z }}</span>
             </div>
             <div style="position:absolute;right:12px;bottom:12px;display:flex;gap:6px">
               <button onClick="{{ rotateA }}" title="{{ ui.autoRotate }}" style="width:34px;height:34px;border-radius:8px;background:rgba(8,12,24,.7);border:1px solid rgba(255,255,255,.16);color:#dbe4f7;cursor:pointer;font-size:15px">↻</button>
@@ -734,27 +734,31 @@ class Component extends DCLogic {
 
   _popAtom(el,S){
     const THREE=S.THREE; const content=S.content;
-    const accent=new THREE.Color(this.catColor(el.cat));
+    const accent=new THREE.Color(this.catColor(el.cat)).convertSRGBToLinear();
     const nucGroup=new THREE.Group(); content.add(nucGroup); S.nucGroup=nucGroup;
     const neutrons=Math.max(0,Math.round(el.mass)-el.z);
     const nP=Math.min(el.z,80), nN=Math.min(neutrons,80), total=nP+nN;
     const coreR=0.45+Math.cbrt(Math.max(total,1))*0.16;
     const nucGeo=new THREE.SphereGeometry(coreR*0.30,12,12);
-    const protMat=new THREE.MeshStandardMaterial({color:0xff5d6e,emissive:0x551016,roughness:.5,metalness:.1});
-    const neutMat=new THREE.MeshStandardMaterial({color:0x6f9eff,emissive:0x10204d,roughness:.5,metalness:.1});
+    // colours are sRGB like the legend; three r128 needs them in linear, otherwise they render pale/white
+    const lin=(c)=>new THREE.Color(c).convertSRGBToLinear();
+    // no tone mapping: ACES pulls bright lit colours towards white, which made the nucleus look pale pink and white
+    const protMat=new THREE.MeshStandardMaterial({color:lin('#e8283f'),emissive:lin('#3a0610'),roughness:.5,metalness:0,envMapIntensity:.3,toneMapped:false});
+    const neutMat=new THREE.MeshStandardMaterial({color:lin('#2f5be0'),emissive:lin('#081640'),roughness:.5,metalness:0,envMapIntensity:.3,toneMapped:false});
     const rand=(R)=>{let v;do{v=new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1);}while(v.lengthSq()>1);return v.multiplyScalar(R);};
     for(let i=0;i<total;i++){ const m=new THREE.Mesh(nucGeo,i<nP?protMat:neutMat); m.position.copy(rand(coreR)); nucGroup.add(m); }
-    const glow=new THREE.Mesh(new THREE.SphereGeometry(coreR*1.5,24,24),new THREE.MeshBasicMaterial({color:accent,transparent:true,opacity:0.10,blending:THREE.AdditiveBlending}));
+    const glow=new THREE.Mesh(new THREE.SphereGeometry(coreR*1.5,24,24),new THREE.MeshBasicMaterial({color:accent,transparent:true,opacity:0.10,blending:THREE.AdditiveBlending,toneMapped:false}));
     nucGroup.add(glow); S.glow=glow;
     const base=coreR+1.25, step=0.92;
     el.shells.forEach((count,si)=>{ const r=base+si*step; const g=new THREE.Group();
       g.rotation.x=(si*37)*Math.PI/180; g.rotation.y=(si*61)*Math.PI/180;
       const pts=[]; const seg=96; for(let i=0;i<=seg;i++){const a=i/seg*Math.PI*2;pts.push(new THREE.Vector3(Math.cos(a)*r,Math.sin(a)*r,0));}
-      // each shell has its own colour (same as the shell cards on the right); electrons are white with a halo in that colour
-      const sCol=new THREE.Color(this.SHELL_COLORS[si]||'#ffffff').convertSRGBToLinear();
-      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:sCol,transparent:true,opacity:0.55,blending:THREE.AdditiveBlending})));
-      const eGeo=new THREE.SphereGeometry(0.09,12,12), eMat=new THREE.MeshBasicMaterial({color:0xffffff});
-      const hGeo=new THREE.SphereGeometry(0.2,12,12), hMat=new THREE.MeshBasicMaterial({color:sCol,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending});
+      // each shell has its own colour, the same as its card on the right; orbit and electrons are drawn
+      // unlit and without tone mapping so the colour comes out exactly (not washed to white)
+      const sCol=lin(this.SHELL_COLORS[si]||'#ffffff');
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:sCol,transparent:true,opacity:0.7,toneMapped:false})));
+      const eGeo=new THREE.SphereGeometry(0.12,14,14), eMat=new THREE.MeshBasicMaterial({color:sCol,toneMapped:false});
+      const hGeo=new THREE.SphereGeometry(0.24,14,14), hMat=new THREE.MeshBasicMaterial({color:sCol,transparent:true,opacity:0.28,depthWrite:false,toneMapped:false});
       for(let i=0;i<count;i++){const a=i/count*Math.PI*2;const e=new THREE.Mesh(eGeo,eMat);e.position.set(Math.cos(a)*r,Math.sin(a)*r,0);const h=new THREE.Mesh(hGeo,hMat);h.position.copy(e.position);g.add(e);g.add(h);}
       content.add(g); S.shells.push({group:g,speed:0.32/(si*0.5+1)});
     });
