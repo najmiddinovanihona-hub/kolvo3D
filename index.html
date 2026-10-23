@@ -733,13 +733,25 @@ class Component extends DCLogic {
     const vs=DATA.map(val).filter(v=>v!=null), vmax=Math.max(...vs);
     const lin=c=>new THREE.Color(c).convertSRGBToLinear();
     const grid=new THREE.Group(); scene.add(grid);
+    // canvas texture with the element symbol (big) and atomic number (small); dark ink on the bright
+    // coloured columns, light ink on the grey "no data" ones
+    const labelTex=(e,onColour)=>{ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d');
+      const ink=onColour?'#0b1020':'#e6ebf7';
+      x.fillStyle=ink; x.textAlign='center'; x.textBaseline='middle';
+      x.font='700 '+(e.sym.length>1?58:66)+'px "Space Grotesk", Arial, sans-serif'; x.fillText(e.sym,64,72);
+      x.globalAlpha=.75; x.font='600 24px "IBM Plex Mono", monospace'; x.textAlign='left'; x.fillText(String(e.z),12,22);
+      const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding; t.anisotropy=4; return t; };
     const base=new THREE.Mesh(new THREE.BoxGeometry(19.4,0.12,11.6),new THREE.MeshStandardMaterial({color:lin('#141a2c'),roughness:.9}));
     base.position.set(0,-0.07,0.3); grid.add(base);
     DATA.forEach(e=>{ const v=val(e); const h= v==null ? 0.05 : 0.15+v/vmax*5;
       const mat= v==null ? new THREE.MeshStandardMaterial({color:lin('#3a4256'),roughness:.8})
         : new THREE.MeshStandardMaterial({color:lin(this.catColor(e.cat)),roughness:.42,metalness:.05,emissive:lin(this.catColor(e.cat)),emissiveIntensity:.12});
       const b=new THREE.Mesh(new THREE.BoxGeometry(0.84,h,0.84),mat);
-      b.position.set(e.x-9.5, h/2, (e.y>7?e.y+0.4:e.y)-5.2); grid.add(b); });
+      const px=e.x-9.5, pz=(e.y>7?e.y+0.4:e.y)-5.2;
+      b.position.set(px, h/2, pz); grid.add(b);
+      // symbol and atomic number printed on the top face, like a table tile
+      const top=new THREE.Mesh(new THREE.PlaneGeometry(0.8,0.8),new THREE.MeshBasicMaterial({map:labelTex(e, v!=null),transparent:true,depthWrite:false}));
+      top.rotation.x=-Math.PI/2; top.position.set(px, h+0.004, pz); grid.add(top); });
     camera.position.set(0,12,15);
     const controls=this._makeOrbit(THREE,camera,renderer.domElement,true); controls.autoRotateSpeed=0.5; controls.minDistance=8; controls.maxDistance=40; controls.target.set(0,1,0.3); controls.sync();
     const S={THREE,slot:'land',scene,camera,renderer,controls,host,raf:0,onResize:null};
