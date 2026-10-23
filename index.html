@@ -31,10 +31,16 @@
   @keyframes ptfade{from{opacity:0}to{opacity:1}}
   @keyframes ptrow{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   input::placeholder{color:rgba(170,185,220,.5)}
+  .pt-listview,.pt-viewtoggle{display:none}
   @media (max-width:760px){
     #pt-appheader{flex-wrap:wrap !important;padding:10px 14px !important;gap:9px 12px !important}
     #pt-subtitle{display:none !important}
-    #pt-search{order:3 !important;width:100% !important}
+    #pt-search{order:3 !important;flex:1 1 180px !important;width:auto !important}
+    .pt-viewtoggle{display:flex;order:4}
+    .pt-view-list .pt-listview{display:block}
+    .pt-view-list #pt-grid{display:none !important}
+    #pt-cats{scrollbar-width:none}
+    #pt-cats::-webkit-scrollbar{display:none}
     #pt-cats{padding:9px 12px !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch}
     #pt-main{align-items:flex-start !important;justify-content:flex-start !important;padding:12px !important}
     #pt-grid{width:780px !important;min-width:780px !important;max-height:none !important;margin:0 !important}
@@ -47,9 +53,12 @@
     #pt-quickstats{grid-template-columns:repeat(2,1fr) !important}
     #pt-mendeleev-body{padding:22px 16px 56px !important}
   }
+  @media (max-width:520px){
+    .pt-vlabel{display:none}
+  }
 </style>
 </helmet>
-<div style="position:fixed;inset:0;display:flex;flex-direction:column;background:linear-gradient(rgba(4,8,22,.5),rgba(4,8,22,.62)),url('assets/app-bg.png') center/cover no-repeat,#060c20">
+<div class="{{ viewClass }}" style="position:fixed;inset:0;display:flex;flex-direction:column;background:linear-gradient(rgba(4,8,22,.5),rgba(4,8,22,.62)),url('assets/app-bg.png') center/cover no-repeat,#060c20">
 
   <header id="pt-appheader" style="flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:16px 26px 14px;border-bottom:1px solid rgba(120,150,220,.12);background:rgba(8,12,24,.55);backdrop-filter:blur(14px);z-index:5">
     <div style="display:flex;flex-direction:column;gap:2px;min-width:max-content">
@@ -72,6 +81,12 @@
     <div style="display:flex;gap:4px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:4px">
       <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
         <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;letter-spacing:.05em;padding:7px 12px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
+      </sc-for>
+    </div>
+
+    <div class="pt-viewtoggle" style="gap:3px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+      <sc-for list="{{ viewOpts }}" as="vo" hint-placeholder-count="2">
+        <button onClick="{{ vo.set }}" title="{{ vo.label }}" style="display:inline-flex;align-items:center;gap:6px;background:{{ vo.bg }};color:{{ vo.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:7px 11px;cursor:pointer;transition:.15s;white-space:nowrap"><span style="font-size:13px">{{ vo.icon }}</span><span class="pt-vlabel">{{ vo.label }}</span></button>
       </sc-for>
     </div>
   </header>
@@ -101,6 +116,27 @@
       </sc-for>
       <div style="grid-column:1/3;grid-row:9;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:'IBM Plex Mono';font-size:9px;color:rgba(255,138,216,.7)">57–71</div>
       <div style="grid-column:1/3;grid-row:10;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:'IBM Plex Mono';font-size:9px;color:rgba(255,122,156,.7)">89–103</div>
+    </div>
+
+    <!-- phones: elements grouped by period, big tap targets -->
+    <div class="pt-listview" style="width:100%;max-width:560px;margin:0 auto;padding-bottom:12px">
+      <sc-for list="{{ periodGroups }}" as="pg" hint-placeholder-count="9">
+        <section style="margin-bottom:18px">
+          <div style="display:flex;align-items:baseline;gap:8px;margin:0 2px 8px">
+            <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:rgba(190,205,240,.8)">{{ pg.label }}</span>
+            <span style="font-family:'IBM Plex Mono';font-size:10px;color:rgba(170,188,228,.45)">{{ pg.count }}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px">
+            <sc-for list="{{ pg.items }}" as="el" hint-placeholder-count="8">
+              <button onClick="{{ el.select }}" title="{{ el.titleAttr }}" style="aspect-ratio:1/1.08;display:flex;flex-direction:column;justify-content:space-between;min-width:0;background:{{ el.bg }};border:1px solid {{ el.bc }};border-radius:10px;padding:5px 4px 6px;cursor:pointer;color:{{ el.fg }};overflow:hidden">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;opacity:.75;text-align:left;line-height:1">{{ el.z }}</span>
+                <span style="font-family:'Space Grotesk';font-weight:700;font-size:21px;line-height:1;text-align:center">{{ el.sym }}</span>
+                <span style="font-size:8.5px;line-height:1.1;text-align:center;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ el.shortName }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </section>
+      </sc-for>
     </div>
   </main>
 
@@ -333,26 +369,27 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
 class Component extends DCLogic {
-  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false };
+  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list' };
   PORTFOLIO = "https://najmiddinovanihona-hub.github.io/portfolio.html/";
 
   constructor(props){ super(props); this._engines = {atom:null, mat:null};
     // restore the language the visitor picked last time
-    try{ const l=localStorage.getItem('pt-lang'); if(['uz','en','ru'].includes(l)) this.state.lang=l; }catch(_){}
+    try{ const l=localStorage.getItem('pt-lang'); if(['uz','en','ru'].includes(l)) this.state.lang=l;
+      const v=localStorage.getItem('pt-view'); if(v==='list'||v==='table') this.state.mobileView=v; }catch(_){}
     this._onKey=(e)=>this._handleKey(e); this._onNav=()=>this._route(); }
 
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",copyLink:"Havolani nusxalash",copied:"Nusxalandi",prevEl:"Oldingi element",nextEl:"Keyingi element",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",periodFmt:"{n}-davr",lanthGroup:"Lantanoidlar",actGroup:"Aktinoidlar",viewList:"Ro'yxat",viewTable:"Jadval",copyLink:"Havolani nusxalash",copied:"Nusxalandi",prevEl:"Oldingi element",nextEl:"Keyingi element",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
       f:{symbol:"Belgisi",number:"Atom raqami",mass:"Atom massasi",cat:"Kategoriya",group:"Guruh",period:"Period",block:"Blok",econf:"Elektron konfiguratsiyasi",shells:"Qavatlar",valence:"Valent elektronlar",protons:"Protonlar",neutrons:"Neytronlar",electrons:"Elektronlar",ox:"Oksidlanish darajalari",phase:"Fizik holati",density:"Zichligi",melt:"Erish harorati",boil:"Qaynash harorati",radius:"Atom radiusi",ion:"Ionlanish energiyasi",eneg:"Elektrmanfiyligi"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",copyLink:"Copy link",copied:"Copied",prevEl:"Previous element",nextEl:"Next element",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",periodFmt:"Period {n}",lanthGroup:"Lanthanides",actGroup:"Actinides",viewList:"List",viewTable:"Table",copyLink:"Copy link",copied:"Copied",prevEl:"Previous element",nextEl:"Next element",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
       f:{symbol:"Symbol",number:"Atomic number",mass:"Atomic mass",cat:"Category",group:"Group",period:"Period",block:"Block",econf:"Electron configuration",shells:"Shells",valence:"Valence electrons",protons:"Protons",neutrons:"Neutrons",electrons:"Electrons",ox:"Oxidation states",phase:"Phase",density:"Density",melt:"Melting point",boil:"Boiling point",radius:"Atomic radius",ion:"Ionization energy",eneg:"Electronegativity"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",copyLink:"Скопировать ссылку",copied:"Скопировано",prevEl:"Предыдущий элемент",nextEl:"Следующий элемент",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",periodFmt:"{n}-й период",lanthGroup:"Лантаноиды",actGroup:"Актиноиды",viewList:"Список",viewTable:"Таблица",copyLink:"Скопировать ссылку",copied:"Скопировано",prevEl:"Предыдущий элемент",nextEl:"Следующий элемент",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
       f:{symbol:"Символ",number:"Атомный номер",mass:"Атомная масса",cat:"Категория",group:"Группа",period:"Период",block:"Блок",econf:"Электронная конфигурация",shells:"Оболочки",valence:"Валентные электроны",protons:"Протоны",neutrons:"Нейтроны",electrons:"Электроны",ox:"Степени окисления",phase:"Агрегатное состояние",density:"Плотность",melt:"Температура плавления",boil:"Температура кипения",radius:"Атомный радиус",ion:"Энергия ионизации",eneg:"Электроотрицательность"},
       ph:{solid:"Твёрдое",liquid:"Жидкое",gas:"Газ"}}
   }[this.state.lang]; }
@@ -463,6 +500,8 @@ class Component extends DCLogic {
   selectEl(el){ this.setState({selected:el, fullView:null, explode:false, autoRotateA:true, autoRotateM:true}, ()=>this._syncDocument()); setTimeout(()=>{ this._build('atom',el); this._build('mat',el); }, 50); }
   _closeEl(){ this.setState({selected:null, fullView:null}, ()=>this._syncDocument()); this._disposeAll(); }
   clearFilters(){ this.setState({search:'', activeCats:[]}); }
+  // phones only: periodic list vs. the classic (horizontally scrolling) table
+  setMobileView(v){ try{ localStorage.setItem('pt-view', v); }catch(_){} this.setState({mobileView:v}); }
   expandView(slot){ this.setState({fullView:slot}); setTimeout(()=>this._moveCanvas(slot,'pt-host-full',0), 70); }
   collapseView(){ const slot=this.state.fullView; this.setState({fullView:null}); setTimeout(()=>this._moveCanvas(slot, slot==='atom'?'pt-host-atom':'pt-host-mat', 0), 70); }
   _moveCanvas(slot, hostId, tries){ tries=tries||0; const S=this._engines&&this._engines[slot]; if(!S) return; const host=document.getElementById(hostId);
@@ -501,7 +540,17 @@ class Component extends DCLogic {
       return { z:el.z, x:el.x, y:el.y, sym:el.sym, shortName:el.name[L],
         titleAttr: el.z+' · '+el.name[L],
         bg: this.rgba(col, m?0.13:0.05), bc: this.rgba(col, m?0.4:0.12), fg: col,
-        op: anyFilter ? (m?1:0.16) : 1, select:()=>this.openEl(el) }; });
+        op: anyFilter ? (m?1:0.16) : 1, match:m, period:el.y<=7?el.y:null, row:el.y, select:()=>this.openEl(el) }; });
+    // list view groups: periods 1–7, then the lanthanide (row 9) and actinide (row 10) series;
+    // filtered-out elements are dropped instead of dimmed, and empty groups disappear
+    const periodGroups = [1,2,3,4,5,6,7,9,10].map(r=>{
+      const items = elements.filter(e=>e.row===r && (!anyFilter || e.match));
+      const label = r===9 ? ui.lanthGroup : r===10 ? ui.actGroup : ui.periodFmt.replace('{n}', r);
+      return { label, items, count: items.length };
+    }).filter(g=>g.count>0);
+    const mv = this.state.mobileView;
+    const viewOpts = [['list','☰',ui.viewList],['table','▦',ui.viewTable]].map(o=>({ icon:o[1], label:o[2], set:()=>this.setMobileView(o[0]),
+      bg: mv===o[0]?'rgba(77,210,255,.18)':'transparent', fg: mv===o[0]?'#4dd2ff':'rgba(190,205,235,.7)' }));
     const q = this.state.search.trim();
     const noResults = anyFilter && DATA.length>0 && !DATA.some(el=>this.matches(el));
     const noResultsText = q ? '«'+q+'» '+ui.noResultsFor : ui.noResults;
@@ -550,6 +599,7 @@ class Component extends DCLogic {
 
     return { ui, langs, cats, elements, selected, search:this.state.search,
       noResults, noResultsText, clearFilters:()=>this.clearFilters(),
+      periodGroups, viewOpts, viewClass:'pt-view-'+mv,
       copyLink:()=>this.copyLink(), copyLabel: this.state.linkCopied?'✓ '+ui.copied:ui.copyLink,
       copyFg: this.state.linkCopied?'#7ee787':'#dbe4f7',
       started:this.state.started, notStarted:!this.state.started, showPortfolio:this.state.showPortfolio, portfolioUrl:this.PORTFOLIO,
