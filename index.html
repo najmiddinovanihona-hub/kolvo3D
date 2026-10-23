@@ -33,6 +33,28 @@
   @keyframes ptfade{from{opacity:0}to{opacity:1}}
   @keyframes ptrow{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   input::placeholder{color:rgba(170,185,220,.5)}
+  /* theme palettes: every themed colour in the page reads one of these */
+  .pt-root{--overlay:#04060e;--app-bg:linear-gradient(rgba(4,8,22,.5),rgba(4,8,22,.62)),url('assets/app-bg.png') center/cover no-repeat,#060c20;
+    --hdr:rgba(8,12,24,.55);--panel:rgba(12,17,33,.65);--cell:rgba(12,17,33,.94);--input:rgba(14,20,38,.8);
+    --line:rgba(120,150,220,.16);--line-soft:rgba(120,150,220,.1);--btn:rgba(255,255,255,.05);--btn-line:rgba(255,255,255,.15);--btn-hover:rgba(255,255,255,.12);
+    --text:#e7ecf7;--body:rgba(214,224,246,.92);--muted:rgba(170,188,228,.62);--cyan:#4dd2ff;--violet:#c8a8ff;--quote:#e6dcff;--warn:#ffc2cf;--tip-bg:rgba(9,14,28,.95)}
+  .pt-root.pt-light{--overlay:#eef2f8;--app-bg:radial-gradient(1200px 700px at 12% -10%,rgba(77,160,255,.18),transparent 60%),radial-gradient(1000px 640px at 100% 110%,rgba(192,139,255,.16),transparent 55%),linear-gradient(#f7f9fd,#e8eef8);
+    --hdr:rgba(255,255,255,.8);--panel:#ffffff;--cell:#ffffff;--input:#ffffff;
+    --line:rgba(30,50,100,.16);--line-soft:rgba(30,50,100,.1);--btn:rgba(20,40,90,.04);--btn-line:rgba(20,40,90,.16);--btn-hover:rgba(20,40,90,.09);
+    --text:#141c30;--body:#2c3753;--muted:#5d6a88;--cyan:#0a78b0;--violet:#7036c8;--quote:#3b2a66;--warn:#b3263e;--tip-bg:rgba(255,255,255,.97)}
+  .pt-light input::placeholder{color:rgba(60,75,110,.55)}
+  .pt-light ::-webkit-scrollbar-thumb{background:rgba(40,60,110,.3)}
+  /* neon tiles: hover lifts the tile and shows its info card */
+  .pt-tile:hover{transform:scale(1.08);z-index:30;opacity:1 !important;filter:brightness(1.18)}
+  .pt-light .pt-tile:hover{filter:none;box-shadow:0 6px 18px rgba(20,30,60,.18) !important}
+  .pt-tip{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) scale(.96);width:176px;display:flex;flex-direction:column;gap:3px;
+    padding:11px 13px;border-radius:12px;border:1px solid;background:var(--tip-bg);box-shadow:0 12px 34px rgba(0,0,0,.45),0 0 16px var(--c);
+    text-align:left;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s,transform .12s;z-index:40;backdrop-filter:blur(10px);color:var(--text)}
+  .pt-light .pt-tip{box-shadow:0 14px 34px rgba(20,30,60,.2)}
+  .pt-tile:hover .pt-tip{opacity:1;visibility:visible;transform:translateX(-50%) scale(1)}
+  .pt-tip-down .pt-tip{bottom:auto;top:calc(100% + 10px)}
+  .pt-tip-left .pt-tip,.pt-tip-left:hover .pt-tip{left:0;transform:none}
+  .pt-tip-right .pt-tip,.pt-tip-right:hover .pt-tip{left:auto;right:0;transform:none}
   .pt-listview,.pt-viewtoggle{display:none}
   /* tiny Uzbek flag: blue / white / green with thin red fimbriation */
   .pt-uzflag{display:inline-block;flex:0 0 auto;width:16px;height:11px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.25);background:linear-gradient(#0099b5 0 32%,#ce1126 32% 36%,#fff 36% 64%,#ce1126 64% 68%,#1eb53a 68%)}
@@ -53,7 +75,7 @@
     #pt-copy-label{display:none}
     #pt-detail-body{flex-direction:column !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}
     #pt-viewers{flex:none !important;width:100% !important;min-width:0 !important;height:60vh !important;padding:12px !important}
-    #pt-info{flex:none !important;overflow:visible !important;border-left:none !important;border-top:1px solid rgba(120,150,220,.12) !important;padding:18px 16px 46px !important}
+    #pt-info{flex:none !important;overflow:visible !important;border-left:none !important;border-top:1px solid var(--line-soft) !important;padding:18px 16px 46px !important}
     #pt-quickstats{grid-template-columns:repeat(2,1fr) !important}
     #pt-mendeleev-body{padding:22px 16px 56px !important}
   }
@@ -62,42 +84,43 @@
   }
 </style>
 </helmet>
-<div class="{{ viewClass }}" style="position:fixed;inset:0;display:flex;flex-direction:column;background:linear-gradient(rgba(4,8,22,.5),rgba(4,8,22,.62)),url('assets/app-bg.png') center/cover no-repeat,#060c20">
+<div class="{{ viewClass }}" style="position:fixed;inset:0;display:flex;flex-direction:column;color:var(--text);background:var(--app-bg);transition:background .3s">
 
-  <header id="pt-appheader" style="flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:16px 26px 14px;border-bottom:1px solid rgba(120,150,220,.12);background:rgba(8,12,24,.55);backdrop-filter:blur(14px);z-index:5">
+  <header id="pt-appheader" style="flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:16px 26px 14px;border-bottom:1px solid var(--line-soft);background:var(--hdr);backdrop-filter:blur(14px);z-index:5">
     <div style="display:flex;flex-direction:column;gap:2px;min-width:max-content">
       <div style="display:flex;align-items:center;gap:11px">
         <div style="width:11px;height:11px;border-radius:50%;background:#4dd2ff;box-shadow:0 0 14px #4dd2ff,0 0 28px rgba(77,210,255,.5)"></div>
         <span style="font-size:18px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap">{{ ui.title }}</span>
       </div>
-      <span id="pt-subtitle" style="font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(160,180,225,.55);padding-left:22px;white-space:nowrap">{{ ui.subtitle }}</span>
+      <span id="pt-subtitle" style="font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);padding-left:22px;white-space:nowrap">{{ ui.subtitle }}</span>
     </div>
 
     <div style="flex:1"></div>
 
     <div id="pt-search" style="position:relative;width:min(320px,34vw)">
-      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:rgba(160,180,225,.5);font-size:14px">⌕</span>
-      <input value="{{ search }}" onInput="{{ onSearch }}" placeholder="{{ ui.searchPh }}" spellcheck="false" style="width:100%;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;color:#eaf0ff;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 14px 10px 34px;outline:none" />
+      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px">⌕</span>
+      <input value="{{ search }}" onInput="{{ onSearch }}" placeholder="{{ ui.searchPh }}" spellcheck="false" style="width:100%;background:var(--input);border:1px solid var(--line);border-radius:11px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;padding:10px 14px 10px 34px;outline:none" />
     </div>
 
-    <button onClick="{{ openMendeleev }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(192,139,255,.12);border:1px solid rgba(192,139,255,.4);border-radius:11px;color:#c8a8ff;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s" style-hover="background:rgba(192,139,255,.22)"><span style="font-size:14px">📖</span> {{ ui.mendeleevBtn }}</button>
+    <button onClick="{{ openMendeleev }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(192,139,255,.12);border:1px solid rgba(192,139,255,.4);border-radius:11px;color:var(--violet);font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s" style-hover="background:rgba(192,139,255,.22)"><span style="font-size:14px">📖</span> {{ ui.mendeleevBtn }}</button>
 
-    <div style="display:flex;gap:4px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:4px">
+    <div style="display:flex;gap:4px;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:4px">
       <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
         <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;letter-spacing:.05em;padding:7px 12px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
       </sc-for>
     </div>
+    <button onClick="{{ toggleTheme }}" title="{{ themeTitle }}" style="flex:0 0 auto;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:var(--input);border:1px solid var(--line);color:var(--text);font-size:16px;cursor:pointer;transition:.15s" style-hover="background:var(--btn-hover)">{{ themeIcon }}</button>
 
-    <div class="pt-viewtoggle" style="gap:3px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+    <div class="pt-viewtoggle" style="gap:3px;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:3px">
       <sc-for list="{{ viewOpts }}" as="vo" hint-placeholder-count="2">
         <button onClick="{{ vo.set }}" title="{{ vo.label }}" style="display:inline-flex;align-items:center;gap:6px;background:{{ vo.bg }};color:{{ vo.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:7px 11px;cursor:pointer;transition:.15s;white-space:nowrap"><span style="font-size:13px">{{ vo.icon }}</span><span class="pt-vlabel">{{ vo.label }}</span></button>
       </sc-for>
     </div>
   </header>
 
-  <div id="pt-cats" style="flex:0 0 auto;display:flex;flex-wrap:wrap;gap:7px;padding:11px 26px;border-bottom:1px solid rgba(120,150,220,.08);z-index:4">
+  <div id="pt-cats" style="flex:0 0 auto;display:flex;flex-wrap:wrap;gap:7px;padding:11px 26px;border-bottom:1px solid var(--line-soft);z-index:4">
     <button onClick="{{ uzChip.toggle }}" style="display:flex;align-items:center;gap:7px;background:{{ uzChip.bg }};border:1px solid {{ uzChip.bc }};border-radius:20px;padding:6px 13px 6px 10px;cursor:pointer;font-family:'Space Grotesk';font-size:11.5px;font-weight:600;color:{{ uzChip.fg }};transition:.15s;white-space:nowrap"><span class="pt-uzflag"></span>{{ ui.uzTitle }}</button>
-    <span style="width:1px;align-self:stretch;margin:2px 3px;background:rgba(120,150,220,.2)"></span>
+    <span style="width:1px;align-self:stretch;margin:2px 3px;background:var(--line)"></span>
     <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11">
       <button onClick="{{ c.toggle }}" style="display:flex;align-items:center;gap:7px;background:{{ c.bg }};border:1px solid {{ c.bc }};border-radius:20px;padding:6px 13px 6px 10px;cursor:pointer;font-family:'Space Grotesk';font-size:11.5px;font-weight:500;color:{{ c.fg }};transition:.15s;opacity:{{ c.op }};white-space:nowrap">
         <span style="width:9px;height:9px;border-radius:50%;background:{{ c.dot }};box-shadow:0 0 8px {{ c.dot }}"></span>{{ c.label }}
@@ -107,21 +130,35 @@
 
   <main id="pt-main" style="flex:1;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;padding:22px;position:relative">
     <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;left:50%;top:22px;transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:14px;max-width:calc(100% - 32px);background:rgba(10,15,30,.92);border:1px solid rgba(255,138,160,.4);border-radius:12px;padding:11px 12px 11px 18px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:ptfade .2s ease">
-        <span style="font-size:13.5px;color:#ffc2cf;line-height:1.4">{{ noResultsText }}</span>
-        <button onClick="{{ clearFilters }}" style="flex:0 0 auto;background:rgba(77,210,255,.14);border:1px solid rgba(77,210,255,.4);color:#4dd2ff;border-radius:9px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:7px 13px;cursor:pointer;white-space:nowrap" style-hover="background:rgba(77,210,255,.24)">{{ ui.clearFilters }}</button>
+      <div style="position:absolute;left:50%;top:22px;transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:14px;max-width:calc(100% - 32px);background:var(--tip-bg);border:1px solid rgba(255,138,160,.4);border-radius:12px;padding:11px 12px 11px 18px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:ptfade .2s ease">
+        <span style="font-size:13.5px;color:var(--warn);line-height:1.4">{{ noResultsText }}</span>
+        <button onClick="{{ clearFilters }}" style="flex:0 0 auto;background:rgba(77,210,255,.14);border:1px solid rgba(77,210,255,.4);color:var(--cyan);border-radius:9px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:7px 13px;cursor:pointer;white-space:nowrap" style-hover="background:rgba(77,210,255,.24)">{{ ui.clearFilters }}</button>
       </div>
     </sc-if>
-    <div id="pt-grid" style="display:grid;grid-template-columns:repeat(18,minmax(0,1fr));grid-auto-rows:1fr;gap:5px;width:min(1480px,100%);max-height:100%;aspect-ratio:18/10.4;margin:auto">
+    <div id="pt-grid" style="display:grid;grid-template-columns:20px repeat(18,minmax(0,1fr));grid-template-rows:18px repeat(10,minmax(0,1fr));gap:5px;width:min(1500px,100%);max-height:100%;aspect-ratio:18.6/10.7;margin:auto">
+      <sc-for list="{{ groupLabels }}" as="g" hint-placeholder-count="18">
+        <div style="grid-column:{{ g.col }};grid-row:{{ g.row }};display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;font-family:'IBM Plex Mono';font-size:10px;font-weight:600;color:var(--muted)">{{ g.n }}</div>
+      </sc-for>
+      <sc-for list="{{ periodLabels }}" as="p" hint-placeholder-count="7">
+        <div style="grid-column:1;grid-row:{{ p.row }};display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono';font-size:10px;font-weight:600;color:var(--muted)">{{ p.n }}</div>
+      </sc-for>
       <sc-for list="{{ elements }}" as="el" hint-placeholder-count="60">
-        <button onClick="{{ el.select }}" title="{{ el.titleAttr }}" style="grid-column:{{ el.x }};grid-row:{{ el.y }};display:flex;flex-direction:column;justify-content:space-between;min-height:0;min-width:0;background:{{ el.bg }};border:1px solid {{ el.bc }};border-radius:7px;padding:4px 3px;cursor:pointer;color:{{ el.fg }};opacity:{{ el.op }};transition:transform .14s,box-shadow .14s,opacity .2s;position:relative;overflow:hidden" style-hover="transform:scale(1.16);box-shadow:0 0 22px currentColor,0 8px 26px rgba(0,0,0,.6);z-index:6;opacity:1;border-color:currentColor">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;opacity:.7;text-align:left;line-height:1">{{ el.z }}</span>
-          <span style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(11px,1.15vw,19px);line-height:.95;text-align:center">{{ el.sym }}</span>
-          <span style="font-size:6.7px;line-height:1;text-align:center;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ el.shortName }}</span>
+        <button class="{{ el.tileCls }}" onClick="{{ el.select }}" aria-label="{{ el.titleAttr }}" style="--c:{{ el.glowCol }};grid-column:{{ el.col }};grid-row:{{ el.gridRow }};display:flex;flex-direction:column;justify-content:space-between;min-height:0;min-width:0;background:{{ el.bg }};border:1px solid {{ el.bc }};box-shadow:{{ el.glow }};border-radius:7px;padding:4px 3px;cursor:pointer;color:{{ el.fg }};opacity:{{ el.op }};transition:transform .14s,box-shadow .2s,opacity .2s,filter .14s;position:relative">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;opacity:.75;text-align:left;line-height:1">{{ el.z }}</span>
+          <span style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(11px,1.15vw,19px);line-height:.95;text-align:center;text-shadow:{{ el.tshadow }}">{{ el.sym }}</span>
+          <span style="font-size:6.7px;line-height:1;text-align:center;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ el.shortName }}</span>
+          <span class="pt-tip" style="border-color:{{ el.fg }}">
+            <span style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono';font-size:10px;color:var(--muted)"><span>{{ el.z }}</span><span>{{ el.massTxt }}</span></span>
+            <span style="font-family:'Space Grotesk';font-size:28px;font-weight:700;line-height:1.05;color:{{ el.fg }};text-shadow:{{ el.tshadow }}">{{ el.sym }}</span>
+            <span style="font-size:14px;font-weight:700;color:var(--text)">{{ el.shortName }}</span>
+            <span style="font-size:11px;color:{{ el.fg }}">{{ el.catName }}</span>
+            <span style="font-family:'IBM Plex Mono';font-size:10.5px;color:var(--body);margin-top:2px">{{ el.econfShort }}</span>
+            <span style="margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)">{{ ui.tipHint }}</span>
+          </span>
         </button>
       </sc-for>
-      <div style="grid-column:1/3;grid-row:9;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:'IBM Plex Mono';font-size:9px;color:rgba(255,138,216,.7)">57–71</div>
-      <div style="grid-column:1/3;grid-row:10;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:'IBM Plex Mono';font-size:9px;color:rgba(255,122,156,.7)">89–103</div>
+      <div style="grid-column:2/4;grid-row:10;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:'IBM Plex Mono';font-size:9px;color:rgba(255,138,216,.85)">57–71</div>
+      <div style="grid-column:2/4;grid-row:11;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:'IBM Plex Mono';font-size:9px;color:rgba(255,122,156,.85)">89–103</div>
     </div>
 
     <!-- phones: elements grouped by period, big tap targets -->
@@ -129,12 +166,12 @@
       <sc-for list="{{ periodGroups }}" as="pg" hint-placeholder-count="9">
         <section style="margin-bottom:18px">
           <div style="display:flex;align-items:baseline;gap:8px;margin:0 2px 8px">
-            <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:rgba(190,205,240,.8)">{{ pg.label }}</span>
-            <span style="font-family:'IBM Plex Mono';font-size:10px;color:rgba(170,188,228,.45)">{{ pg.count }}</span>
+            <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--muted)">{{ pg.label }}</span>
+            <span style="font-family:'IBM Plex Mono';font-size:10px;color:var(--muted)">{{ pg.count }}</span>
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px">
             <sc-for list="{{ pg.items }}" as="el" hint-placeholder-count="8">
-              <button onClick="{{ el.select }}" title="{{ el.titleAttr }}" style="aspect-ratio:1/1.08;display:flex;flex-direction:column;justify-content:space-between;min-width:0;background:{{ el.bg }};border:1px solid {{ el.bc }};border-radius:10px;padding:5px 4px 6px;cursor:pointer;color:{{ el.fg }};overflow:hidden">
+              <button onClick="{{ el.select }}" title="{{ el.titleAttr }}" style="aspect-ratio:1/1.08;display:flex;flex-direction:column;justify-content:space-between;min-width:0;background:{{ el.bg }};border:1px solid {{ el.bc }};box-shadow:{{ el.glow }};border-radius:10px;padding:5px 4px 6px;cursor:pointer;color:{{ el.fg }};overflow:hidden">
                 <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;opacity:.75;text-align:left;line-height:1">{{ el.z }}</span>
                 <span style="font-family:'Space Grotesk';font-weight:700;font-size:21px;line-height:1;text-align:center">{{ el.sym }}</span>
                 <span style="font-size:8.5px;line-height:1.1;text-align:center;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">{{ el.shortName }}</span>
@@ -146,9 +183,9 @@
     </div>
   </main>
 
-  <footer style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 20px;border-top:1px solid rgba(120,150,220,.12);background:rgba(8,12,24,.5);backdrop-filter:blur(10px);font-size:12px;z-index:5">
-    <span style="color:rgba(160,180,225,.55)">{{ ui.authorLbl }}:</span>
-    <button onClick="{{ openPortfolio }}" style="background:none;border:none;cursor:pointer;font-family:'Space Grotesk';font-size:12px;font-weight:600;color:#4dd2ff;display:inline-flex;align-items:center;gap:6px;padding:0" style-hover="text-decoration:underline">Nihona Najmiddinova Irshodovna <span style="font-size:11px;opacity:.7">↗</span></button>
+  <footer style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 20px;border-top:1px solid var(--line-soft);background:var(--hdr);backdrop-filter:blur(10px);font-size:12px;z-index:5">
+    <span style="color:var(--muted)">{{ ui.authorLbl }}:</span>
+    <button onClick="{{ openPortfolio }}" style="background:none;border:none;cursor:pointer;font-family:'Space Grotesk';font-size:12px;font-weight:600;color:var(--cyan);display:inline-flex;align-items:center;gap:6px;padding:0" style-hover="text-decoration:underline">Nihona Najmiddinova Irshodovna <span style="font-size:11px;opacity:.7">↗</span></button>
   </footer>
 
   <sc-if value="{{ notStarted }}" hint-placeholder-val="{{ true }}">
@@ -166,19 +203,19 @@
   </sc-if>
 
   <sc-if value="{{ showPortfolio }}" hint-placeholder-val="{{ false }}">
-    <div style="position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:#04060e">
-      <div style="flex:0 0 auto;display:flex;align-items:center;gap:14px;padding:11px 18px;border-bottom:1px solid rgba(120,150,220,.16);background:rgba(8,12,24,.85)">
-        <button onClick="{{ closePortfolio }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(77,210,255,.14);border:1px solid rgba(77,210,255,.35);color:#4dd2ff;border-radius:10px;font-family:'Space Grotesk';font-weight:600;font-size:13px;padding:9px 16px;cursor:pointer" style-hover="background:rgba(77,210,255,.22)"><span style="font-size:15px">←</span> {{ ui.backBtn }}</button>
-        <div style="flex:1;min-width:0;font-family:'IBM Plex Mono';font-size:12px;color:rgba(160,180,225,.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ portfolioUrl }}</div>
-        <a href="{{ portfolioUrl }}" target="_blank" rel="noopener" style="color:rgba(190,205,235,.7);font-size:12px;text-decoration:none;white-space:nowrap">↗</a>
+    <div style="position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:var(--overlay)">
+      <div style="flex:0 0 auto;display:flex;align-items:center;gap:14px;padding:11px 18px;border-bottom:1px solid var(--line);background:var(--hdr)">
+        <button onClick="{{ closePortfolio }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(77,210,255,.14);border:1px solid rgba(77,210,255,.35);color:var(--cyan);border-radius:10px;font-family:'Space Grotesk';font-weight:600;font-size:13px;padding:9px 16px;cursor:pointer" style-hover="background:rgba(77,210,255,.22)"><span style="font-size:15px">←</span> {{ ui.backBtn }}</button>
+        <div style="flex:1;min-width:0;font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ portfolioUrl }}</div>
+        <a href="{{ portfolioUrl }}" target="_blank" rel="noopener" style="color:var(--muted);font-size:12px;text-decoration:none;white-space:nowrap">↗</a>
       </div>
       <iframe src="{{ portfolioUrl }}" style="flex:1;width:100%;border:none;background:#fff"></iframe>
     </div>
   </sc-if>
 
   <sc-if value="{{ showMendeleev }}" hint-placeholder-val="{{ false }}">
-    <div style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:radial-gradient(1100px 720px at 20% -8%,rgba(150,90,220,.2),transparent 60%),radial-gradient(900px 600px at 92% 110%,rgba(60,90,200,.16),transparent 55%),#04060e;animation:ptfade .25s ease">
-      <header style="flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:16px 28px;border-bottom:1px solid rgba(150,120,220,.18);background:rgba(8,12,24,.5);backdrop-filter:blur(12px)">
+    <div style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:radial-gradient(1100px 720px at 20% -8%,rgba(150,90,220,.2),transparent 60%),radial-gradient(900px 600px at 92% 110%,rgba(60,90,200,.16),transparent 55%),var(--overlay);animation:ptfade .25s ease">
+      <header style="flex:0 0 auto;display:flex;align-items:center;gap:18px;padding:16px 28px;border-bottom:1px solid rgba(150,120,220,.18);background:var(--hdr);backdrop-filter:blur(12px)">
         <div style="flex:0 0 auto;position:relative;width:54px;height:54px">
           <div style="position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(192,139,255,.5);animation:ptspin 9s linear infinite"></div>
           <div style="position:absolute;inset:11px;border-radius:50%;border:1.5px solid rgba(77,210,255,.5);transform:rotate(60deg);animation:ptspin 6s linear infinite reverse"></div>
@@ -186,37 +223,38 @@
         </div>
         <div style="flex:1;min-width:0">
           <div style="font-size:24px;font-weight:700;line-height:1.1">{{ minfo.title }}</div>
-          <div style="font-size:12.5px;letter-spacing:.06em;color:rgba(190,170,235,.75);margin-top:3px">{{ minfo.years }}</div>
+          <div style="font-size:12.5px;letter-spacing:.06em;color:var(--muted);margin-top:3px">{{ minfo.years }}</div>
         </div>
-        <div style="flex:0 0 auto;display:flex;gap:3px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+        <div style="flex:0 0 auto;display:flex;gap:3px;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:3px">
           <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
             <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.05em;padding:9px 10px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
           </sc-for>
         </div>
-        <button onClick="{{ closeMendeleev }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#dbe4f7;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
+        <button onClick="{{ toggleTheme }}" title="{{ themeTitle }}" style="flex:0 0 auto;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:var(--input);border:1px solid var(--line);color:var(--text);font-size:16px;cursor:pointer;transition:.15s" style-hover="background:var(--btn-hover)">{{ themeIcon }}</button>
+        <button onClick="{{ closeMendeleev }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-line);color:var(--text);font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:var(--btn-hover)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
       </header>
 
       <div id="pt-mendeleev-body" style="flex:1;min-height:0;overflow-y:auto;padding:36px 28px 70px">
         <div style="max-width:820px;margin:0 auto">
-          <p style="font-size:17px;line-height:1.66;color:rgba(222,230,250,.95);margin-bottom:34px;text-wrap:pretty">{{ minfo.lead }}</p>
+          <p style="font-size:17px;line-height:1.66;color:var(--body);margin-bottom:34px;text-wrap:pretty">{{ minfo.lead }}</p>
           <sc-for list="{{ minfo.sections }}" as="s" hint-placeholder-count="6">
             <div style="margin-bottom:30px">
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
                 <span style="width:7px;height:7px;border-radius:50%;background:#c08bff;box-shadow:0 0 10px #c08bff"></span>
-                <h3 style="font-size:18px;font-weight:700;letter-spacing:.01em;color:#eef1fb;margin:0">{{ s.h }}</h3>
+                <h3 style="font-size:18px;font-weight:700;letter-spacing:.01em;color:var(--text);margin:0">{{ s.h }}</h3>
               </div>
               <sc-if value="{{ s.p }}" hint-placeholder-val="{{ true }}">
-                <p style="font-size:15px;line-height:1.68;color:rgba(212,222,246,.9);margin:0 0 12px 19px;text-wrap:pretty">{{ s.p }}</p>
+                <p style="font-size:15px;line-height:1.68;color:var(--body);margin:0 0 12px 19px;text-wrap:pretty">{{ s.p }}</p>
               </sc-if>
               <sc-if value="{{ s.quote }}" hint-placeholder-val="{{ false }}">
-                <blockquote style="margin:0 0 12px 19px;padding:14px 20px;background:rgba(150,110,220,.1);border-left:3px solid #c08bff;border-radius:0 10px 10px 0;font-size:15.5px;font-style:italic;line-height:1.6;color:#e6dcff">{{ s.quote }}</blockquote>
+                <blockquote style="margin:0 0 12px 19px;padding:14px 20px;background:rgba(150,110,220,.1);border-left:3px solid #c08bff;border-radius:0 10px 10px 0;font-size:15.5px;font-style:italic;line-height:1.6;color:var(--quote)">{{ s.quote }}</blockquote>
               </sc-if>
               <sc-if value="{{ s.hasItems }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;flex-direction:column;gap:8px;margin-left:19px">
                   <sc-for list="{{ s.items }}" as="it" hint-placeholder-count="3">
-                    <div style="display:flex;align-items:flex-start;gap:11px;background:rgba(12,17,33,.6);border:1px solid rgba(120,150,220,.14);border-radius:10px;padding:11px 15px">
+                    <div style="display:flex;align-items:flex-start;gap:11px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 15px">
                       <span style="flex:0 0 auto;color:#c08bff;font-size:14px;line-height:1.5">▹</span>
-                      <span style="font-size:14.5px;line-height:1.55;color:rgba(214,224,246,.92)">{{ it }}</span>
+                      <span style="font-size:14.5px;line-height:1.55;color:var(--body)">{{ it }}</span>
                     </div>
                   </sc-for>
                 </div>
@@ -232,7 +270,7 @@
     <div style="position:fixed;inset:0;z-index:50;background:radial-gradient(1000px 680px at 50% 46%,{{ selected.accentSoft }},rgba(5,9,22,.97) 70%),#04060e;animation:ptfade .2s ease">
       <div id="pt-host-full" style="position:absolute;inset:0"></div>
       <div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:18px 26px;z-index:2;pointer-events:none">
-        <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:{{ selected.accent }}">{{ fullLabel }} · {{ selected.name }}</div>
+        <div style="font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:{{ selected.stageAccent }}">{{ fullLabel }} · {{ selected.name }}</div>
         <button onClick="{{ collapseView }}" style="pointer-events:auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 20px;border-radius:11px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#eaf0ff;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.18)"><span style="font-size:16px;line-height:1">⤡</span> {{ ui.collapse }}</button>
       </div>
       <div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:10px;padding:24px;z-index:2;pointer-events:none">
@@ -246,9 +284,9 @@
   </sc-if>
 
   <sc-if value="{{ selected }}" hint-placeholder-val="{{ false }}">
-    <div style="position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;background:radial-gradient(1100px 700px at 22% -6%,{{ selected.accentSoft }},transparent 60%),radial-gradient(900px 600px at 90% 108%,rgba(120,90,200,.12),transparent 55%),#04060e;animation:ptfade .25s ease">
+    <div style="position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;background:radial-gradient(1100px 700px at 22% -6%,{{ selected.accentSoft }},transparent 60%),radial-gradient(900px 600px at 90% 108%,rgba(120,90,200,.12),transparent 55%),var(--overlay);animation:ptfade .25s ease">
 
-      <header id="pt-detail-header" style="flex:0 0 auto;position:relative;display:flex;align-items:center;gap:18px;padding:16px 28px;border-bottom:1px solid rgba(120,150,220,.14);background:rgba(8,12,24,.5);backdrop-filter:blur(12px)">
+      <header id="pt-detail-header" style="flex:0 0 auto;position:relative;display:flex;align-items:center;gap:18px;padding:16px 28px;border-bottom:1px solid var(--line);background:var(--hdr);backdrop-filter:blur(12px)">
         <div style="flex:0 0 auto;width:66px;height:66px;border-radius:14px;background:{{ selected.accentSoft }};border:1px solid {{ selected.accent }};display:flex;flex-direction:column;align-items:center;justify-content:center;color:{{ selected.accent }};box-shadow:0 0 28px {{ selected.accentSoft }}">
           <span style="font-family:'IBM Plex Mono';font-size:11px;opacity:.8">{{ selected.z }}</span>
           <span style="font-weight:700;font-size:28px;line-height:1">{{ selected.sym }}</span>
@@ -256,7 +294,7 @@
         <div style="flex:1;min-width:0">
           <div style="font-size:28px;font-weight:700;line-height:1.05">{{ selected.name }}</div>
           <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">
-            <span style="font-size:13px;color:rgba(170,188,228,.75)">{{ selected.catName }}</span>
+            <span style="font-size:13px;color:var(--muted)">{{ selected.catName }}</span>
             <span style="width:4px;height:4px;border-radius:50%;background:rgba(150,170,210,.5)"></span>
             <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'IBM Plex Mono';color:{{ selected.accent }};background:{{ selected.accentSoft }};border:1px solid {{ selected.accent }};padding:3px 10px;border-radius:20px">{{ selected.phaseLabel }}</span>
             <sc-if value="{{ selected.radioactive }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-family:'IBM Plex Mono';color:#ffd24d;background:rgba(255,210,77,.12);border:1px solid rgba(255,210,77,.4);padding:3px 10px;border-radius:20px">☢ {{ selected.radioLabel }}</span></sc-if>
@@ -265,20 +303,21 @@
         <div id="pt-detail-tools" style="flex:0 0 auto;display:flex;align-items:center;gap:8px">
           <div style="display:flex;gap:4px">
             <sc-if value="{{ selected.hasPrev }}" hint-placeholder-val="{{ true }}">
-              <button onClick="{{ selected.goPrev }}" title="{{ selected.prevTitle }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 13px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#dbe4f7;font-family:'IBM Plex Mono';font-weight:600;font-size:13px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:15px">‹</span>{{ selected.prevSym }}</button>
+              <button onClick="{{ selected.goPrev }}" title="{{ selected.prevTitle }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 13px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-hover);color:var(--text);font-family:'IBM Plex Mono';font-weight:600;font-size:13px;cursor:pointer" style-hover="background:var(--btn-hover)"><span style="font-size:15px">‹</span>{{ selected.prevSym }}</button>
             </sc-if>
             <sc-if value="{{ selected.hasNext }}" hint-placeholder-val="{{ true }}">
-              <button onClick="{{ selected.goNext }}" title="{{ selected.nextTitle }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 13px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#dbe4f7;font-family:'IBM Plex Mono';font-weight:600;font-size:13px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)">{{ selected.nextSym }}<span style="font-size:15px">›</span></button>
+              <button onClick="{{ selected.goNext }}" title="{{ selected.nextTitle }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 13px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-hover);color:var(--text);font-family:'IBM Plex Mono';font-weight:600;font-size:13px;cursor:pointer" style-hover="background:var(--btn-hover)">{{ selected.nextSym }}<span style="font-size:15px">›</span></button>
             </sc-if>
           </div>
-          <button onClick="{{ copyLink }}" title="{{ ui.copyLink }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 14px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:{{ copyFg }};font-family:'Space Grotesk';font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:14px">🔗</span><span id="pt-copy-label">{{ copyLabel }}</span></button>
-          <div style="display:flex;gap:3px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+          <button onClick="{{ copyLink }}" title="{{ ui.copyLink }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 14px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-hover);color:{{ copyFg }};font-family:'Space Grotesk';font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap" style-hover="background:var(--btn-hover)"><span style="font-size:14px">🔗</span><span id="pt-copy-label">{{ copyLabel }}</span></button>
+          <div style="display:flex;gap:3px;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:3px">
             <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
               <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.05em;padding:9px 10px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
             </sc-for>
           </div>
+          <button onClick="{{ toggleTheme }}" title="{{ themeTitle }}" style="flex:0 0 auto;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:var(--input);border:1px solid var(--line);color:var(--text);font-size:16px;cursor:pointer;transition:.15s" style-hover="background:var(--btn-hover)">{{ themeIcon }}</button>
         </div>
-        <button onClick="{{ close }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;width:auto;height:42px;padding:0 18px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#dbe4f7;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
+        <button onClick="{{ close }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;width:auto;height:42px;padding:0 18px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-line);color:var(--text);font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:var(--btn-hover)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
       </header>
 
       <div id="pt-detail-body" style="flex:1;min-height:0;display:flex;gap:0">
@@ -288,7 +327,7 @@
 
           <div style="flex:1;min-height:0;position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(460px 300px at 50% 40%,{{ selected.accentSoft }},rgba(7,10,20,.9) 74%);border:1px solid rgba(120,150,220,.18)">
             <div id="pt-host-atom" style="position:absolute;inset:0"></div>
-            <div style="position:absolute;left:14px;top:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:{{ selected.accent }};pointer-events:none">{{ ui.tabAtom }}</div>
+            <div style="position:absolute;left:14px;top:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:{{ selected.stageAccent }};pointer-events:none">{{ ui.tabAtom }}</div>
             <div style="position:absolute;left:14px;right:132px;bottom:12px;display:flex;flex-wrap:wrap;gap:3px 13px;font-size:10.5px;font-family:'IBM Plex Mono';pointer-events:none">
               <span style="color:#ff5d6e">● {{ ui.proton }} {{ selected.z }}</span>
               <span style="color:#6f9eff">● {{ ui.neutron }} {{ selected.neutrons }}</span>
@@ -303,7 +342,7 @@
 
           <div style="flex:1;min-height:0;position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(460px 300px at 50% 40%,{{ selected.accentSoft }},rgba(7,10,20,.9) 74%);border:1px solid rgba(120,150,220,.18)">
             <div id="pt-host-mat" style="position:absolute;inset:0"></div>
-            <div style="position:absolute;left:14px;top:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:{{ selected.accent }};pointer-events:none">{{ ui.tabMat }}</div>
+            <div style="position:absolute;left:14px;top:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:{{ selected.stageAccent }};pointer-events:none">{{ ui.tabMat }}</div>
             <div style="position:absolute;left:14px;bottom:12px;font-size:10.5px;font-family:'IBM Plex Mono';color:rgba(190,205,235,.8);pointer-events:none">◆ {{ selected.matCaption }}</div>
             <div style="position:absolute;right:12px;bottom:12px;display:flex;gap:6px">
               <button onClick="{{ rotateM }}" title="{{ ui.autoRotate }}" style="width:34px;height:34px;border-radius:8px;background:rgba(8,12,24,.7);border:1px solid rgba(255,255,255,.16);color:#dbe4f7;cursor:pointer;font-size:15px">↻</button>
@@ -315,31 +354,31 @@
         </div>
 
         <!-- RIGHT: extensive info -->
-        <div id="pt-info" style="flex:1;min-width:0;overflow-y:auto;padding:22px 30px 50px;border-left:1px solid rgba(120,150,220,.1)">
+        <div id="pt-info" style="flex:1;min-width:0;overflow-y:auto;padding:22px 30px 50px;border-left:1px solid var(--line-soft)">
 
           <div id="pt-quickstats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px">
             <sc-for list="{{ selected.quickStats }}" as="q" hint-placeholder-count="4">
-              <div style="background:rgba(12,17,33,.7);border:1px solid rgba(120,150,220,.16);border-radius:12px;padding:12px 13px">
-                <div style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:rgba(170,188,228,.55);margin-bottom:5px">{{ q.label }}</div>
+              <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 13px">
+                <div style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">{{ q.label }}</div>
                 <div style="font-family:'IBM Plex Mono';font-size:16px;font-weight:600;color:{{ selected.accent }};line-height:1.1">{{ q.value }}</div>
               </div>
             </sc-for>
           </div>
 
           <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ selected.accent }};margin-bottom:10px;font-weight:600">{{ ui.aboutTitle }}</div>
-          <p style="font-size:14.5px;line-height:1.66;color:rgba(216,226,248,.94);margin-bottom:20px">{{ selected.desc }}</p>
+          <p style="font-size:14.5px;line-height:1.66;color:var(--body);margin-bottom:20px">{{ selected.desc }}</p>
 
           <sc-if value="{{ selected.hasFacts }}" hint-placeholder-val="{{ false }}">
             <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ selected.accent }};margin-bottom:10px;font-weight:600">{{ ui.factsTitle }}</div>
-            <div style="background:rgba(12,17,33,.6);border:1px solid rgba(120,150,220,.14);border-left:3px solid {{ selected.accent }};border-radius:12px;padding:14px 18px;margin-bottom:24px">
-              <p style="font-size:14px;line-height:1.64;color:rgba(214,224,246,.92)">{{ selected.facts }}</p>
+            <div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid {{ selected.accent }};border-radius:12px;padding:14px 18px;margin-bottom:24px">
+              <p style="font-size:14px;line-height:1.64;color:var(--body)">{{ selected.facts }}</p>
             </div>
           </sc-if>
 
           <sc-if value="{{ selected.hasUz }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#4ad37a;margin-bottom:10px;font-weight:600"><span class="pt-uzflag"></span>{{ ui.uzTitle }}</div>
             <div style="background:linear-gradient(120deg,rgba(0,153,181,.12),rgba(30,181,58,.08));border:1px solid rgba(74,211,122,.28);border-left:3px solid #1eb53a;border-radius:12px;padding:14px 18px;margin-bottom:24px">
-              <p style="font-size:14px;line-height:1.64;color:rgba(220,236,240,.94)">{{ selected.uzText }}</p>
+              <p style="font-size:14px;line-height:1.64;color:var(--body)">{{ selected.uzText }}</p>
             </div>
           </sc-if>
 
@@ -347,9 +386,9 @@
             <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ selected.accent }};margin-bottom:11px;font-weight:600">{{ ui.detailsTitle }}</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:24px">
               <sc-for list="{{ selected.details }}" as="d" hint-placeholder-count="6">
-                <div style="background:rgba(12,17,33,.6);border:1px solid rgba(120,150,220,.14);border-radius:12px;padding:13px 16px">
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px"><span style="font-size:15px;line-height:1">{{ d.icon }}</span><span style="font-size:12.5px;font-weight:700;color:#e8edf9">{{ d.title }}</span></div>
-                  <p style="font-size:13.5px;line-height:1.6;color:rgba(214,224,246,.9)">{{ d.text }}</p>
+                <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px"><span style="font-size:15px;line-height:1">{{ d.icon }}</span><span style="font-size:12.5px;font-weight:700;color:var(--text)">{{ d.title }}</span></div>
+                  <p style="font-size:13.5px;line-height:1.6;color:var(--body)">{{ d.text }}</p>
                 </div>
               </sc-for>
             </div>
@@ -366,23 +405,23 @@
           </div>
 
           <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ selected.accent }};margin-bottom:11px;font-weight:600">{{ ui.propsTitle }}</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(120,150,220,.12);border:1px solid rgba(120,150,220,.14);border-radius:12px;overflow:hidden;margin-bottom:24px">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line-soft);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:24px">
             <sc-for list="{{ selected.rows }}" as="r" hint-placeholder-count="18">
-              <div style="display:flex;flex-direction:column;gap:3px;background:rgba(12,17,33,.94);padding:11px 13px">
-                <span style="font-size:10px;color:rgba(170,188,228,.62);line-height:1.25">{{ r.label }}</span>
-                <span style="font-family:'IBM Plex Mono';font-size:13px;color:#eef3ff;font-weight:500;line-height:1.2">{{ r.value }}</span>
+              <div style="display:flex;flex-direction:column;gap:3px;background:var(--cell);padding:11px 13px">
+                <span style="font-size:10px;color:var(--muted);line-height:1.25">{{ r.label }}</span>
+                <span style="font-family:'IBM Plex Mono';font-size:13px;color:var(--text);font-weight:500;line-height:1.2">{{ r.value }}</span>
               </div>
             </sc-for>
           </div>
 
           <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ selected.accent }};margin-bottom:11px;font-weight:600">{{ ui.discoveryTitle }}</div>
-          <div style="background:rgba(12,17,33,.7);border:1px solid rgba(120,150,220,.14);border-radius:12px;padding:16px 18px;display:flex;gap:20px;align-items:center">
+          <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;gap:20px;align-items:center">
             <div style="flex:0 0 auto;text-align:center">
               <div style="font-family:'IBM Plex Mono';font-size:26px;font-weight:600;color:{{ selected.accent }}">{{ selected.discYear }}</div>
               <div style="font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(170,188,228,.5)">{{ ui.year }}</div>
             </div>
-            <div style="width:1px;align-self:stretch;background:rgba(120,150,220,.16)"></div>
-            <div style="font-size:13.5px;color:rgba(214,224,246,.9);line-height:1.45">{{ selected.discBy }}</div>
+            <div style="width:1px;align-self:stretch;background:var(--line)"></div>
+            <div style="font-size:13.5px;color:var(--body);line-height:1.45">{{ selected.discBy }}</div>
           </div>
         </div>
       </div>
@@ -394,19 +433,21 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
 class Component extends DCLogic {
-  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list', uzOnly:false };
+  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list', uzOnly:false, theme:'dark' };
   PORTFOLIO = "https://najmiddinovanihona-hub.github.io/portfolio.html/";
 
   constructor(props){ super(props); this._engines = {atom:null, mat:null};
     // restore the language the visitor picked last time
     try{ const l=localStorage.getItem('pt-lang'); if(['uz','en','ru'].includes(l)) this.state.lang=l;
       const v=localStorage.getItem('pt-view'); if(v==='list'||v==='table') this.state.mobileView=v; }catch(_){}
+    // theme: the visitor's last choice, otherwise follow the system light/dark setting
+    try{ const t=localStorage.getItem('pt-theme'); this.state.theme = (t==='light'||t==='dark') ? t : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); }catch(_){}
     this._onKey=(e)=>this._handleKey(e); this._onNav=()=>this._route(); }
 
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",uzTitle:"O'zbekistonda",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
       cap:{solid:"Moddaning haqiqiy ko'rinishi",liquid:"Xona haroratida suyuq",glow:"Radioaktivligi tufayli qorong'ida xira yog'du sochadi",
         gas_discharge:"Rangsiz gaz — ampulada elektr razryadi nuri bilan",gas_colored:"Shisha ampulada — gazning o'z rangi",gas_colorless:"Rangsiz gaz, shisha ampulada",
         predicted:"Taxminiy model — ko'zga ko'rinadigan miqdorda hech qachon olinmagan",
@@ -417,7 +458,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnit",paramagnetic:"Paramagnit",ferromagnetic:"Ferromagnit",antiferromagnetic:"Antiferromagnit"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",uzTitle:"In Uzbekistan",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
       cap:{solid:"How the substance really looks",liquid:"Liquid at room temperature",glow:"Glows faintly in the dark because of its radioactivity",
         gas_discharge:"Colourless gas — shown glowing in an electric discharge",gas_colored:"In a glass ampoule — the gas's own colour",gas_colorless:"Colourless gas in a glass ampoule",
         predicted:"Predicted model — never made in a visible amount",
@@ -428,7 +469,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnetic",paramagnetic:"Paramagnetic",ferromagnetic:"Ferromagnetic",antiferromagnetic:"Antiferromagnetic"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",uzTitle:"В Узбекистане",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
       cap:{solid:"Как вещество выглядит на самом деле",liquid:"Жидкость при комнатной температуре",glow:"Слабо светится в темноте из-за радиоактивности",
         gas_discharge:"Бесцветный газ — показан свечением в электрическом разряде",gas_colored:"В стеклянной ампуле — собственный цвет газа",gas_colorless:"Бесцветный газ в стеклянной ампуле",
         predicted:"Предполагаемая модель — никогда не получен в видимом количестве",
@@ -497,6 +538,13 @@ class Component extends DCLogic {
   kc(k){ return k===null?'—':(Math.round((k-273.15)*10)/10)+' °C'; }
 
   // ---------- handlers ----------
+  toggleTheme(){ const t=this.state.theme==='light'?'dark':'light'; try{ localStorage.setItem('pt-theme', t); }catch(_){} this.setState({theme:t}); }
+  // darker shade of a #rrggbb colour (k = 0..1), used to keep neon category colours readable on the day theme
+  shade(hex,k){ const n=parseInt(hex.slice(1),16), f=(v)=>Math.round(v*(1-k)).toString(16).padStart(2,'0'); return '#'+f((n>>16)&255)+f((n>>8)&255)+f(n&255); }
+  // electron configuration with the noble-gas core abbreviated and superscript counts: [Ar] 4s² 3d⁶
+  econfShort(el){ const DATA=window.PT_ELEMENTS||[]; const core=[86,54,36,18,10,2].find(z=>z<el.z); let txt=el.econf;
+    if(core){ const c=DATA[core-1]; if(c && txt.startsWith(c.econf+' ')) txt='['+c.sym+'] '+txt.slice(c.econf.length+1); }
+    const sup={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'}; return txt.replace(/([spdf])([0-9]+)/g,(_,o,n)=>o+n.split('').map(d=>sup[d]).join('')); }
   setLang(l){ try{ localStorage.setItem('pt-lang', l); }catch(_){} this.setState({lang:l}, ()=>this._syncDocument()); }
   // keep <html lang> and the tab title in step with the chosen language and open element
   _syncDocument(){ const ui=this.STR(), el=this.state.selected;
@@ -577,23 +625,40 @@ class Component extends DCLogic {
     const L = this.state.lang, ui = this.STR();
     const anyFilter = this.state.search.trim()!=='' || this.state.activeCats.length>0 || this.state.uzOnly;
     const uzOn = this.state.uzOnly;
-    const uzChip = { toggle:()=>this.toggleUz(), bg: uzOn?'rgba(30,181,58,.16)':'rgba(255,255,255,.025)',
-      bc: uzOn?'#1eb53a':'rgba(120,150,220,.15)', fg: uzOn?'#6fe08f':'rgba(200,212,238,.75)' };
+    const light = this.state.theme==='light';
+    // category colours are bright neon; on the day theme text and borders use a darker shade so they stay readable
+    const ink = (col)=> light ? this.shade(col,.42) : col;
+    const accentOn = light ? '#0a78b0' : '#4dd2ff';
+    const uzChip = { toggle:()=>this.toggleUz(), bg: uzOn?'rgba(30,181,58,.16)':'var(--btn)',
+      bc: uzOn?'#1eb53a':'var(--line)', fg: uzOn?(light?'#16803a':'#6fe08f'):'var(--muted)' };
 
     const langs = ['uz','en','ru'].map(code=>({label:{uz:"O'Z",en:"EN",ru:"RU"}[code], set:()=>this.setLang(code),
-      bg: this.state.lang===code?'rgba(77,210,255,.18)':'transparent', fg: this.state.lang===code?'#4dd2ff':'rgba(190,205,235,.7)'}));
+      bg: this.state.lang===code?'rgba(77,210,255,.18)':'transparent', fg: this.state.lang===code?accentOn:'var(--muted)'}));
 
     // only offer category chips that actually have elements in the data
     const cats = this.CATS().filter(c=>DATA.some(e=>e.cat===c[0])).map(c=>{ const on=this.state.activeCats.includes(c[0]); return {
       label:c[2][L], dot:c[1], toggle:()=>this.toggleCat(c[0]),
-      bg: on?this.rgba(c[1],.16):'rgba(255,255,255,.025)', bc: on?c[1]:'rgba(120,150,220,.15)',
-      fg: on?c[1]:'rgba(200,212,238,.75)', op: (this.state.activeCats.length===0||on)?1:.5 }; });
+      bg: on?this.rgba(c[1],.16):'var(--btn)', bc: on?ink(c[1]):'var(--line)',
+      fg: on?ink(c[1]):'var(--muted)', op: (this.state.activeCats.length===0||on)?1:.5 }; });
 
-    const elements = DATA.map(el=>{ const col=this.catColor(el.cat); const m=this.matches(el);
+    const elements = DATA.map(el=>{ const col=this.catColor(el.cat); const m=this.matches(el); const tc=ink(col);
       return { z:el.z, x:el.x, y:el.y, sym:el.sym, shortName:el.name[L],
         titleAttr: el.z+' · '+el.name[L],
-        bg: this.rgba(col, m?0.13:0.05), bc: this.rgba(col, m?0.4:0.12), fg: col,
+        // neon look: tinted glass fill, glowing border and symbol (night); soft tinted card (day)
+        bg: light ? this.rgba(col, m?0.14:0.05) : this.rgba(col, m?0.08:0.03),
+        bc: light ? this.rgba(tc, m?0.55:0.15) : this.rgba(col, m?0.8:0.18),
+        glow: !m ? 'none' : light ? '0 1px 2px rgba(20,30,60,.08)' : '0 0 9px '+this.rgba(col,.38)+', inset 0 0 10px '+this.rgba(col,.14),
+        tshadow: light ? 'none' : '0 0 8px '+this.rgba(col,.75), glowCol: this.rgba(col,.45), fg: tc,
+        // grid: column 1 and row 1 hold the period and group numbers
+        col: el.x+1, gridRow: el.y+1,
+        tileCls: 'pt-tile'+(el.y<=2?' pt-tip-down':'')+(el.x<=2?' pt-tip-left':el.x>=17?' pt-tip-right':''),
+        massTxt: el.mass+' u', catName: this.catLabel(el.cat), econfShort: this.econfShort(el),
         op: anyFilter ? (m?1:0.16) : 1, match:m, period:el.y<=7?el.y:null, row:el.y, select:()=>this.openEl(el) }; });
+    // group number above the top element of each column, period number left of each row
+    const groupLabels = Array.from({length:18},(_,i)=>{ const g=i+1;
+      const ys=DATA.filter(e=>e.x===g && e.y<=7).map(e=>e.y); const top=ys.length?Math.min(...ys):1;
+      return { n:g, col:g+1, row:top }; });
+    const periodLabels = [1,2,3,4,5,6,7].map(p=>({ n:p, row:p+1 }));
     // list view groups: periods 1–7, then the lanthanide (row 9) and actinide (row 10) series;
     // filtered-out elements are dropped instead of dimmed, and empty groups disappear
     const periodGroups = [1,2,3,4,5,6,7,9,10].map(r=>{
@@ -603,7 +668,7 @@ class Component extends DCLogic {
     }).filter(g=>g.count>0);
     const mv = this.state.mobileView;
     const viewOpts = [['list','☰',ui.viewList],['table','▦',ui.viewTable]].map(o=>({ icon:o[1], label:o[2], set:()=>this.setMobileView(o[0]),
-      bg: mv===o[0]?'rgba(77,210,255,.18)':'transparent', fg: mv===o[0]?'#4dd2ff':'rgba(190,205,235,.7)' }));
+      bg: mv===o[0]?'rgba(77,210,255,.18)':'transparent', fg: mv===o[0]?accentOn:'var(--muted)' }));
     const q = this.state.search.trim();
     const noResults = anyFilter && DATA.length>0 && !DATA.some(el=>this.matches(el));
     const noResultsText = q ? '«'+q+'» '+ui.noResultsFor : ui.noResults;
@@ -646,10 +711,10 @@ class Component extends DCLogic {
       ];
       const shellNames=['K','L','M','N','O','P','Q'];
       selected = { z:el.z, sym:el.sym, name:el.name[L], catName:this.catLabel(el.cat),
-        massLabel: el.mass+' u', accent:col, accentSoft:this.rgba(col,.16),
+        massLabel: el.mass+' u', accent:ink(col), stageAccent:col, accentSoft:this.rgba(col,.16),
         phaseLabel: ui.ph[el.phase], radioactive:this.isRadioactive(el.z), radioLabel:ui.radioLabel,
         matCaption: ui.cap[this._matKind(this._matSpec(el))], neutrons, desc, facts, hasFacts: !!facts, uzText, hasUz: !!uzText, rows: rowObjs, details, hasDetails: details.length>0, quickStats,
-        shellChips: el.shells.map((c,i)=>{ const sc=this.SHELL_COLORS[i]||'#ffffff'; return {label:shellNames[i]||('n'+(i+1)), count:c, color:sc, border:this.rgba(sc,.45), bg:this.rgba(sc,.08)}; }),
+        shellChips: el.shells.map((c,i)=>{ const sc=this.SHELL_COLORS[i]||'#ffffff'; return {label:shellNames[i]||('n'+(i+1)), count:c, color:light?this.shade(sc,.38):sc, border:this.rgba(sc,.45), bg:this.rgba(sc,.08)}; }),
         discYear: el.disc.year, discBy: el.disc.by };
       const prevEl=DATA.find(e=>e.z===el.z-1), nextEl=DATA.find(e=>e.z===el.z+1);
       Object.assign(selected, {
@@ -663,9 +728,10 @@ class Component extends DCLogic {
 
     return { ui, langs, cats, elements, selected, search:this.state.search,
       noResults, noResultsText, clearFilters:()=>this.clearFilters(),
-      periodGroups, viewOpts, viewClass:'pt-view-'+mv, uzChip,
+      periodGroups, viewOpts, viewClass:'pt-view-'+mv+' pt-root pt-'+this.state.theme, uzChip, groupLabels, periodLabels,
+      toggleTheme:()=>this.toggleTheme(), themeIcon: light?'🌙':'☀️', themeTitle: light?ui.themeNight:ui.themeDay,
       copyLink:()=>this.copyLink(), copyLabel: this.state.linkCopied?'✓ '+ui.copied:ui.copyLink,
-      copyFg: this.state.linkCopied?'#7ee787':'#dbe4f7',
+      copyFg: this.state.linkCopied?(light?'#16803a':'#7ee787'):'var(--text)',
       started:this.state.started, notStarted:!this.state.started, showPortfolio:this.state.showPortfolio, portfolioUrl:this.PORTFOLIO,
       showMendeleev:this.state.showMendeleev, openMendeleev:()=>this.openMendeleev(), closeMendeleev:()=>this.closeMendeleev(), minfo,
       start:()=>this.start(), openPortfolio:()=>this.openPortfolio(), closePortfolio:()=>this.closePortfolio(),
