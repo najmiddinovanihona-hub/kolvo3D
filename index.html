@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mendeleyev 3D — Interaktiv davriy jadval</title>
+<meta name="description" content="Mendeleyev davriy jadvalining interaktiv 3D platformasi: har bir elementning atom modeli, moddaning 3D ko'rinishi va uch tilda ma'lumotlar.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a1430'/%3E%3Cg fill='none' stroke='%234dd2ff' stroke-width='5'%3E%3Cellipse cx='50' cy='50' rx='34' ry='13'/%3E%3Cellipse cx='50' cy='50' rx='34' ry='13' transform='rotate(60 50 50)'/%3E%3Cellipse cx='50' cy='50' rx='34' ry='13' transform='rotate(120 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='9' fill='%23c08bff'/%3E%3C/svg%3E">
 <script src="./support.js"></script>
 </head>
 <body>
@@ -79,7 +82,13 @@
     </sc-for>
   </div>
 
-  <main id="pt-main" style="flex:1;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;padding:22px">
+  <main id="pt-main" style="flex:1;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;padding:22px;position:relative">
+    <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:50%;top:22px;transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:14px;max-width:calc(100% - 32px);background:rgba(10,15,30,.92);border:1px solid rgba(255,138,160,.4);border-radius:12px;padding:11px 12px 11px 18px;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:ptfade .2s ease">
+        <span style="font-size:13.5px;color:#ffc2cf;line-height:1.4">{{ noResultsText }}</span>
+        <button onClick="{{ clearFilters }}" style="flex:0 0 auto;background:rgba(77,210,255,.14);border:1px solid rgba(77,210,255,.4);color:#4dd2ff;border-radius:9px;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:7px 13px;cursor:pointer;white-space:nowrap" style-hover="background:rgba(77,210,255,.24)">{{ ui.clearFilters }}</button>
+      </div>
+    </sc-if>
     <div id="pt-grid" style="display:grid;grid-template-columns:repeat(18,minmax(0,1fr));grid-auto-rows:1fr;gap:5px;width:min(1480px,100%);max-height:100%;aspect-ratio:18/10.4;margin:auto">
       <sc-for list="{{ elements }}" as="el" hint-placeholder-count="60">
         <button onClick="{{ el.select }}" title="{{ el.titleAttr }}" style="grid-column:{{ el.x }};grid-row:{{ el.y }};display:flex;flex-direction:column;justify-content:space-between;min-height:0;min-width:0;background:{{ el.bg }};border:1px solid {{ el.bc }};border-radius:7px;padding:4px 3px;cursor:pointer;color:{{ el.fg }};opacity:{{ el.op }};transition:transform .14s,box-shadow .14s,opacity .2s;position:relative;overflow:hidden" style-hover="transform:scale(1.16);box-shadow:0 0 22px currentColor,0 8px 26px rgba(0,0,0,.6);z-index:6;opacity:1;border-color:currentColor">
@@ -304,15 +313,15 @@ class Component extends DCLogic {
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
       f:{symbol:"Belgisi",number:"Atom raqami",mass:"Atom massasi",cat:"Kategoriya",group:"Guruh",period:"Period",block:"Blok",econf:"Elektron konfiguratsiyasi",shells:"Qavatlar",valence:"Valent elektronlar",protons:"Protonlar",neutrons:"Neytronlar",electrons:"Elektronlar",ox:"Oksidlanish darajalari",phase:"Fizik holati",density:"Zichligi",melt:"Erish harorati",boil:"Qaynash harorati",radius:"Atom radiusi",ion:"Ionlanish energiyasi",eneg:"Elektrmanfiyligi"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
       f:{symbol:"Symbol",number:"Atomic number",mass:"Atomic mass",cat:"Category",group:"Group",period:"Period",block:"Block",econf:"Electron configuration",shells:"Shells",valence:"Valence electrons",protons:"Protons",neutrons:"Neutrons",electrons:"Electrons",ox:"Oxidation states",phase:"Phase",density:"Density",melt:"Melting point",boil:"Boiling point",radius:"Atomic radius",ion:"Ionization energy",eneg:"Electronegativity"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
       f:{symbol:"Символ",number:"Атомный номер",mass:"Атомная масса",cat:"Категория",group:"Группа",period:"Период",block:"Блок",econf:"Электронная конфигурация",shells:"Оболочки",valence:"Валентные электроны",protons:"Протоны",neutrons:"Нейтроны",electrons:"Электроны",ox:"Степени окисления",phase:"Агрегатное состояние",density:"Плотность",melt:"Температура плавления",boil:"Температура кипения",radius:"Атомный радиус",ion:"Энергия ионизации",eneg:"Электроотрицательность"},
       ph:{solid:"Твёрдое",liquid:"Жидкое",gas:"Газ"}}
   }[this.state.lang]; }
@@ -372,11 +381,16 @@ class Component extends DCLogic {
   kc(k){ return k===null?'—':(Math.round((k-273.15)*10)/10)+' °C'; }
 
   // ---------- handlers ----------
-  setLang(l){ this.setState({lang:l}); }
+  setLang(l){ this.setState({lang:l}, ()=>this._syncDocument()); }
+  // keep <html lang> and the tab title in step with the chosen language and open element
+  _syncDocument(){ const ui=this.STR(), el=this.state.selected;
+    document.documentElement.lang=this.state.lang;
+    document.title = el ? el.name[this.state.lang]+' ('+el.sym+') — '+ui.pageTitle.split(' — ')[0] : ui.pageTitle; }
   onSearch(e){ this.setState({search:e.target.value}); }
   toggleCat(c){ this.setState(s=>({activeCats: s.activeCats.includes(c)?s.activeCats.filter(x=>x!==c):[...s.activeCats,c]})); }
-  selectEl(el){ this.setState({selected:el, explode:false, autoRotateA:true, autoRotateM:true}); setTimeout(()=>{ this._build('atom',el); this._build('mat',el); }, 50); }
-  close(){ this.setState({selected:null, fullView:null}); this._disposeAll(); }
+  selectEl(el){ this.setState({selected:el, explode:false, autoRotateA:true, autoRotateM:true}, ()=>this._syncDocument()); setTimeout(()=>{ this._build('atom',el); this._build('mat',el); }, 50); }
+  close(){ this.setState({selected:null, fullView:null}, ()=>this._syncDocument()); this._disposeAll(); }
+  clearFilters(){ this.setState({search:'', activeCats:[]}); }
   expandView(slot){ this.setState({fullView:slot}); setTimeout(()=>this._moveCanvas(slot,'pt-host-full',0), 70); }
   collapseView(){ const slot=this.state.fullView; this.setState({fullView:null}); setTimeout(()=>this._moveCanvas(slot, slot==='atom'?'pt-host-atom':'pt-host-mat', 0), 70); }
   _moveCanvas(slot, hostId, tries){ tries=tries||0; const S=this._engines&&this._engines[slot]; if(!S) return; const host=document.getElementById(hostId);
@@ -405,7 +419,8 @@ class Component extends DCLogic {
     const langs = ['uz','en','ru'].map(code=>({label:{uz:"O'Z",en:"EN",ru:"RU"}[code], set:()=>this.setLang(code),
       bg: this.state.lang===code?'rgba(77,210,255,.18)':'transparent', fg: this.state.lang===code?'#4dd2ff':'rgba(190,205,235,.7)'}));
 
-    const cats = this.CATS().map(c=>{ const on=this.state.activeCats.includes(c[0]); return {
+    // only offer category chips that actually have elements in the data
+    const cats = this.CATS().filter(c=>DATA.some(e=>e.cat===c[0])).map(c=>{ const on=this.state.activeCats.includes(c[0]); return {
       label:c[2][L], dot:c[1], toggle:()=>this.toggleCat(c[0]),
       bg: on?this.rgba(c[1],.16):'rgba(255,255,255,.025)', bc: on?c[1]:'rgba(120,150,220,.15)',
       fg: on?c[1]:'rgba(200,212,238,.75)', op: (this.state.activeCats.length===0||on)?1:.5 }; });
@@ -415,6 +430,9 @@ class Component extends DCLogic {
         titleAttr: el.z+' · '+el.name[L],
         bg: this.rgba(col, m?0.13:0.05), bc: this.rgba(col, m?0.4:0.12), fg: col,
         op: anyFilter ? (m?1:0.16) : 1, select:()=>this.selectEl(el) }; });
+    const q = this.state.search.trim();
+    const noResults = anyFilter && DATA.length>0 && !DATA.some(el=>this.matches(el));
+    const noResultsText = q ? '«'+q+'» '+ui.noResultsFor : ui.noResults;
 
     let selected=null;
     const el=this.state.selected;
@@ -426,9 +444,10 @@ class Component extends DCLogic {
       const rows = [
         [f.symbol, el.sym],[f.number, '#'+el.z],[f.mass, el.mass+' u'],
         [f.cat, this.catLabel(el.cat)],[f.group, el.group],[f.period, el.period],
-        [f.block, el.block+'-blok'],[f.phase, ui.ph[el.phase]],[f.econf, el.econf],
+        [f.block, el.block+ui.blockSfx],[f.phase, ui.ph[el.phase]],[f.econf, el.econf],
         [f.protons, el.z],[f.neutrons, neutrons],[f.electrons, el.z],
-        [f.valence, el.shells[el.shells.length-1]],[f.ox, el.ox||'—'],[f.eneg, this.fmt(el.eneg)],
+        // d-block: ns + (n-1)d electrons, which equals the group number; others: outer shell
+        [f.valence, el.block==='d' ? el.group : el.shells[el.shells.length-1]],[f.ox, el.ox||'—'],[f.eneg, this.fmt(el.eneg)],
         [f.density, densVal],
         [f.melt, el.melt!=null?(this.kc(el.melt)+' ('+el.melt+' K)'):'—'],
         [f.boil, el.boil!=null?(this.kc(el.boil)+' ('+el.boil+' K)'):'—'],
@@ -454,6 +473,7 @@ class Component extends DCLogic {
       sections: mraw.sections.map(s=>({ h:s.h, p:s.p||'', quote:s.quote||'', items:s.items||[], hasItems:!!(s.items&&s.items.length) })) };
 
     return { ui, langs, cats, elements, selected, search:this.state.search,
+      noResults, noResultsText, clearFilters:()=>this.clearFilters(),
       started:this.state.started, notStarted:!this.state.started, showPortfolio:this.state.showPortfolio, portfolioUrl:this.PORTFOLIO,
       showMendeleev:this.state.showMendeleev, openMendeleev:()=>this.openMendeleev(), closeMendeleev:()=>this.closeMendeleev(), minfo,
       start:()=>this.start(), openPortfolio:()=>this.openPortfolio(), closePortfolio:()=>this.closePortfolio(),
