@@ -952,9 +952,10 @@ class Component extends DCLogic {
   openChem(){ this._go('kimyo'); }
   closeChem(){ this._back(); }
   _chemReady(){ return !!(window.PT_CHEM && window.PTV); }
+  // bump ?v= whenever the lessons or visuals change, so browsers do not keep an old copy
   _loadChem(){
     if(!this._chemP){ const add=(src)=>new Promise(res=>{ const el=document.createElement("script"); el.src=src; el.onload=el.onerror=()=>res(); document.head.appendChild(el); });
-      this._chemP=Promise.all([add("data/chemistry.js"), add("chem-visuals.js")]).then(()=>{ if(!this._chemReady()) this._chemP=null; }); }
+      this._chemP=Promise.all([add("data/chemistry.js?v=4"), add("chem-visuals.js?v=4")]).then(()=>{ if(!this._chemReady()) this._chemP=null; }); }
     return this._chemP;
   }
   // lessons are grouped as parts → chapters → topics; navigation walks them in order
