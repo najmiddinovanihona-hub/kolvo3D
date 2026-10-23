@@ -38,7 +38,9 @@
     #pt-cats{padding:9px 12px !important;flex-wrap:nowrap !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch}
     #pt-main{align-items:flex-start !important;justify-content:flex-start !important;padding:12px !important}
     #pt-grid{width:780px !important;min-width:780px !important;max-height:none !important;margin:0 !important}
-    #pt-detail-header{padding:11px 14px !important;gap:12px !important}
+    #pt-detail-header{padding:11px 14px !important;gap:10px 12px !important;flex-wrap:wrap !important}
+    #pt-detail-tools{order:3;width:100%;flex-wrap:wrap}
+    #pt-copy-label{display:none}
     #pt-detail-body{flex-direction:column !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch}
     #pt-viewers{flex:none !important;width:100% !important;min-width:0 !important;height:60vh !important;padding:12px !important}
     #pt-info{flex:none !important;overflow:visible !important;border-left:none !important;border-top:1px solid rgba(120,150,220,.12) !important;padding:18px 16px 46px !important}
@@ -109,6 +111,11 @@
 
   <sc-if value="{{ notStarted }}" hint-placeholder-val="{{ true }}">
     <div style="position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:radial-gradient(760px 520px at 50% 48%,rgba(4,9,26,.62),rgba(4,9,26,.2) 58%,transparent 76%),linear-gradient(rgba(5,10,28,.28),rgba(5,10,28,.4)),url('assets/intro-bg.png') center/cover no-repeat,#061029">
+      <div style="position:absolute;top:18px;right:18px;display:flex;gap:3px;background:rgba(14,20,38,.7);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+        <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
+          <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.05em;padding:8px 11px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
+        </sc-for>
+      </div>
       <div style="font-size:clamp(26px,4.4vw,46px);font-weight:700;letter-spacing:-.01em;line-height:1.1;max-width:14ch;text-wrap:balance;background:linear-gradient(180deg,#ffffff,#a9c2ec);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">{{ ui.welcomeT }}</div>
       <p style="margin-top:18px;font-size:clamp(14px,1.5vw,16.5px);line-height:1.6;color:rgba(195,210,240,.78);max-width:54ch">{{ ui.welcomeS }}</p>
       <button onClick="{{ start }}" style="margin-top:34px;display:inline-flex;align-items:center;gap:10px;background:linear-gradient(180deg,#4dd2ff,#2a8fdb);color:#04101e;border:none;border-radius:14px;font-family:'Space Grotesk';font-weight:700;font-size:16px;letter-spacing:.02em;padding:15px 40px;cursor:pointer;box-shadow:0 0 0 1px rgba(255,255,255,.15) inset,0 12px 36px rgba(77,210,255,.4)" style-hover="transform:translateY(-2px);box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 16px 46px rgba(77,210,255,.55)">{{ ui.startBtn }} <span style="font-size:18px">→</span></button>
@@ -139,7 +146,12 @@
           <div style="font-size:24px;font-weight:700;line-height:1.1">{{ minfo.title }}</div>
           <div style="font-size:12.5px;letter-spacing:.06em;color:rgba(190,170,235,.75);margin-top:3px">{{ minfo.years }}</div>
         </div>
-        <button onClick="{{ closeMendeleev }}" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#dbe4f7;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
+        <div style="flex:0 0 auto;display:flex;gap:3px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+          <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
+            <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.05em;padding:9px 10px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
+          </sc-for>
+        </div>
+        <button onClick="{{ closeMendeleev }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#dbe4f7;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
       </header>
 
       <div id="pt-mendeleev-body" style="flex:1;min-height:0;overflow-y:auto;padding:36px 28px 70px">
@@ -208,7 +220,23 @@
             <sc-if value="{{ selected.radioactive }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-family:'IBM Plex Mono';color:#ffd24d;background:rgba(255,210,77,.12);border:1px solid rgba(255,210,77,.4);padding:3px 10px;border-radius:20px">☢ {{ selected.radioLabel }}</span></sc-if>
           </div>
         </div>
-        <button onClick="{{ close }}" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;width:auto;height:42px;padding:0 18px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#dbe4f7;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
+        <div id="pt-detail-tools" style="flex:0 0 auto;display:flex;align-items:center;gap:8px">
+          <div style="display:flex;gap:4px">
+            <sc-if value="{{ selected.hasPrev }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ selected.goPrev }}" title="{{ selected.prevTitle }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 13px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#dbe4f7;font-family:'IBM Plex Mono';font-weight:600;font-size:13px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:15px">‹</span>{{ selected.prevSym }}</button>
+            </sc-if>
+            <sc-if value="{{ selected.hasNext }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ selected.goNext }}" title="{{ selected.nextTitle }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 13px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#dbe4f7;font-family:'IBM Plex Mono';font-weight:600;font-size:13px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)">{{ selected.nextSym }}<span style="font-size:15px">›</span></button>
+            </sc-if>
+          </div>
+          <button onClick="{{ copyLink }}" title="{{ ui.copyLink }}" style="display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 14px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:{{ copyFg }};font-family:'Space Grotesk';font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:14px">🔗</span><span id="pt-copy-label">{{ copyLabel }}</span></button>
+          <div style="display:flex;gap:3px;background:rgba(14,20,38,.8);border:1px solid rgba(120,150,220,.2);border-radius:11px;padding:3px">
+            <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
+              <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.05em;padding:9px 10px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <button onClick="{{ close }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;width:auto;height:42px;padding:0 18px;border-radius:11px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#dbe4f7;font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:rgba(255,255,255,.12)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
       </header>
 
       <div id="pt-detail-body" style="flex:1;min-height:0;display:flex;gap:0">
@@ -305,23 +333,26 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
 class Component extends DCLogic {
-  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null };
+  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false };
   PORTFOLIO = "https://najmiddinovanihona-hub.github.io/portfolio.html/";
 
-  constructor(props){ super(props); this._engines = {atom:null, mat:null}; }
+  constructor(props){ super(props); this._engines = {atom:null, mat:null};
+    // restore the language the visitor picked last time
+    try{ const l=localStorage.getItem('pt-lang'); if(['uz','en','ru'].includes(l)) this.state.lang=l; }catch(_){}
+    this._onKey=(e)=>this._handleKey(e); this._onNav=()=>this._route(); }
 
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",copyLink:"Havolani nusxalash",copied:"Nusxalandi",prevEl:"Oldingi element",nextEl:"Keyingi element",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
       f:{symbol:"Belgisi",number:"Atom raqami",mass:"Atom massasi",cat:"Kategoriya",group:"Guruh",period:"Period",block:"Blok",econf:"Elektron konfiguratsiyasi",shells:"Qavatlar",valence:"Valent elektronlar",protons:"Protonlar",neutrons:"Neytronlar",electrons:"Elektronlar",ox:"Oksidlanish darajalari",phase:"Fizik holati",density:"Zichligi",melt:"Erish harorati",boil:"Qaynash harorati",radius:"Atom radiusi",ion:"Ionlanish energiyasi",eneg:"Elektrmanfiyligi"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",copyLink:"Copy link",copied:"Copied",prevEl:"Previous element",nextEl:"Next element",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
       f:{symbol:"Symbol",number:"Atomic number",mass:"Atomic mass",cat:"Category",group:"Group",period:"Period",block:"Block",econf:"Electron configuration",shells:"Shells",valence:"Valence electrons",protons:"Protons",neutrons:"Neutrons",electrons:"Electrons",ox:"Oxidation states",phase:"Phase",density:"Density",melt:"Melting point",boil:"Boiling point",radius:"Atomic radius",ion:"Ionization energy",eneg:"Electronegativity"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",copyLink:"Скопировать ссылку",copied:"Скопировано",prevEl:"Предыдущий элемент",nextEl:"Следующий элемент",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
       f:{symbol:"Символ",number:"Атомный номер",mass:"Атомная масса",cat:"Категория",group:"Группа",period:"Период",block:"Блок",econf:"Электронная конфигурация",shells:"Оболочки",valence:"Валентные электроны",protons:"Протоны",neutrons:"Нейтроны",electrons:"Электроны",ox:"Степени окисления",phase:"Агрегатное состояние",density:"Плотность",melt:"Температура плавления",boil:"Температура кипения",radius:"Атомный радиус",ion:"Энергия ионизации",eneg:"Электроотрицательность"},
       ph:{solid:"Твёрдое",liquid:"Жидкое",gas:"Газ"}}
   }[this.state.lang]; }
@@ -381,15 +412,56 @@ class Component extends DCLogic {
   kc(k){ return k===null?'—':(Math.round((k-273.15)*10)/10)+' °C'; }
 
   // ---------- handlers ----------
-  setLang(l){ this.setState({lang:l}, ()=>this._syncDocument()); }
+  setLang(l){ try{ localStorage.setItem('pt-lang', l); }catch(_){} this.setState({lang:l}, ()=>this._syncDocument()); }
   // keep <html lang> and the tab title in step with the chosen language and open element
   _syncDocument(){ const ui=this.STR(), el=this.state.selected;
     document.documentElement.lang=this.state.lang;
     document.title = el ? el.name[this.state.lang]+' ('+el.sym+') — '+ui.pageTitle.split(' — ')[0] : ui.pageTitle; }
   onSearch(e){ this.setState({search:e.target.value}); }
   toggleCat(c){ this.setState(s=>({activeCats: s.activeCats.includes(c)?s.activeCats.filter(x=>x!==c):[...s.activeCats,c]})); }
-  selectEl(el){ this.setState({selected:el, explode:false, autoRotateA:true, autoRotateM:true}, ()=>this._syncDocument()); setTimeout(()=>{ this._build('atom',el); this._build('mat',el); }, 50); }
-  close(){ this.setState({selected:null, fullView:null}, ()=>this._syncDocument()); this._disposeAll(); }
+  // ---------- routing: #Fe / #26 opens an element, #mendeleyev the Mendeleev page ----------
+  // The URL hash is the source of truth, so links can be shared and the browser Back button works.
+  _route(){
+    const DATA=window.PT_ELEMENTS; if(!DATA) return;
+    const h=decodeURIComponent(location.hash.slice(1)).trim().toLowerCase();
+    if(h===this._routeKey) return; this._routeKey=h;
+    if(h==='mendeleyev'){ if(this.state.selected) this._closeEl(); this.setState({started:true, showMendeleev:true}); return; }
+    if(this.state.showMendeleev) this.setState({showMendeleev:false});
+    const el = h ? DATA.find(e=>e.sym.toLowerCase()===h || String(e.z)===h) : null;
+    if(el){ this.setState({started:true}); this.selectEl(el); }
+    else if(this.state.selected) this._closeEl();
+  }
+  _go(h){ history.pushState({pt:1},'','#'+h); this._route(); }
+  _replace(h){ history.replaceState(history.state,'', h?'#'+h:location.pathname+location.search); this._route(); }
+  // leave the current page: step back in history if we opened it, otherwise just clear the hash
+  _back(){ if(history.state && history.state.pt) history.back(); else this._replace(''); }
+
+  openEl(el){ this._go(el.sym); }
+  close(){ this._back(); }
+  _step(d){ const el=this.state.selected; const DATA=window.PT_ELEMENTS||[]; const n=el&&DATA.find(e=>e.z===el.z+d); if(n) this._replace(n.sym); }
+  copyLink(){
+    const url=location.href; const done=()=>{ this.setState({linkCopied:true}); clearTimeout(this._copyT); this._copyT=setTimeout(()=>this.setState({linkCopied:false}),1600); };
+    const fallback=()=>{ const t=document.createElement('textarea'); t.value=url; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); done(); }catch(_){} t.remove(); };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
+  }
+
+  _handleKey(e){
+    const tag=(e.target&&e.target.tagName)||'';
+    if(e.key==='Escape'){
+      if(this.state.fullView) this.collapseView();
+      else if(this.state.showPortfolio) this.closePortfolio();
+      else if(this.state.showMendeleev) this.closeMendeleev();
+      else if(this.state.selected) this.close();
+      else if(tag==='INPUT' && (this.state.search || this.state.activeCats.length)) this.clearFilters();
+      return;
+    }
+    if(!this.state.selected || this.state.fullView || tag==='INPUT' || tag==='TEXTAREA') return;
+    if(e.key==='ArrowRight'){ e.preventDefault(); this._step(1); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); this._step(-1); }
+  }
+
+  selectEl(el){ this.setState({selected:el, fullView:null, explode:false, autoRotateA:true, autoRotateM:true}, ()=>this._syncDocument()); setTimeout(()=>{ this._build('atom',el); this._build('mat',el); }, 50); }
+  _closeEl(){ this.setState({selected:null, fullView:null}, ()=>this._syncDocument()); this._disposeAll(); }
   clearFilters(){ this.setState({search:'', activeCats:[]}); }
   expandView(slot){ this.setState({fullView:slot}); setTimeout(()=>this._moveCanvas(slot,'pt-host-full',0), 70); }
   collapseView(){ const slot=this.state.fullView; this.setState({fullView:null}); setTimeout(()=>this._moveCanvas(slot, slot==='atom'?'pt-host-atom':'pt-host-mat', 0), 70); }
@@ -400,8 +472,8 @@ class Component extends DCLogic {
   start(){ this.setState({started:true}); }
   openPortfolio(){ this.setState({showPortfolio:true}); }
   closePortfolio(){ this.setState({showPortfolio:false}); }
-  openMendeleev(){ this.setState({showMendeleev:true}); }
-  closeMendeleev(){ this.setState({showMendeleev:false}); }
+  openMendeleev(){ this._go('mendeleyev'); }
+  closeMendeleev(){ this._back(); }
 
   matches(el){
     const q=this.state.search.trim().toLowerCase();
@@ -429,7 +501,7 @@ class Component extends DCLogic {
       return { z:el.z, x:el.x, y:el.y, sym:el.sym, shortName:el.name[L],
         titleAttr: el.z+' · '+el.name[L],
         bg: this.rgba(col, m?0.13:0.05), bc: this.rgba(col, m?0.4:0.12), fg: col,
-        op: anyFilter ? (m?1:0.16) : 1, select:()=>this.selectEl(el) }; });
+        op: anyFilter ? (m?1:0.16) : 1, select:()=>this.openEl(el) }; });
     const q = this.state.search.trim();
     const noResults = anyFilter && DATA.length>0 && !DATA.some(el=>this.matches(el));
     const noResultsText = q ? '«'+q+'» '+ui.noResultsFor : ui.noResults;
@@ -466,6 +538,10 @@ class Component extends DCLogic {
         matCaption: ui.matCaption, neutrons, desc, facts, hasFacts: !!facts, rows, quickStats,
         shellChips: el.shells.map((c,i)=>({label:shellNames[i]||('n'+(i+1)), count:c})),
         discYear: el.disc.year, discBy: el.disc.by };
+      const prevEl=DATA.find(e=>e.z===el.z-1), nextEl=DATA.find(e=>e.z===el.z+1);
+      Object.assign(selected, {
+        hasPrev:!!prevEl, prevSym:prevEl?prevEl.sym:'', prevTitle:prevEl?ui.prevEl+': '+prevEl.name[L]+' (←)':'', goPrev:()=>this._step(-1),
+        hasNext:!!nextEl, nextSym:nextEl?nextEl.sym:'', nextTitle:nextEl?ui.nextEl+': '+nextEl.name[L]+' (→)':'', goNext:()=>this._step(1) });
     }
 
     const mraw=this.MINFO();
@@ -474,6 +550,8 @@ class Component extends DCLogic {
 
     return { ui, langs, cats, elements, selected, search:this.state.search,
       noResults, noResultsText, clearFilters:()=>this.clearFilters(),
+      copyLink:()=>this.copyLink(), copyLabel: this.state.linkCopied?'✓ '+ui.copied:ui.copyLink,
+      copyFg: this.state.linkCopied?'#7ee787':'#dbe4f7',
       started:this.state.started, notStarted:!this.state.started, showPortfolio:this.state.showPortfolio, portfolioUrl:this.PORTFOLIO,
       showMendeleev:this.state.showMendeleev, openMendeleev:()=>this.openMendeleev(), closeMendeleev:()=>this.closeMendeleev(), minfo,
       start:()=>this.start(), openPortfolio:()=>this.openPortfolio(), closePortfolio:()=>this.closePortfolio(),
@@ -487,18 +565,26 @@ class Component extends DCLogic {
   }
 
   // re-render once external data scripts (elements/descriptions/facts) have loaded
-  componentDidMount(){ const tick=(n)=>{ if(window.PT_ELEMENTS && window.PT_DESC && window.PT_FACTS){ this.forceUpdate(); } else if(n<80){ setTimeout(()=>tick(n+1),50); } }; tick(0); }
+  componentDidMount(){
+    window.addEventListener('keydown', this._onKey);
+    window.addEventListener('popstate', this._onNav); window.addEventListener('hashchange', this._onNav);
+    this._syncDocument();
+    const tick=(n)=>{ if(window.PT_ELEMENTS && window.PT_DESC && window.PT_FACTS){ this.forceUpdate(); this._route(); } else if(n<80){ setTimeout(()=>tick(n+1),50); } }; tick(0); }
 
   // ---------- Three.js engine (two independent viewers) ----------
-  componentWillUnmount(){ this._disposeAll(); }
+  componentWillUnmount(){ this._disposeAll();
+    window.removeEventListener('keydown', this._onKey);
+    window.removeEventListener('popstate', this._onNav); window.removeEventListener('hashchange', this._onNav); }
 
-  _build(slot, el){ try{ this._buildInner(slot, el); }catch(e){ console.error('scene build error', e); } }
-  _buildInner(slot, el){
+  // retries until the viewer host and Three.js are ready (e.g. when opened straight from a link);
+  // gives up if another element was opened meanwhile
+  _build(slot, el, tries){ tries=tries||0; if(this.state.selected!==el || tries>100) return;
+    try{ this._buildInner(slot, el, tries); }catch(e){ console.error('scene build error', e); } }
+  _buildInner(slot, el, tries){
     const hostId = slot==='atom' ? 'pt-host-atom' : 'pt-host-mat';
     const mode = slot==='atom' ? 'atom' : 'material';
     const host = document.getElementById(hostId);
-    if(!host || !window.THREE){ if(window.THREE) setTimeout(()=>this._build(slot,el),60); return; }
-    if(!host.clientWidth){ setTimeout(()=>this._build(slot,el),60); return; }
+    if(!host || !window.THREE || !host.clientWidth){ setTimeout(()=>this._build(slot,el,tries+1),60); return; }
     this._disposeOne(slot);
     const THREE = window.THREE;
     const W = host.clientWidth||480, H = host.clientHeight||300;
