@@ -32,12 +32,14 @@ python -m http.server 8000
 ```
 index.html          — asosiy ilova
 support.js          — ishlash uchun zarur kutubxona
+chem-visuals.js     — kimyo darslari uchun 3D, animatsiya, diagramma, grafik va kalkulyatorlar
 data/
   elements.js       — 118 element ma'lumotlari
   descriptions.js   — element tavsiflari
   facts.js          — qo'llanilishi va qiziqarli faktlar
   uzbekistan.js     — O'zbekistonda qazib olinadigan / ishlab chiqariladigan elementlar
   mendeleev.js      — «Mendeleyev haqida» sahifasi: xronologiya, bo'limlar, bashoratlar, rasmlar (Wikimedia Commons)
+  chemistry.js      — «Umumiy kimyo»: Birinchi qism, 6 bob, 53 mavzu (3 tilda), test savollari
   details.js        — batafsil bo'limlar (tarix, tarqalishi, olinishi, kimyosi, biologiyasi, izotoplari) va qo'shimcha fizik xossalar
 assets/
   intro-bg.png      — kirish ekrani foni
