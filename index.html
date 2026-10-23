@@ -21,8 +21,6 @@
 <script src="data/uzbekistan.js"></script>
 <script src="data/details.js"></script>
 <script src="data/mendeleev.js"></script>
-<script src="data/chemistry.js"></script>
-<script src="chem-visuals.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -349,6 +347,12 @@
         <button onClick="{{ closeChem }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-line);color:var(--text);font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:var(--btn-hover)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
       </header>
 
+      <sc-if value="{{ chemLoading }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;gap:12px">
+          <div style="font-size:46px">⏳</div>
+          <div style="font-size:16px;color:var(--muted)">{{ ui.chemLoading }}</div>
+        </div>
+      </sc-if>
       <sc-if value="{{ chemEmpty }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;gap:12px">
           <div style="font-size:54px">🧪</div>
@@ -636,7 +640,7 @@ class Component extends DCLogic {
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",mTimeline:"Hayot yo'li",chemBtn:"Umumiy kimyo",chemTitle:"Umumiy kimyo",chemSub:"Asosiy tushunchalar va formulalar",chemOf:"MAVZU {n} / {t}",chemQuiz:"O'zingizni sinang",chemNavHide:"Mavzular ro'yxatini yopish",chemNavShow:"Mavzular ro'yxatini ochish",chemRight:"To'g'ri! ",chemWrong:"Noto'g'ri. ",chemTopicN:"{n}-mavzu",chemLab:"Amaliy",chemProb:"Masalalar",chemEmptyT:"Mavzular tez orada qo'shiladi",chemEmptyS:"Bu bo'limda umumiy kimyo bo'yicha mavzular joylashadi.",mGallery:"Tasvirlar",mPred:"Bashorat (1871)",mReal:"O'lchangan",mDiff:"farq",mCount:"Ma'lum elementlar soni",mAntiq:"qadimdan",mNoData:"ma'lumot yo'q",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",mTimeline:"Hayot yo'li",chemBtn:"Umumiy kimyo",chemTitle:"Umumiy kimyo",chemSub:"Asosiy tushunchalar va formulalar",chemOf:"MAVZU {n} / {t}",chemQuiz:"O'zingizni sinang",chemNavHide:"Mavzular ro'yxatini yopish",chemNavShow:"Mavzular ro'yxatini ochish",chemRight:"To'g'ri! ",chemWrong:"Noto'g'ri. ",chemTopicN:"{n}-mavzu",chemLab:"Amaliy",chemProb:"Masalalar",chemLoading:"Mavzular yuklanmoqda…",chemEmptyT:"Mavzular tez orada qo'shiladi",chemEmptyS:"Bu bo'limda umumiy kimyo bo'yicha mavzular joylashadi.",mGallery:"Tasvirlar",mPred:"Bashorat (1871)",mReal:"O'lchangan",mDiff:"farq",mCount:"Ma'lum elementlar soni",mAntiq:"qadimdan",mNoData:"ma'lumot yo'q",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
       cap:{solid:"Moddaning haqiqiy ko'rinishi",liquid:"Xona haroratida suyuq",glow:"Radioaktivligi tufayli qorong'ida xira yog'du sochadi",
         gas_discharge:"Rangsiz gaz — ampulada elektr razryadi nuri bilan",gas_colored:"Shisha ampulada — gazning o'z rangi",gas_colorless:"Rangsiz gaz, shisha ampulada",
         predicted:"Taxminiy model — ko'zga ko'rinadigan miqdorda hech qachon olinmagan",
@@ -647,7 +651,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnit",paramagnetic:"Paramagnit",ferromagnetic:"Ferromagnit",antiferromagnetic:"Antiferromagnit"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",mTimeline:"Life timeline",chemBtn:"General chemistry",chemTitle:"General chemistry",chemSub:"Core concepts and formulas",chemOf:"TOPIC {n} / {t}",chemQuiz:"Test yourself",chemNavHide:"Hide the topic list",chemNavShow:"Show the topic list",chemRight:"Correct! ",chemWrong:"Not quite. ",chemTopicN:"Topic {n}",chemLab:"Lab",chemProb:"Problems",chemEmptyT:"Topics coming soon",chemEmptyS:"General chemistry topics will appear in this section.",mGallery:"Images",mPred:"Predicted (1871)",mReal:"Measured",mDiff:"difference",mCount:"Known elements",mAntiq:"antiquity",mNoData:"no data",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",mTimeline:"Life timeline",chemBtn:"General chemistry",chemTitle:"General chemistry",chemSub:"Core concepts and formulas",chemOf:"TOPIC {n} / {t}",chemQuiz:"Test yourself",chemNavHide:"Hide the topic list",chemNavShow:"Show the topic list",chemRight:"Correct! ",chemWrong:"Not quite. ",chemTopicN:"Topic {n}",chemLab:"Lab",chemProb:"Problems",chemLoading:"Loading topics…",chemEmptyT:"Topics coming soon",chemEmptyS:"General chemistry topics will appear in this section.",mGallery:"Images",mPred:"Predicted (1871)",mReal:"Measured",mDiff:"difference",mCount:"Known elements",mAntiq:"antiquity",mNoData:"no data",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
       cap:{solid:"How the substance really looks",liquid:"Liquid at room temperature",glow:"Glows faintly in the dark because of its radioactivity",
         gas_discharge:"Colourless gas — shown glowing in an electric discharge",gas_colored:"In a glass ampoule — the gas's own colour",gas_colorless:"Colourless gas in a glass ampoule",
         predicted:"Predicted model — never made in a visible amount",
@@ -658,7 +662,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnetic",paramagnetic:"Paramagnetic",ferromagnetic:"Ferromagnetic",antiferromagnetic:"Antiferromagnetic"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",mTimeline:"Хронология жизни",chemBtn:"Общая химия",chemTitle:"Общая химия",chemSub:"Основные понятия и формулы",chemOf:"ТЕМА {n} / {t}",chemQuiz:"Проверьте себя",chemNavHide:"Скрыть список тем",chemNavShow:"Показать список тем",chemRight:"Верно! ",chemWrong:"Неверно. ",chemTopicN:"Тема {n}",chemLab:"Практикум",chemProb:"Задачи",chemEmptyT:"Темы скоро появятся",chemEmptyS:"Здесь будут темы по общей химии.",mGallery:"Изображения",mPred:"Предсказано (1871)",mReal:"Измерено",mDiff:"разница",mCount:"Известно элементов",mAntiq:"с древности",mNoData:"нет данных",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",mTimeline:"Хронология жизни",chemBtn:"Общая химия",chemTitle:"Общая химия",chemSub:"Основные понятия и формулы",chemOf:"ТЕМА {n} / {t}",chemQuiz:"Проверьте себя",chemNavHide:"Скрыть список тем",chemNavShow:"Показать список тем",chemRight:"Верно! ",chemWrong:"Неверно. ",chemTopicN:"Тема {n}",chemLab:"Практикум",chemProb:"Задачи",chemLoading:"Темы загружаются…",chemEmptyT:"Темы скоро появятся",chemEmptyS:"Здесь будут темы по общей химии.",mGallery:"Изображения",mPred:"Предсказано (1871)",mReal:"Измерено",mDiff:"разница",mCount:"Известно элементов",mAntiq:"с древности",mNoData:"нет данных",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
       cap:{solid:"Как вещество выглядит на самом деле",liquid:"Жидкость при комнатной температуре",glow:"Слабо светится в темноте из-за радиоактивности",
         gas_discharge:"Бесцветный газ — показан свечением в электрическом разряде",gas_colored:"В стеклянной ампуле — собственный цвет газа",gas_colorless:"Бесцветный газ в стеклянной ампуле",
         predicted:"Предполагаемая модель — никогда не получен в видимом количестве",
@@ -749,6 +753,9 @@ class Component extends DCLogic {
     if(h===this._routeKey) return; this._routeKey=h;
     // #kimyo opens the general-chemistry screen, #kimyo/<topic> a given topic
     if(h==='kimyo' || h.startsWith('kimyo/')){ if(this.state.selected) this._closeEl(); if(this.state.showMendeleev){ this.setState({showMendeleev:false}); this._disposeOne('land'); }
+      // lessons and their visuals (~1.3 MB) are fetched only the first time this screen opens
+      if(!this._chemReady()){ this.setState({started:true, showChem:true, chemLoading:true});
+        this._loadChem().then(()=>{ this.setState({chemLoading:false}); this._routeKey=null; this._route(); }); return; }
       const T=this._chemFlat().map(x=>x.t); const id=h.slice(6); const t=T.find(x=>x.id===id)||T[0];
       this.setState({started:true, showChem:true, chemTopic:t?t.id:''}, ()=>{ const m=document.getElementById('pt-chem-main'); if(m) m.scrollTop=0; this._drawChemSoon(); }); return; }
     if(this.state.showChem){ this.setState({showChem:false}); this._disposeChem(); }
@@ -905,6 +912,12 @@ class Component extends DCLogic {
   // ---------- "General chemistry" screen ----------
   openChem(){ this._go('kimyo'); }
   closeChem(){ this._back(); }
+  _chemReady(){ return !!(window.PT_CHEM && window.PTV); }
+  _loadChem(){
+    if(!this._chemP){ const add=(src)=>new Promise(res=>{ const el=document.createElement("script"); el.src=src; el.onload=el.onerror=()=>res(); document.head.appendChild(el); });
+      this._chemP=Promise.all([add("data/chemistry.js"), add("chem-visuals.js")]).then(()=>{ if(!this._chemReady()) this._chemP=null; }); }
+    return this._chemP;
+  }
   // lessons are grouped as parts → chapters → topics; navigation walks them in order
   // collapse / expand the topic list; 3D canvases follow the new width
   toggleChemNav(){ const v=!this.state.chemNavOpen; try{ localStorage.setItem('pt-chem-nav', v?'1':'0'); }catch(_){} this.setState({chemNavOpen:v}, ()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),30)); }
@@ -945,7 +958,7 @@ class Component extends DCLogic {
     const partT=cur?(cur.part.title[L]||cur.part.title.uz):'', chT=cur?(cur.ch.title[L]||cur.ch.title.uz):'';
     return { showChem:this.state.showChem, openChem:()=>this.openChem(), closeChem:()=>this.closeChem(),
       chemNav, chemHasTopics:F.length>0, toggleChemNav:()=>this.toggleChemNav(), chemNavDisp:this.state.chemNavOpen?'flex':'none', chemMaxW:this.state.chemNavOpen?'900px':'1150px',
-      chemNavTitle:this.state.chemNavOpen?ui.chemNavHide:ui.chemNavShow, chemNavBtnBg:this.state.chemNavOpen?'rgba(46,204,150,.16)':'var(--input)', chemEmpty:F.length===0,
+      chemNavTitle:this.state.chemNavOpen?ui.chemNavHide:ui.chemNavShow, chemNavBtnBg:this.state.chemNavOpen?'rgba(46,204,150,.16)':'var(--input)', chemEmpty:F.length===0 && !this.state.chemLoading, chemLoading:!!this.state.chemLoading,
       chem: { icon:t?t.icon||'':'', title:tx?tx.title:'', intro:tx?tx.intro||'':'', blocks,
         counter: t ? (partT+' · '+chT.split('.')[0]+' · '+tLabel(t)).toUpperCase() : '',
         quiz, hasQuiz:quiz.length>0, score: answered ? right+' / '+quiz.length : '',
@@ -1150,7 +1163,7 @@ class Component extends DCLogic {
     window.addEventListener('keydown', this._onKey);
     window.addEventListener('popstate', this._onNav); window.addEventListener('hashchange', this._onNav);
     this._syncDocument();
-    const tick=(n)=>{ if(window.PT_ELEMENTS && window.PT_DESC && window.PT_FACTS && window.PT_UZ && window.PT_DETAILS && window.PT_MENDELEEV && window.PT_CHEM){ this.forceUpdate(); this._route(); } else if(n<80){ setTimeout(()=>tick(n+1),50); } }; tick(0); }
+    const tick=(n)=>{ if(window.PT_ELEMENTS && window.PT_DESC && window.PT_FACTS && window.PT_UZ && window.PT_DETAILS && window.PT_MENDELEEV){ this.forceUpdate(); this._route(); } else if(n<80){ setTimeout(()=>tick(n+1),50); } }; tick(0); }
 
   // ---------- Three.js engine (two independent viewers) ----------
   componentWillUnmount(){ this._disposeAll();
