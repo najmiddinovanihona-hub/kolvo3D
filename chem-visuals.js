@@ -302,7 +302,7 @@
       if (e === 0 || e === 1) { const gs = {}; pos.forEach((p) => { (gs[p.grp] = gs[p.grp] || []).push(p); });
         Object.values(gs).forEach((g) => g.slice(1).forEach((p) => { c2.beginPath(); c2.moveTo(g[0].x, g[0].y); c2.lineTo(p.x, p.y); c2.stroke(); })); }
       pos.forEach((p) => { const r = u * (RAD[p.el] || 0.45) * 1.15; c2.beginPath(); c2.arc(p.x, p.y, r, 0, 6.283); c2.fillStyle = CPK[p.el] || '#ccc'; c2.fill();
-        c2.fillStyle = ['H', 'S', 'Cl', 'Ca'].includes(p.el) ? '#111' : '#fff'; c2.font = '600 ' + Math.max(10, r * 0.75) + 'px Space Grotesk, sans-serif'; c2.textBaseline = 'middle'; c2.fillText(p.el, p.x, p.y + 1); });
+        c2.fillStyle = ['H', 'S', 'Cl', 'Ca', 'Al', 'Ag', 'Mg', 'Si'].includes(p.el) ? '#111' : '#fff'; c2.font = '600 ' + Math.max(10, r * 0.75) + 'px Space Grotesk, sans-serif'; c2.textBaseline = 'middle'; c2.fillText(p.el, p.x, p.y + 1); });
       c2.textBaseline = 'alphabetic'; c2.fillStyle = 'rgba(220,228,246,.85)'; c2.font = (12 * dpr) + 'px IBM Plex Mono, monospace';
       const labs = (list, L) => { const seen = {}; L.forEach((a) => { if (!seen[a.mol]) { seen[a.mol] = 1; c2.fillText(a.label, a.cx, H - 12 * dpr); } }); };
       if (e === 0) labs(R[0], A); if (e === 1) labs(R[1], B);
@@ -722,13 +722,358 @@
       + tx(560, 230, D.fert + ' →', { s: 10.5, c: '#ffd24d', w: 600 }));
   }
 
+  // ---------- part 3 additions: dissociation, pH, activity series, metallurgy and industry diagrams ----------
+  Object.assign(CPK, { Mg: '#7fd96a', Al: '#b8c2cc', Cu: '#c87533', Ag: '#d8dde4', K: '#8f40d4', Si: '#e8b878' });
+  Object.assign(RAD, { Mg: 0.5, Al: 0.5, Cu: 0.5, Ag: 0.54, K: 0.6, Si: 0.52 });
+  MOL.CO = [[['C', -0.56, 0, 0], ['O', 0.56, 0, 0]], [[0, 1, 3]]];
+  Object.assign(RX, {
+    caco3_heat: [['CaCO3'], ['CaO', 'CO2'], 'CaCO₃ → CaO + CO₂'],
+    fe_cuso4: [['Fe', 'CuSO4'], ['FeSO4', 'Cu'], 'Fe + CuSO₄ → FeSO₄ + Cu'],
+    agno3_nacl: [['AgNO3', 'NaCl'], ['AgCl', 'NaNO3'], 'AgNO₃ + NaCl → AgCl↓ + NaNO₃'],
+    na_h2o: [['Na', 'Na', 'H2O', 'H2O'], ['NaOH', 'NaOH', 'H2'], '2Na + 2H₂O → 2NaOH + H₂'],
+    mg_o2: [['Mg', 'Mg', 'O2'], ['MgO', 'MgO'], '2Mg + O₂ → 2MgO'],
+    al_o2: [['Al', 'Al', 'Al', 'Al', 'O2', 'O2', 'O2'], ['Al2O3', 'Al2O3'], '4Al + 3O₂ → 2Al₂O₃'],
+    fe2o3_co: [['Fe2O3', 'CO', 'CO', 'CO'], ['Fe', 'Fe', 'CO2', 'CO2', 'CO2'], 'Fe₂O₃ + 3CO → 2Fe + 3CO₂'],
+    co2_caoh2: [['CO2', 'CaO2H2'], ['CaCO3', 'H2O'], 'CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O']
+  });
+  Object.assign(ATOMS, { CaCO3: ['C', 'Ca', 'O', 'O', 'O'], Cu: ['Cu'], CuSO4: ['S', 'Cu', 'O', 'O', 'O', 'O'], FeSO4: ['S', 'Fe', 'O', 'O', 'O', 'O'],
+    AgNO3: ['N', 'Ag', 'O', 'O', 'O'], NaNO3: ['N', 'Na', 'O', 'O', 'O'], AgCl: ['Ag', 'Cl'], Mg: ['Mg'], MgO: ['Mg', 'O'], Al: ['Al'],
+    Al2O3: ['O', 'Al', 'Al', 'O', 'O'], Fe2O3: ['O', 'Fe', 'Fe', 'O', 'O'], CO: ['C', 'O'] });
+  Object.assign(LABEL, { Al2O3: 'Al₂O₃', Fe2O3: 'Fe₂O₃' });
+
+  const S3 = {
+    uz: { graphite: ["Grafit — qatlamli panjara", "Qatlam ichida kuchli bog', qatlamlar orasida kuchsiz tortishuv"], sio2: ["Kremniy(IV) oksid SiO₂ — atom panjara", "Har bir Si to'rtta O bilan, har bir O ikkita Si bilan bog'langan"],
+      dis: { on: "Elektrolit — lampa yonadi", off: "Noelektrolit — lampa yonmaydi", water: "Suv molekulalari ionlarni o'rab oladi (gidratlanish)", sugar: "Shakar molekulalari" },
+      ph: { title: "Eritma muhiti (pH)", acid: "Kislotali", neutral: "Neytral", base: "Ishqoriy", h: "[H⁺]", like: "Shunga o'xshash", salts: "Tuz eritmalari:", litmus: "Lakmus", php: "Fenolftalein", mo: "Metilzarg'aldog'i",
+        sub: { stomach: "Me'da shirasi", lemon: "Limon sharbati", vinegar: "Sirka", coffee: "Qahva", rain: "Yomg'ir suvi", water: "Toza suv", blood: "Qon", sea: "Dengiz suvi", soda: "Ichimlik sodasi eritmasi", soap: "Sovun eritmasi", ammonia: "Novshadil spirti", naoh: "O'yuvchi natriy eritmasi" } },
+      act: { title: "Metallarning faollik qatori", pick: "Metallni tanlang", with: "Nima bilan?", acid: "Xlorid kislota", water: "Suv", yes: "Reaksiya boradi", no: "Reaksiya bormaydi", more: "← faolroq", less: "kamroq faol →",
+        whyAcid: "Qatorda vodoroddan chapda turgan metallar kislotadan vodorodni siqib chiqaradi.", whyNoAcid: "Bu metall vodoroddan o'ngda turadi, shuning uchun xlorid kislotadan vodorodni siqib chiqara olmaydi.",
+        whySalt: "Faolroq metall kamroq faol metallni uning tuzi eritmasidan siqib chiqaradi.", whyNoSalt: "Metall tuz tarkibidagi metalldan faolroq emas, shuning uchun uni siqib chiqara olmaydi.",
+        whyAlk: "Bu metall shu qadar faolki, tuz eritmasidagi suv bilan reaksiyaga kirishadi: ishqor va vodorod hosil bo'ladi.", same: "Metall o'z tuzi bilan reaksiyaga kirishmaydi.",
+        hot: "faqat qizdirilganda", steam: "cho'g'langan holda suv bug'i bilan", film: "oksid parda olib tashlansa", pb: "PbCl₂ kam eriydi va metall sirtini qoplab, reaksiyani to'xtatadi" },
+      cond: { title: "Eritmalarning elektr o'tkazuvchanligi", dw: "Distillangan suv", sugar: "Shakar eritmasi", salt: "Osh tuzi eritmasi", acid: "Xlorid kislota" },
+      el2: { melt: "NaCl suyuqlanmasi", sol: "CuCl₂ eritmasi", cat: "Katod (−)", an: "Anod (+)", src: "Tok manbai" },
+      cor: { t1: "Suv + havo", t2: "Quruq havo", t3: "Qaynatilgan suv + moy", r1: "Zanglaydi", r2: "Zanglamaydi", r3: "Zanglamaydi", prot: "Himoya usullari", p: ["Bo'yash, lak va moy bilan qoplash", "Rux (galvanik), xrom yoki nikel bilan qoplash", "Zanglamaydigan po'lat (Cr, Ni qo'shilgan)", "Faolroq metall (Zn, Mg) protektor sifatida ulash", "Ingibitorlar — korroziyani sekinlashtiruvchi moddalar"], rust: "4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃" },
+      hard: { tmp: "Vaqtinchalik qattiqlik", perm: "Doimiy qattiqlik", tmpS: "Ca(HCO₃)₂, Mg(HCO₃)₂", permS: "CaSO₄, MgCl₂, CaCl₂", boil: "Qaynatish", soda: "Soda qo'shish", ion: "Ion almashtirish (kationit)", ionS: "Ca²⁺ smola donachalariga o'tadi, o'rniga Na⁺ chiqadi", ions: "Qattiqlikni Ca²⁺ va Mg²⁺ ionlari beradi" },
+      bf: { title: "Domna pechi — cho'yan olish", charge: "Shixta: ruda, koks, ohaktosh", gas: "Domna gazi", air: "Qizdirilgan havo", slag: "Shlak", iron: "Cho'yan", z1: "≈ 400 °C", z2: "≈ 700 °C", z3: "≈ 900 °C", z4: "≈ 1800 °C" },
+      cv: { title: "Kislorodli konverter — po'lat olish", o2: "Kislorod (O₂)", pig: "Suyuq cho'yan + temir parchalari", steel: "Po'lat (C < 2%)", gas: "CO gazi", slag: "Shlak (SiO₂, MnO, P birikmalari)", what: "Ortiqcha C, Si, Mn, P, S oksidlanib chiqariladi" },
+      sv: { title: "Ammiakli usulda soda olish", brine: "NaCl eritmasi + NH₃", carb: "Karbonizatsiya kolonnasi", filt: "Filtrlash", calc: "Qizdirish (kalsinatsiya)", soda: "Kalsinirlangan soda Na₂CO₃", kiln: "Ohaktosh kuydirish", regen: "NH₃ ni qayta tiklash", back: "qaytadi" },
+      cc: { air: "Atmosferadagi CO₂", plant: "O'simliklar — fotosintez", animal: "Odam va hayvonlar — nafas olish", fuel: "Ko'mir, neft, gaz yonishi", ocean: "Okean CO₂ ni eritadi", rock: "Ohaktosh, ko'mir, neft (cho'kindilar)", decay: "Chirish" },
+      sil: { sand: "Qum SiO₂", clay: "Tuproq (gil)", lime: "Ohaktosh CaCO₃", soda: "Soda Na₂CO₃", glass: "Shisha", cement: "Sement", ceram: "Keramika", glassT: "≈ 1500 °C da suyuqlantiriladi", cementT: "≈ 1450 °C da kuydiriladi", ceramT: "≈ 1000 °C da pishiriladi", ex: "g'isht, chinni, kafel" } },
+    en: { graphite: ["Graphite — a layered lattice", "Strong bonds within a layer, weak attraction between layers"], sio2: ["Silicon(IV) oxide SiO₂ — an atomic lattice", "Each Si is bonded to four O, each O to two Si"],
+      dis: { on: "Electrolyte — the lamp lights", off: "Non-electrolyte — the lamp stays off", water: "Water molecules surround the ions (hydration)", sugar: "Sugar molecules" },
+      ph: { title: "Acidity of a solution (pH)", acid: "Acidic", neutral: "Neutral", base: "Alkaline", h: "[H⁺]", like: "Similar to", salts: "Salt solutions:", litmus: "Litmus", php: "Phenolphthalein", mo: "Methyl orange",
+        sub: { stomach: "Stomach acid", lemon: "Lemon juice", vinegar: "Vinegar", coffee: "Coffee", rain: "Rainwater", water: "Pure water", blood: "Blood", sea: "Sea water", soda: "Baking soda solution", soap: "Soap solution", ammonia: "Household ammonia", naoh: "Caustic soda solution" } },
+      act: { title: "Activity series of metals", pick: "Pick a metal", with: "With what?", acid: "Hydrochloric acid", water: "Water", yes: "A reaction takes place", no: "No reaction", more: "← more active", less: "less active →",
+        whyAcid: "Metals to the left of hydrogen in the series push hydrogen out of acids.", whyNoAcid: "This metal is to the right of hydrogen, so it cannot push hydrogen out of hydrochloric acid.",
+        whySalt: "A more active metal pushes a less active metal out of a solution of its salt.", whyNoSalt: "The metal is not more active than the metal in the salt, so it cannot displace it.",
+        whyAlk: "This metal is so active that it reacts with the water of the solution instead, giving an alkali and hydrogen.", same: "A metal does not react with its own salt.",
+        hot: "only when heated", steam: "red-hot, with steam", film: "once the oxide film is removed", pb: "PbCl₂ is poorly soluble and coats the metal, stopping the reaction" },
+      cond: { title: "Electrical conductivity of solutions", dw: "Distilled water", sugar: "Sugar solution", salt: "Table salt solution", acid: "Hydrochloric acid" },
+      el2: { melt: "Molten NaCl", sol: "CuCl₂ solution", cat: "Cathode (−)", an: "Anode (+)", src: "Power source" },
+      cor: { t1: "Water + air", t2: "Dry air", t3: "Boiled water + oil", r1: "Rusts", r2: "No rust", r3: "No rust", prot: "Ways to protect", p: ["Paint, varnish or grease", "Coating with zinc (galvanising), chromium or nickel", "Stainless steel (with Cr and Ni)", "Connecting a more active metal (Zn, Mg) as a protector", "Inhibitors — substances that slow corrosion"], rust: "4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃" },
+      hard: { tmp: "Temporary hardness", perm: "Permanent hardness", tmpS: "Ca(HCO₃)₂, Mg(HCO₃)₂", permS: "CaSO₄, MgCl₂, CaCl₂", boil: "Boiling", soda: "Adding soda", ion: "Ion exchange (cation resin)", ionS: "Ca²⁺ moves onto the resin beads and Na⁺ comes out instead", ions: "Hardness is caused by Ca²⁺ and Mg²⁺ ions" },
+      bf: { title: "Blast furnace — making pig iron", charge: "Charge: ore, coke, limestone", gas: "Furnace gas", air: "Hot air blast", slag: "Slag", iron: "Pig iron", z1: "≈ 400 °C", z2: "≈ 700 °C", z3: "≈ 900 °C", z4: "≈ 1800 °C" },
+      cv: { title: "Oxygen converter — making steel", o2: "Oxygen (O₂)", pig: "Molten pig iron + scrap", steel: "Steel (C < 2%)", gas: "CO gas", slag: "Slag (SiO₂, MnO, P compounds)", what: "Extra C, Si, Mn, P and S are oxidised and removed" },
+      sv: { title: "Ammonia-soda (Solvay) process", brine: "NaCl brine + NH₃", carb: "Carbonating tower", filt: "Filtering", calc: "Heating (calcining)", soda: "Soda ash Na₂CO₃", kiln: "Lime kiln", regen: "NH₃ recovery", back: "recycled" },
+      cc: { air: "CO₂ in the atmosphere", plant: "Plants — photosynthesis", animal: "People and animals — breathing", fuel: "Burning coal, oil, gas", ocean: "Oceans dissolve CO₂", rock: "Limestone, coal, oil (sediments)", decay: "Decay" },
+      sil: { sand: "Sand SiO₂", clay: "Clay", lime: "Limestone CaCO₃", soda: "Soda Na₂CO₃", glass: "Glass", cement: "Cement", ceram: "Ceramics", glassT: "melted at ≈ 1500 °C", cementT: "burnt at ≈ 1450 °C", ceramT: "fired at ≈ 1000 °C", ex: "bricks, porcelain, tiles" } },
+    ru: { graphite: ["Графит — слоистая решётка", "Прочные связи внутри слоя, слабое притяжение между слоями"], sio2: ["Оксид кремния(IV) SiO₂ — атомная решётка", "Каждый Si связан с четырьмя O, каждый O — с двумя Si"],
+      dis: { on: "Электролит — лампа горит", off: "Неэлектролит — лампа не горит", water: "Молекулы воды окружают ионы (гидратация)", sugar: "Молекулы сахара" },
+      ph: { title: "Среда раствора (pH)", acid: "Кислая", neutral: "Нейтральная", base: "Щелочная", h: "[H⁺]", like: "Похоже на", salts: "Растворы солей:", litmus: "Лакмус", php: "Фенолфталеин", mo: "Метилоранж",
+        sub: { stomach: "Желудочный сок", lemon: "Лимонный сок", vinegar: "Уксус", coffee: "Кофе", rain: "Дождевая вода", water: "Чистая вода", blood: "Кровь", sea: "Морская вода", soda: "Раствор питьевой соды", soap: "Мыльный раствор", ammonia: "Нашатырный спирт", naoh: "Раствор едкого натра" } },
+      act: { title: "Ряд активности металлов", pick: "Выберите металл", with: "С чем?", acid: "Соляная кислота", water: "Вода", yes: "Реакция идёт", no: "Реакция не идёт", more: "← активнее", less: "менее активны →",
+        whyAcid: "Металлы левее водорода в ряду вытесняют водород из кислот.", whyNoAcid: "Этот металл стоит правее водорода и не вытесняет водород из соляной кислоты.",
+        whySalt: "Более активный металл вытесняет менее активный из раствора его соли.", whyNoSalt: "Металл не активнее металла в соли и не может его вытеснить.",
+        whyAlk: "Этот металл настолько активен, что реагирует с водой раствора: образуются щёлочь и водород.", same: "Металл не реагирует с собственной солью.",
+        hot: "только при нагревании", steam: "в раскалённом виде с водяным паром", film: "если снять оксидную плёнку", pb: "PbCl₂ малорастворим и покрывает металл, останавливая реакцию" },
+      cond: { title: "Электропроводность растворов", dw: "Дистиллированная вода", sugar: "Раствор сахара", salt: "Раствор поваренной соли", acid: "Соляная кислота" },
+      el2: { melt: "Расплав NaCl", sol: "Раствор CuCl₂", cat: "Катод (−)", an: "Анод (+)", src: "Источник тока" },
+      cor: { t1: "Вода + воздух", t2: "Сухой воздух", t3: "Кипячёная вода + масло", r1: "Ржавеет", r2: "Не ржавеет", r3: "Не ржавеет", prot: "Способы защиты", p: ["Окраска, лак, смазка", "Покрытие цинком (оцинковка), хромом или никелем", "Нержавеющая сталь (с Cr и Ni)", "Подключение более активного металла (Zn, Mg) — протектора", "Ингибиторы — вещества, замедляющие коррозию"], rust: "4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃" },
+      hard: { tmp: "Временная жёсткость", perm: "Постоянная жёсткость", tmpS: "Ca(HCO₃)₂, Mg(HCO₃)₂", permS: "CaSO₄, MgCl₂, CaCl₂", boil: "Кипячение", soda: "Добавление соды", ion: "Ионный обмен (катионит)", ionS: "Ca²⁺ переходит в зёрна смолы, взамен выходит Na⁺", ions: "Жёсткость создают ионы Ca²⁺ и Mg²⁺" },
+      bf: { title: "Доменная печь — получение чугуна", charge: "Шихта: руда, кокс, известняк", gas: "Доменный газ", air: "Горячее дутьё", slag: "Шлак", iron: "Чугун", z1: "≈ 400 °C", z2: "≈ 700 °C", z3: "≈ 900 °C", z4: "≈ 1800 °C" },
+      cv: { title: "Кислородный конвертер — получение стали", o2: "Кислород (O₂)", pig: "Жидкий чугун + металлолом", steel: "Сталь (C < 2%)", gas: "Газ CO", slag: "Шлак (SiO₂, MnO, соединения P)", what: "Лишние C, Si, Mn, P, S окисляются и удаляются" },
+      sv: { title: "Аммиачный способ получения соды", brine: "Рассол NaCl + NH₃", carb: "Карбонизационная колонна", filt: "Фильтрование", calc: "Прокаливание (кальцинация)", soda: "Кальцинированная сода Na₂CO₃", kiln: "Обжиг известняка", regen: "Регенерация NH₃", back: "возвращается" },
+      cc: { air: "CO₂ атмосферы", plant: "Растения — фотосинтез", animal: "Люди и животные — дыхание", fuel: "Сжигание угля, нефти, газа", ocean: "Океан растворяет CO₂", rock: "Известняк, уголь, нефть (осадки)", decay: "Гниение" },
+      sil: { sand: "Песок SiO₂", clay: "Глина", lime: "Известняк CaCO₃", soda: "Сода Na₂CO₃", glass: "Стекло", cement: "Цемент", ceram: "Керамика", glassT: "плавят при ≈ 1500 °C", cementT: "обжигают при ≈ 1450 °C", ceramT: "обжигают при ≈ 1000 °C", ex: "кирпич, фарфор, плитка" } }
+  };
+
+  // graphite layers and the SiO₂ network, built with the same look as molecule3d
+  function lattice3(host, spec, ctx) {
+    const st = stage(host, ctx, 320), THREE = st.THREE, g = new THREE.Group(); st.scene.add(g);
+    const sphere = (el, p, r) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 28, 20), new THREE.MeshStandardMaterial({ color: lin(THREE, CPK[el] || '#ccc'), roughness: 0.35 })); m.position.set(...p); g.add(m); };
+    const stick = (a, b, r, col, op) => { const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), d = B.clone().sub(A);
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d.length(), 12), new THREE.MeshStandardMaterial({ color: lin(THREE, col), roughness: 0.5, transparent: op != null, opacity: op == null ? 1 : op }));
+      m.position.copy(A.clone().add(B).multiplyScalar(0.5)); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); g.add(m); };
+    const T = S3[ctx.lang];
+    if (spec.mol === 'graphite') {
+      // three honeycomb layers, every other one shifted (ABA stacking); dotted links show the weak attraction
+      const a = 0.9, gap = 1.7, layers = [-1, 0, 1];
+      layers.forEach((li) => { const P = [], sh = li === 0 ? a : 0;
+        for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) { const x = i * a * 1.5, z = j * a * Math.sqrt(3) + (i % 2 ? a * Math.sqrt(3) / 2 : 0);
+          [[x - a / 2, z], [x + a / 2, z]].forEach((q) => { if (Math.hypot(q[0], q[1]) < 3.1) P.push([q[0] + sh, li * gap, q[1]]); }); }
+        const U = P.filter((p, i) => P.findIndex((q) => Math.hypot(q[0] - p[0], q[2] - p[2]) < 0.05) === i);
+        U.forEach((p) => sphere('C', p, 0.2));
+        for (let i = 0; i < U.length; i++) for (let j = i + 1; j < U.length; j++) if (Math.abs(Math.hypot(U[i][0] - U[j][0], U[i][2] - U[j][2]) - a) < 0.05) stick(U[i], U[j], 0.06, '#9aa3b5'); });
+      for (let k = 0; k < 6; k++) { const ang = k * Math.PI / 3, x = Math.cos(ang) * 1.6, z = Math.sin(ang) * 1.6; stick([x, -gap, z], [x, gap, z], 0.015, '#6f8bff', 0.45); }
+      st.start(9.5, () => { g.rotation.y += 0.004; });
+    } else {
+      // β-cristobalite-like net: Si on the diamond positions, O halfway along every Si–Si link
+      const a = 4.2, P = [], F = [[0, 0, 0], [0, 0.5, 0.5], [0.5, 0, 0.5], [0.5, 0.5, 0]];
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) for (let k = 0; k < 2; k++) F.forEach((f) => [[0, 0, 0], [0.25, 0.25, 0.25]].forEach((b) => {
+        const x = f[0] + b[0] + i, y = f[1] + b[1] + j, z = f[2] + b[2] + k; if (x <= 1.01 && y <= 1.01 && z <= 1.01) P.push([x, y, z]); }));
+      const U = P.filter((p, i) => P.findIndex((q) => Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) < 0.01) === i), used = new Set(), B = [];
+      for (let i = 0; i < U.length; i++) for (let j = i + 1; j < U.length; j++) if (Math.abs(Math.hypot(U[i][0] - U[j][0], U[i][1] - U[j][1], U[i][2] - U[j][2]) - 0.433) < 0.02) { B.push([i, j]); used.add(i); used.add(j); }
+      const pos = (p) => p.map((v) => (v - 0.5) * a);
+      U.forEach((p, i) => { if (used.has(i)) sphere('Si', pos(p), 0.3); });
+      B.forEach(([i, j]) => { const A = pos(U[i]), C = pos(U[j]), M = A.map((v, k) => (v + C[k]) / 2); sphere('O', M, 0.22); stick(A, M, 0.06, '#c9ced8'); stick(M, C, 0.06, '#c9ced8'); });
+      st.start(9, () => { g.rotation.y += 0.004; });
+    }
+    const t = spec.mol === 'graphite' ? T.graphite : T.sio2;
+    host.insertAdjacentHTML('beforeend', '<div style="position:absolute;left:12px;top:10px;font:600 13px Space Grotesk,sans-serif;color:#eef2ff;z-index:2">' + esc(t[0]) + '<div style="margin-top:5px;font:11px IBM Plex Mono,monospace;color:rgba(220,228,246,.85)">' + esc(t[1]) + '</div></div>');
+  }
+
+  // a substance dissolving in water: the crystal or molecules break up into hydrated ions, a lamp shows conductivity
+  const DIS = {
+    NaCl: { eq: 'NaCl → Na⁺ + Cl⁻', ions: [['Na⁺', '#a066f0', 1], ['Cl⁻', '#2fd14b', 1]] },
+    HCl: { eq: 'HCl → H⁺ + Cl⁻', ions: [['H⁺', '#f4f6f8', 1], ['Cl⁻', '#2fd14b', 1]] },
+    NaOH: { eq: 'NaOH → Na⁺ + OH⁻', ions: [['Na⁺', '#a066f0', 1], ['OH⁻', '#ff5d6e', 1]] },
+    CuSO4: { eq: 'CuSO₄ → Cu²⁺ + SO₄²⁻', ions: [['Cu²⁺', '#3a8cff', 1], ['SO₄²⁻', '#f2d23c', 1]] },
+    sugar: { eq: 'C₁₂H₂₂O₁₁ (aq)', ions: null }
+  };
+  function dissociation(host, spec, ctx) {
+    const D = DIS[spec.s] || DIS.NaCl, T = S3[ctx.lang].dis, on = !!D.ions;
+    host.innerHTML = card('<canvas style="display:block;width:100%;height:250px;border-radius:9px;background:rgba(10,14,30,.85)"></canvas>'
+      + '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:10px"><div style="font:600 17px IBM Plex Mono,monospace;color:var(--text)">' + esc(D.eq) + '</div>'
+      + '<div style="font-size:13px;font-weight:600;color:' + (on ? 'var(--green)' : 'var(--warn)') + '">' + esc(on ? T.on : T.off) + '</div></div>'
+      + '<div style="margin-top:4px;font-size:12.5px;color:var(--muted)">' + esc(on ? T.water : T.sugar) + '</div>');
+    const cv = host.querySelector('canvas'), c2 = cv.getContext('2d');
+    // 16 formula units: in a block at first, then spread through the beaker
+    const N = 16, P = [];
+    for (let i = 0; i < N; i++) { const gx = i % 4, gy = Math.floor(i / 4);
+      (on ? [0, 1] : [0]).forEach((k) => P.push({ k, hx: gx * 2 + k, hy: gy, x: Math.random(), y: 0.35 + Math.random() * 0.55, vx: (Math.random() - 0.5) * 0.004, vy: (Math.random() - 0.5) * 0.004 })); }
+    let raf = 0, alive = true; const t0 = performance.now();
+    const frame = (now) => {
+      if (!alive) return;
+      const dpr = window.devicePixelRatio || 1, W = cv.width = cv.clientWidth * dpr, H = cv.height = cv.clientHeight * dpr;
+      const bx = W * 0.12, bw = W * 0.76, by = H * 0.3, bh = H * 0.64, r = Math.min(W, H) / 30, t = ((now - t0) / 1000) % 9, e = Math.min(1, Math.max(0, (t - 1) / 3));
+      c2.clearRect(0, 0, W, H);
+      // beaker and water
+      c2.fillStyle = 'rgba(77,160,255,.14)'; c2.fillRect(bx, by + bh * 0.08, bw, bh * 0.92);
+      c2.strokeStyle = 'rgba(220,228,246,.7)'; c2.lineWidth = 2 * dpr; c2.beginPath(); c2.moveTo(bx, by); c2.lineTo(bx, by + bh); c2.lineTo(bx + bw, by + bh); c2.lineTo(bx + bw, by); c2.stroke();
+      // electrodes, wires and the lamp
+      const ex1 = bx + bw * 0.08, ex2 = bx + bw * 0.92, lx = W / 2, ly = H * 0.12, glow = on && e > 0.5 ? (e - 0.5) * 2 : 0;
+      c2.fillStyle = '#5d6270'; c2.fillRect(ex1 - 4 * dpr, by - 10 * dpr, 8 * dpr, bh * 0.75); c2.fillRect(ex2 - 4 * dpr, by - 10 * dpr, 8 * dpr, bh * 0.75);
+      c2.strokeStyle = 'rgba(200,212,238,.6)'; c2.beginPath(); c2.moveTo(ex1, by - 10 * dpr); c2.lineTo(ex1, ly); c2.lineTo(lx - r, ly); c2.moveTo(lx + r, ly); c2.lineTo(ex2, ly); c2.lineTo(ex2, by - 10 * dpr); c2.stroke();
+      if (glow) { const gr = c2.createRadialGradient(lx, ly, 0, lx, ly, r * 5); gr.addColorStop(0, 'rgba(255,220,90,' + (0.8 * glow) + ')'); gr.addColorStop(1, 'rgba(255,220,90,0)'); c2.fillStyle = gr; c2.beginPath(); c2.arc(lx, ly, r * 5, 0, 6.283); c2.fill(); }
+      c2.beginPath(); c2.arc(lx, ly, r * 1.1, 0, 6.283); c2.fillStyle = glow ? '#ffe27a' : 'rgba(160,170,190,.35)'; c2.fill(); c2.strokeStyle = 'rgba(220,228,246,.8)'; c2.stroke();
+      // particles: e = 0 packed crystal at the bottom, e = 1 free and drifting
+      P.forEach((p) => {
+        p.x += p.vx; p.y += p.vy; if (p.x < 0.05 || p.x > 0.95) p.vx *= -1; if (p.y < 0.2 || p.y > 0.95) p.vy *= -1;
+        const cx = bx + bw * 0.38 + p.hx * r * 1.9 * (on ? 1 : 1.6) - (on ? 0 : bw * 0.04), cy = by + bh - r * 1.4 - p.hy * r * 1.9;
+        const fx = bx + bw * (0.1 + p.x * 0.8), fy = by + bh * p.y, x = cx + (fx - cx) * e, y = cy + (fy - cy) * e;
+        if (on && e > 0.2) for (let w = 0; w < 4; w++) { const a = w * 1.57 + now / 900; c2.beginPath(); c2.arc(x + Math.cos(a) * r * 1.7, y + Math.sin(a) * r * 1.7, r * 0.38, 0, 6.283); c2.fillStyle = 'rgba(255,93,110,' + 0.55 * e + ')'; c2.fill(); }
+        if (on) { const ion = D.ions[p.k]; c2.beginPath(); c2.arc(x, y, r * (p.k ? 1.05 : 0.8), 0, 6.283); c2.fillStyle = ion[1]; c2.fill();
+          if (e > 0.2) { c2.fillStyle = ion[1] === '#f4f6f8' || ion[1] === '#f2d23c' ? '#111' : '#fff'; c2.font = '600 ' + (r * 0.8) + 'px Space Grotesk'; c2.textAlign = 'center'; c2.textBaseline = 'middle'; c2.fillText(ion[0].replace(/[⁺⁻²]/g, ''), x, y); } }
+        else { c2.beginPath(); c2.ellipse(x, y, r * 1.3, r * 0.8, 0, 0, 6.283); c2.fillStyle = '#f2efe6'; c2.fill(); }
+      });
+      if (on) { c2.font = (11 * dpr) + 'px IBM Plex Mono'; c2.textAlign = 'left'; D.ions.forEach((ion, i) => { c2.fillStyle = ion[1]; c2.beginPath(); c2.arc(12 * dpr, (18 + i * 18) * dpr, 5 * dpr, 0, 6.283); c2.fill(); c2.fillStyle = 'rgba(220,228,246,.85)'; c2.fillText(ion[0], 22 * dpr, (22 + i * 18) * dpr); }); }
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    ctx.onDispose(() => { alive = false; cancelAnimationFrame(raf); });
+  }
+
+  // pH scale with a slider, everyday examples, salt solutions and indicator colours
+  function phscale(host, spec, ctx) {
+    const L = ctx.lang, T = S3[L].ph, U = T.sub;
+    const EX = [[1.5, 'stomach'], [2.2, 'lemon'], [2.9, 'vinegar'], [5, 'coffee'], [5.6, 'rain'], [7, 'water'], [7.4, 'blood'], [8.1, 'sea'], [8.3, 'soda'], [10, 'soap'], [11.6, 'ammonia'], [13.5, 'naoh']];
+    const SALT = [['NaCl', 7], ['Na₂CO₃', 11.6], ['NH₄Cl', 5.1], ['AlCl₃', 3.0], ['CH₃COONa', 8.9], ['ZnCl₂', 4.6]];
+    const col = (p) => 'hsl(' + Math.round(p / 14 * 260) + ',85%,52%)';
+    host.innerHTML = card('<div style="font-size:12px;color:var(--muted);margin-bottom:6px">' + esc(T.title) + '</div>'
+      + '<div style="height:26px;border-radius:8px;background:linear-gradient(90deg,' + Array.from({ length: 15 }, (_, i) => col(i)).join(',') + ')"></div>'
+      + '<input class="ph-r" type="range" min="0" max="14" step="0.1" value="7" style="width:100%;margin:6px 0 2px;accent-color:#2ecc96">'
+      + '<div style="display:flex;justify-content:space-between;font:11px IBM Plex Mono;color:var(--muted)">' + Array.from({ length: 15 }, (_, i) => '<span>' + i + '</span>').join('') + '</div>'
+      + '<div class="ph-o" style="margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center"></div>'
+      + '<div style="margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px"><span style="font-size:12px;color:var(--muted)">' + esc(T.salts) + '</span>'
+      + SALT.map((s) => '<button data-p="' + s[1] + '" style="border-radius:16px;border:1px solid var(--line);background:var(--btn);color:var(--text);font:12.5px IBM Plex Mono;padding:5px 10px;cursor:pointer">' + s[0] + '</button>').join('') + '</div>');
+    const r = host.querySelector('.ph-r'), out = host.querySelector('.ph-o');
+    const ind = (p) => [[T.litmus, p < 5 ? '#e63a4a' : p <= 8 ? '#8a5ad0' : '#3a6ae6'], [T.php, p < 8.2 ? '#f4f4f4' : '#e0207a'], [T.mo, p < 3.1 ? '#e6455a' : p < 4.4 ? '#f08a2a' : '#f2d23c']];
+    const upd = () => { const p = +r.value, near = EX.reduce((a, b) => (Math.abs(b[0] - p) < Math.abs(a[0] - p) ? b : a)), md = p < 6.9 ? T.acid : p > 7.1 ? T.base : T.neutral;
+      const hE = -Math.round(p);
+      out.innerHTML = '<div style="width:74px;height:74px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:' + col(p) + ';color:#0b1020;font:700 22px IBM Plex Mono;box-shadow:0 0 18px ' + col(p) + '">' + num(p, L, 1) + '<span style="font:600 10px Space Grotesk">pH</span></div>'
+        + '<div><div style="font-size:16px;font-weight:700;color:var(--text)">' + esc(md) + '</div><div style="font:12.5px IBM Plex Mono;color:var(--muted);margin-top:2px">' + T.h + ' ≈ 10' + String(hE).split('').map((c) => (c === '-' ? '⁻' : '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c])).join('') + ' mol/L</div>'
+        + '<div style="font-size:13px;color:var(--body);margin-top:4px">' + esc(T.like) + ': <b>' + esc(U[near[1]]) + '</b> (pH ≈ ' + num(near[0], L, 1) + ')</div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">' + ind(p).map((x) => '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><span style="width:16px;height:16px;border-radius:5px;border:1px solid var(--line);background:' + x[1] + '"></span>' + esc(x[0]) + '</span>').join('') + '</div></div>'; };
+    r.addEventListener('input', upd);
+    host.querySelectorAll('button[data-p]').forEach((b) => b.addEventListener('click', () => { r.value = b.dataset.p; upd(); }));
+    upd();
+  }
+
+  // activity series: does metal M react with acid, water or a salt solution?
+  const ACT = [['K', 1], ['Ca', 2], ['Na', 1], ['Mg', 2], ['Al', 3], ['Zn', 2], ['Fe', 2], ['Ni', 2], ['Sn', 2], ['Pb', 2], ['H', 0], ['Cu', 2], ['Hg', 2], ['Ag', 1], ['Pt', 2], ['Au', 3]];
+  const SALTS = { CuSO4: ['Cu', 'SO4', 2], AgNO3: ['Ag', 'NO3', 1], FeSO4: ['Fe', 'SO4', 2], ZnSO4: ['Zn', 'SO4', 2] };
+  function activity(host, spec, ctx) {
+    const T = S3[ctx.lang].act, idx = (s) => ACT.findIndex((a) => a[0] === s);
+    let M = 'Zn', R = 'HCl';
+    const chip = (on, c) => 'border-radius:9px;border:1px solid ' + (on ? c : 'var(--line)') + ';background:' + (on ? c + '33' : 'var(--btn)') + ';color:var(--text);font:600 13px Space Grotesk;padding:6px 9px;cursor:pointer;min-width:38px';
+    const salt = (m, an, v) => { // sulfate or nitrate of metal m with valence v
+      if (an === 'SO4') return v === 1 ? m + '2SO4' : v === 2 ? m + 'SO4' : m + '2(SO4)3';
+      return v === 1 ? m + 'NO3' : m + '(NO3)' + v; };
+    const coef = (k, f) => (k === 1 ? '' : k) + pretty(f);
+    const solve = () => {
+      const m = ACT[idx(M)], v = m[1], left = idx(M) < idx('H');
+      if (R === 'HCl') { if (!left) return [false, T.whyNoAcid];
+        const eq = v === 1 ? '2' + M + ' + 2HCl → 2' + pretty(M + 'Cl') + ' + H₂' : v === 2 ? M + ' + 2HCl → ' + pretty(M + 'Cl2') + ' + H₂' : '2' + M + ' + 6HCl → 2' + pretty(M + 'Cl3') + ' + 3H₂';
+        return [true, T.whyAcid + (M === 'Pb' ? ' (' + T.pb + ')' : ''), eq]; }
+      if (R === 'H2O') {
+        const W = { K: '2K + 2H₂O → 2KOH + H₂', Na: '2Na + 2H₂O → 2NaOH + H₂', Ca: 'Ca + 2H₂O → Ca(OH)₂ + H₂', Mg: 'Mg + 2H₂O → Mg(OH)₂ + H₂ (' + T.hot + ')',
+          Al: '2Al + 6H₂O → 2Al(OH)₃ + 3H₂ (' + T.film + ')', Zn: 'Zn + H₂O → ZnO + H₂ (' + T.steam + ')', Fe: '3Fe + 4H₂O → Fe₃O₄ + 4H₂ (' + T.steam + ')' };
+        return W[M] ? [true, '', W[M]] : [false, ''];
+      }
+      const s = SALTS[R]; if (s[0] === M) return [false, T.same];
+      if (['K', 'Ca', 'Na'].includes(M)) return [true, T.whyAlk, M === 'Ca' ? 'Ca + 2H₂O → Ca(OH)₂ + H₂' : '2' + M + ' + 2H₂O → 2' + M + 'OH + H₂'];
+      if (idx(M) > idx(s[0])) return [false, T.whyNoSalt];
+      // a·M + c·(X salt) → b·(M salt) + d·X; a(n) = anions and m(n) = metal atoms per salt formula
+      const w = s[2], sx = salt(s[0], s[1], w), sm = salt(M, s[1], v);
+      const aX = s[1] === 'SO4' ? (w === 1 ? 1 : w === 2 ? 1 : 3) : w, aM = s[1] === 'SO4' ? (v === 1 ? 1 : v === 2 ? 1 : 3) : v;
+      const mX = s[1] === 'SO4' ? (w === 1 ? 2 : w === 2 ? 1 : 2) : 1, mM = s[1] === 'SO4' ? (v === 1 ? 2 : v === 2 ? 1 : 2) : 1;
+      // smallest whole numbers that balance metal M, the anion and metal X
+      for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) for (let c = 1; c <= 6; c++) for (let d = 1; d <= 6; d++)
+        if (a === b * mM && c * aX === b * aM && c * mX === d) return [true, T.whySalt, coef(a, M) + ' + ' + coef(c, sx) + ' → ' + coef(b, sm) + ' + ' + coef(d, s[0])];
+      return [true, T.whySalt];
+    };
+    const draw = () => {
+      const res = solve();
+      host.innerHTML = card('<div style="font-size:12px;color:var(--muted);margin-bottom:6px">' + esc(T.title) + ' · ' + esc(T.pick) + '</div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:4px">' + ACT.map((a, i) => a[0] === 'H' ? '<span style="align-self:center;padding:6px 8px;border-radius:9px;border:1px dashed var(--muted);color:var(--muted);font:700 13px Space Grotesk">(H)</span>'
+          : '<button data-m="' + a[0] + '" style="' + chip(a[0] === M, i < 10 ? '#2ecc96' : '#ffb454') + '">' + a[0] + '</button>').join('') + '</div>'
+        + '<div style="display:flex;justify-content:space-between;font:11px IBM Plex Mono;color:var(--muted);margin:4px 2px 12px"><span>' + esc(T.more) + '</span><span>' + esc(T.less) + '</span></div>'
+        + '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">' + esc(T.with) + '</div><div style="display:flex;flex-wrap:wrap;gap:6px">'
+        + [['HCl', T.acid + ' HCl'], ['H2O', T.water + ' H₂O'], ['CuSO4', 'CuSO₄'], ['AgNO3', 'AgNO₃'], ['FeSO4', 'FeSO₄'], ['ZnSO4', 'ZnSO₄']].map((x) => '<button data-r="' + x[0] + '" style="' + chip(x[0] === R, '#4dd2ff') + '">' + esc(x[1]) + '</button>').join('') + '</div>'
+        + '<div style="margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid ' + (res[0] ? 'rgba(46,204,150,.55)' : 'rgba(255,93,110,.5)') + ';background:' + (res[0] ? 'rgba(46,204,150,.1)' : 'rgba(255,93,110,.08)') + '">'
+        + '<div style="font-weight:700;color:' + (res[0] ? 'var(--green)' : 'var(--warn)') + '">' + (res[0] ? '✓ ' + esc(T.yes) : '✗ ' + esc(T.no)) + '</div>'
+        + (res[2] ? '<div style="margin-top:6px;font:600 16px IBM Plex Mono;color:var(--text)">' + esc(res[2]) + '</div>' : '')
+        + (res[1] ? '<div style="margin-top:6px;font-size:13px;color:var(--body)">' + esc(res[1]) + '</div>' : '') + '</div>');
+    };
+    host.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.m) M = b.dataset.m; if (b.dataset.r) R = b.dataset.r; draw(); });
+    draw();
+  }
+
+  function diagram3(host, spec, ctx) {
+    const T = S3[ctx.lang], k = spec.kind;
+    const box = (x, y, w, h, t, c, s) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:' + c + '22;stroke:' + c + '"/>' + (t ? tx(x + w / 2, y + h / 2 + 4, t, { s: s || 12 }) : '');
+    const ar = (d, c) => '<path class="pv-flow" d="' + d + '" stroke="' + (c || '#2ecc96') + '" stroke-width="2.4" fill="none" marker-end="url(#pvG)"/>';
+    const beaker = (x, y, w, h, liq) => '<path d="M' + x + ' ' + y + ' v' + h + ' h' + w + ' v-' + h + '" style="' + glass + '"/><rect x="' + (x + 2) + '" y="' + (y + h * 0.3) + '" width="' + (w - 4) + '" height="' + (h * 0.7 - 2) + '" fill="' + liq + '" opacity=".35"/>';
+    if (k === 'conductivity') {
+      const D = T.cond, cells = [[D.dw, '#4dd2ff', 0], [D.sugar, '#e8e2cf', 0], [D.salt, '#4dd2ff', 1], [D.acid, '#ffd24d', 1]];
+      host.innerHTML = svg(680, 260, '<style>.pv-glow{animation:pvGlow 1.4s ease-in-out infinite alternate}@keyframes pvGlow{from{opacity:.55}to{opacity:1}}</style>' + cells.map((c, i) => { const x = 20 + i * 168, on = c[2];
+        return beaker(x + 20, 120, 120, 100, c[1]) + '<rect x="' + (x + 48) + '" y="100" width="8" height="90" fill="#5d6270"/><rect x="' + (x + 104) + '" y="100" width="8" height="90" fill="#5d6270"/>'
+          + '<path d="M' + (x + 52) + ' 100 V50 H' + (x + 70) + ' M' + (x + 90) + ' 50 H' + (x + 108) + ' V100" style="fill:none;stroke:var(--muted);stroke-width:2"/>'
+          + (on ? '<circle class="pv-glow" cx="' + (x + 80) + '" cy="50" r="22" fill="#ffd24d" opacity=".5"/>' : '') + '<circle cx="' + (x + 80) + '" cy="50" r="11" style="fill:' + (on ? '#ffe27a' : 'var(--panel)') + ';stroke:var(--text);stroke-width:1.5"/>'
+          + tx(x + 80, 244, c[0], { s: 11.5 }) + tx(x + 80, 22, on ? '💡' : '✕', { s: 14, c: on ? '#ffd24d' : 'var(--muted)' }); }).join(''));
+      return;
+    }
+    if (k === 'electrolysis_nacl') {
+      const D = T.el2, side = (x0, title, liq, cat, an, catIon, anIon, catEq, anEq) => {
+        const ions = Array.from({ length: 6 }, (_, i) => { const toCat = i % 2 === 0, y = 140 + (i % 3) * 30, x = x0 + 100 + i * 24;
+          return '<g style="animation:' + (toCat ? 'pvL' : 'pvR') + ' 3s ease-in-out ' + (i * 0.4) + 's infinite"><circle cx="' + x + '" cy="' + y + '" r="10" fill="' + (toCat ? catIon[1] : anIon[1]) + '"/>' + tx(x, y + 4, toCat ? catIon[0] : anIon[0], { s: 9, c: '#0b1020' }) + '</g>'; }).join('');
+        return tx(x0 + 160, 24, title, { s: 13 }) + beaker(x0 + 30, 90, 260, 140, liq) + '<rect x="' + (x0 + 60) + '" y="60" width="12" height="150" fill="#5d6270"/><rect x="' + (x0 + 248) + '" y="60" width="12" height="150" fill="#5d6270"/>'
+          + '<path d="M' + (x0 + 66) + ' 60 V40 H' + (x0 + 140) + ' M' + (x0 + 180) + ' 40 H' + (x0 + 254) + ' V60" style="fill:none;stroke:var(--muted);stroke-width:2"/><rect x="' + (x0 + 140) + '" y="32" width="40" height="16" rx="3" style="fill:var(--panel);stroke:var(--muted)"/>' + tx(x0 + 160, 44, '− +', { s: 10 })
+          + ions + tx(x0 + 66, 252, D.cat, { s: 11, c: 'var(--muted)' }) + tx(x0 + 254, 252, D.an, { s: 11, c: 'var(--muted)' })
+          + tx(x0 + 66, 272, catEq, { s: 11, w: 500 }) + tx(x0 + 254, 272, anEq, { s: 11, w: 500 }); };
+      host.innerHTML = svg(700, 290, '<style>@keyframes pvL{0%,100%{transform:translateX(0)}50%{transform:translateX(-26px)}}@keyframes pvR{0%,100%{transform:translateX(0)}50%{transform:translateX(26px)}}</style>'
+        + side(10, D.melt, '#ffb454', 0, 0, ['Na⁺', '#a066f0'], ['Cl⁻', '#2fd14b'], 'Na⁺ + e⁻ → Na', '2Cl⁻ − 2e⁻ → Cl₂')
+        + side(360, D.sol, '#3a8cff', 0, 0, ['Cu²⁺', '#3a8cff'], ['Cl⁻', '#2fd14b'], 'Cu²⁺ + 2e⁻ → Cu', '2Cl⁻ − 2e⁻ → Cl₂'));
+      return;
+    }
+    if (k === 'corrosion') {
+      const D = T.cor, tube = (x, liq, oil, rust, t, r) => '<path d="M' + x + ' 30 v150 a20 20 0 0 0 40 0 v-150" style="' + glass + '"/>'
+        + (liq ? '<path d="M' + (x + 2) + ' 110 v70 a18 18 0 0 0 36 0 v-70z" fill="#4dd2ff" opacity=".35"/>' : '<rect x="' + (x + 6) + '" y="168" width="28" height="18" rx="4" fill="#e8e2cf" opacity=".7"/>')
+        + (oil ? '<rect x="' + (x + 2) + '" y="100" width="36" height="10" fill="#ffd24d" opacity=".6"/>' : '')
+        + '<rect x="' + (x + 17) + '" y="50" width="6" height="140" rx="2" fill="' + (rust ? '#b5562a' : '#9aa3b5') + '"/>' + (rust ? '<circle cx="' + (x + 20) + '" cy="120" r="6" fill="#c0642e"/><circle cx="' + (x + 19) + '" cy="150" r="5" fill="#a64b22"/>' : '')
+        + tx(x + 20, 228, t, { s: 11 }) + tx(x + 20, 246, r, { s: 11.5, c: rust ? '#ff8a5c' : 'var(--green)' });
+      host.innerHTML = svg(700, 262, tube(30, 1, 0, 1, D.t1, D.r1) + tube(150, 0, 0, 0, D.t2, D.r2) + tube(270, 1, 1, 0, D.t3, D.r3)
+        + tx(380, 36, D.prot, { a: 'start', s: 13.5 }) + D.p.map((p, i) => '<circle cx="388" cy="' + (62 + i * 30) + '" r="4" fill="#2ecc96"/>' + tx(400, 66 + i * 30, p, { a: 'start', s: 11.5, w: 500 })).join('')
+        + tx(380, 232, D.rust, { a: 'start', s: 12, c: '#ff8a5c' }));
+      return;
+    }
+    if (k === 'hardness') {
+      const D = T.hard;
+      host.innerHTML = svg(700, 290, tx(350, 22, D.ions, { s: 13, c: 'var(--muted)' })
+        + box(20, 40, 320, 60, '', '#4dd2ff') + tx(180, 64, D.tmp, { s: 13 }) + tx(180, 86, D.tmpS, { s: 12, w: 500, c: 'var(--muted)' })
+        + box(360, 40, 320, 60, '', '#ff8a5c') + tx(520, 64, D.perm, { s: 13 }) + tx(520, 86, D.permS, { s: 12, w: 500, c: 'var(--muted)' })
+        + ar('M180 104 L180 130') + box(20, 134, 320, 62, '', '#4dd2ff') + tx(180, 156, D.boil, { s: 12.5 }) + tx(180, 180, 'Ca(HCO₃)₂ → CaCO₃↓ + CO₂ + H₂O', { s: 11.5, w: 500 })
+        + ar('M520 104 L520 130') + box(360, 134, 320, 62, '', '#ff8a5c') + tx(520, 156, D.soda, { s: 12.5 }) + tx(520, 180, 'CaSO₄ + Na₂CO₃ → CaCO₃↓ + Na₂SO₄', { s: 11.5, w: 500 })
+        + box(120, 214, 460, 64, '', '#2ecc96') + tx(350, 238, D.ion, { s: 12.5 }) + tx(350, 262, D.ionS, { s: 11.5, w: 500, c: 'var(--muted)' }));
+      return;
+    }
+    if (k === 'blast_furnace') {
+      const D = T.bf, zones = [[110, D.z1, '3Fe₂O₃ + CO → 2Fe₃O₄ + CO₂', '#4dd2ff'], [170, D.z2, 'Fe₃O₄ + CO → 3FeO + CO₂', '#7ee787'], [230, D.z3, 'FeO + CO → Fe + CO₂', '#ffd24d'], [290, D.z4, 'C + O₂ → CO₂;  CO₂ + C → 2CO', '#ff5d6e']];
+      host.innerHTML = svg(700, 380, tx(460, 20, D.title, { s: 13.5 })
+        + '<defs><linearGradient id="pvBF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4dd2ff" stop-opacity=".25"/><stop offset=".6" stop-color="#ffb454" stop-opacity=".35"/><stop offset="1" stop-color="#ff5d6e" stop-opacity=".55"/></linearGradient></defs>'
+        + '<path d="M150 60 L210 60 L250 220 L240 330 L120 330 L110 220 Z" fill="url(#pvBF)" style="stroke:var(--text);stroke-width:2"/>'
+        + '<rect x="120" y="318" width="120" height="12" fill="#ff8a3a"/><rect x="120" y="304" width="120" height="14" fill="#c9a24a" opacity=".8"/>'
+        + ar('M180 40 L180 58', '#ffb454') + ar('M215 68 L280 40', '#9aa3b8') + tx(290, 44, D.gas, { a: 'start', s: 11.5 })
+        + ar('M60 290 L114 290', '#ff5d6e') + ar('M300 290 L246 290', '#ff5d6e') + tx(14, 278, D.air, { a: 'start', s: 11 })
+        + ar('M240 311 L300 340', '#c9a24a') + tx(306, 344, D.slag, { a: 'start', s: 11.5 }) + ar('M120 324 L60 352', '#ff8a3a') + tx(56, 364, D.iron, { a: 'end', s: 11.5 })
+        + tx(14, 36, D.charge, { a: 'start', s: 11.5, c: '#ffb454' })
+        + zones.map((z) => '<line x1="' + (z[0] < 200 ? 230 : 252) + '" y1="' + z[0] + '" x2="360" y2="' + z[0] + '" style="stroke:var(--muted);stroke-dasharray:3 3"/>' + tx(368, z[0] - 3, z[1], { a: 'start', s: 11, c: z[3] }) + tx(368, z[0] + 14, z[2], { a: 'start', s: 11.5, w: 500 })).join(''));
+      return;
+    }
+    if (k === 'converter') {
+      const D = T.cv;
+      host.innerHTML = svg(700, 320, tx(350, 20, D.title, { s: 13.5 })
+        + '<path d="M150 70 L250 70 L290 130 L290 260 a20 20 0 0 1 -20 20 L130 280 a20 20 0 0 1 -20 -20 L110 130 Z" style="fill:rgba(255,138,58,.15);stroke:var(--text);stroke-width:2"/>'
+        + '<path d="M114 180 L286 180 L286 262 a16 16 0 0 1 -16 16 L130 278 a16 16 0 0 1 -16 -16 Z" fill="#ff8a3a" opacity=".7"/><rect x="114" y="168" width="172" height="12" fill="#c9a24a" opacity=".8"/>'
+        + '<rect x="194" y="30" width="12" height="140" fill="#9aa3b8"/>' + ar('M200 34 L200 168', '#4dd2ff') + tx(186, 44, D.o2, { a: 'end', s: 11.5, c: '#4dd2ff' })
+        + Array.from({ length: 6 }, (_, i) => '<circle class="pv-bub" style="animation-delay:' + (i * 0.35) + 's" cx="' + (180 + (i % 3) * 18) + '" cy="250" r="4" fill="#ffd24d"/>').join('')
+        + ar('M240 74 L300 44', '#9aa3b8') + tx(306, 44, D.gas, { a: 'start', s: 11.5 }) + tx(200, 302, D.pig, { s: 11.5 })
+        + tx(330, 110, D.what, { a: 'start', s: 12 })
+        + ['2C + O₂ → 2CO', 'Si + O₂ → SiO₂', '2Mn + O₂ → 2MnO', '4P + 5O₂ → 2P₂O₅'].map((e, i) => tx(340, 140 + i * 24, e, { a: 'start', s: 12.5, w: 500 })).join('')
+        + tx(330, 250, D.slag, { a: 'start', s: 11.5, c: '#c9a24a' }) + tx(330, 274, '→ ' + D.steel, { a: 'start', s: 13, c: 'var(--green)' }));
+      return;
+    }
+    if (k === 'solvay') {
+      const D = T.sv;
+      host.innerHTML = svg(700, 320, tx(10, 18, D.title, { a: 'start', s: 13.5 })
+        + box(10, 50, 140, 50, D.brine, '#4dd2ff', 11.5) + ar('M152 75 L166 75') + box(170, 50, 170, 50, D.carb, '#c08bff', 11.5) + ar('M342 75 L356 75') + box(360, 50, 100, 50, D.filt, '#9aa3b8', 11.5)
+        + ar('M462 75 L476 75') + box(480, 50, 150, 50, D.calc, '#ff8a5c', 11) + ar('M555 102 L555 136') + box(470, 140, 220, 46, D.soda, '#2ecc96', 11.5)
+        + tx(255, 120, 'NaCl + NH₃ + CO₂ + H₂O → NaHCO₃↓ + NH₄Cl', { s: 12, w: 500 }) + tx(580, 206, '2NaHCO₃ → Na₂CO₃ + CO₂ + H₂O', { s: 12, w: 500 })
+        + ar('M600 48 C 560 26 330 26 290 46', '#9aa3b8') + tx(445, 22, 'CO₂ ' + D.back, { s: 11, c: 'var(--muted)' })
+        + box(20, 236, 220, 46, D.regen, '#7ee787', 11.5) + tx(10, 304, '2NH₄Cl + Ca(OH)₂ → CaCl₂ + 2NH₃ + 2H₂O', { a: 'start', s: 11.5, w: 500 })
+        + box(300, 236, 170, 46, D.kiln, '#ffb454', 11.5) + tx(385, 304, 'CaCO₃ → CaO + CO₂', { s: 12, w: 500 })
+        + ar('M100 234 L84 104', '#7ee787') + tx(98, 172, 'NH₃ ' + D.back, { a: 'start', s: 11, c: '#7ee787' })
+        + ar('M360 234 L290 104', '#ffb454') + tx(336, 172, 'CO₂', { a: 'start', s: 12, c: '#ffb454' }) + ar('M298 259 L244 259', '#ffb454') + tx(271, 252, 'CaO', { s: 10.5, c: '#ffb454' }));
+      return;
+    }
+    if (k === 'carbon_cycle') {
+      const D = T.cc, node = (x, y, t, c) => '<rect x="' + (x - 100) + '" y="' + (y - 20) + '" width="200" height="40" rx="10" style="fill:' + c + '22;stroke:' + c + '"/>' + tx(x, y + 4, t, { s: 11.5 });
+      host.innerHTML = svg(700, 320, node(350, 34, D.air, '#9aa3b8') + node(120, 160, D.plant, '#4fbf5a') + node(580, 160, D.animal, '#ff8a5c') + node(580, 286, D.fuel, '#ffb454') + node(120, 286, D.ocean, '#4dd2ff') + node(350, 286, D.rock, '#b08a5a')
+        + ar('M260 52 C 180 70 140 110 125 138') + ar('M216 160 L476 160', '#4fbf5a') + ar('M560 138 C 540 90 480 60 452 52', '#ff8a5c') + ar('M640 264 C 680 160 560 60 452 40', '#ffb454')
+        + ar('M300 54 C 220 120 160 200 130 264', '#4dd2ff') + ar('M120 182 L330 264', '#b08a5a') + ar('M452 286 L476 286', '#ffb454')
+        + tx(160, 96, 'CO₂ → ' + D.plant.split(' ')[0], { s: 10.5, c: 'var(--muted)', w: 500 }) + tx(560, 84, 'CO₂', { s: 11, c: '#ff8a5c' }) + tx(240, 236, D.decay, { s: 10.5, c: 'var(--muted)', w: 500 }));
+      return;
+    }
+    if (k === 'silicate') {
+      const D = T.sil, raw = [[D.sand, '#e8b878'], [D.soda, '#e0e6f0'], [D.lime, '#cfc6b0'], [D.clay, '#b08a5a']];
+      const prod = [[D.glass, D.glassT, '#4dd2ff', 'Na₂CO₃ + CaCO₃ + 6SiO₂ → Na₂O·CaO·6SiO₂ + 2CO₂'], [D.cement, D.cementT, '#9aa3b8', D.lime + ' + ' + D.clay], [D.ceram, D.ceramT, '#ff8a5c', D.ex]];
+      host.innerHTML = svg(700, 300, raw.map((r, i) => box(10, 30 + i * 62, 170, 46, r[0], r[1], 11.5)).join('')
+        + '<path d="M260 60 h120 v180 h-120z" style="fill:rgba(255,138,58,.18);stroke:var(--text);stroke-width:2"/><g class="pv-fl" style="transform-box:fill-box"><path d="M320 236 c-26 -26 -10 -62 0 -82 c10 20 26 56 0 82z" fill="#ff8a3a"/></g>' + tx(320, 90, '🔥', { s: 20 })
+        + raw.map((r, i) => ar('M182 ' + (53 + i * 62) + ' L256 ' + (100 + i * 30))).join('')
+        + prod.map((p, i) => ar('M384 150 L420 ' + (60 + i * 90)) + box(424, 34 + i * 90, 272, 70, '', p[2]) + tx(560, 56 + i * 90, p[0] + ' — ' + p[1], { s: 12 }) + tx(560, 80 + i * 90, p[3], { s: 9.5, w: 500, c: 'var(--muted)' })).join(''));
+    }
+  }
+
   window.PTV = {
     render(host, spec, ctx) {
       host.innerHTML = '';
       try {
         if (spec.type === 'chart' && (spec.kind === 'eneg' || spec.kind === 'radius')) return trend(host, spec.kind, ctx);
         if (spec.type === 'diagram' && (spec.kind === 'contact' || spec.kind === 'nitrogen_cycle')) return diagram2(host, spec, ctx);
-        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium }[spec.type];
+        if (spec.type === 'molecule3d' && (spec.mol === 'graphite' || spec.mol === 'SiO2')) return lattice3(host, spec, ctx);
+        if (spec.type === 'diagram' && ['conductivity', 'electrolysis_nacl', 'corrosion', 'hardness', 'blast_furnace', 'converter', 'solvay', 'carbon_cycle', 'silicate'].includes(spec.kind)) return diagram3(host, spec, ctx);
+        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium, dissociation, phscale, activity }[spec.type];
         if (fn) fn(host, spec, ctx);
       } catch (e) { console.error('visual', spec, e); }
     },
