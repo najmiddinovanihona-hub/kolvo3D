@@ -4,6 +4,10 @@ Interaktiv 3D kimyo platformasi: har bir elementning atom modeli va moddaning re
 
 **Muallif:** Nihona Najmiddinova Irshodovna
 
+**Sayt:** https://najmiddinovanihona-hub.github.io/mendeleyev-3d/
+
+Har bir elementning o'z havolasi bor, masalan: [#Au](https://najmiddinovanihona-hub.github.io/mendeleyev-3d/#Au) (oltin), [#26](https://najmiddinovanihona-hub.github.io/mendeleyev-3d/#26) (temir), [#mendeleyev](https://najmiddinovanihona-hub.github.io/mendeleyev-3d/#mendeleyev).
+
 ## Ishga tushirish (lokal)
 
 Bu statik sayt. Fayllarni brauzerda ochish uchun oddiy server kifoya:
@@ -32,6 +36,7 @@ data/
   elements.js       — 118 element ma'lumotlari
   descriptions.js   — element tavsiflari
   facts.js          — qo'llanilishi va qiziqarli faktlar
+  uzbekistan.js     — O'zbekistonda qazib olinadigan / ishlab chiqariladigan elementlar
 assets/
   intro-bg.png      — kirish ekrani foni
   app-bg.png        — asosiy ekran foni
@@ -40,6 +45,7 @@ assets/
 ## Texnologiyalar
 
 - Three.js (r128) — 3D atom va modda modellari
+- React 18 (`support.js` sahifa ochilganda CDN'dan yuklaydi)
 - Vanilla JavaScript
 
-Internet aloqasi talab qilinadi (Three.js CDN'dan yuklanadi).
+Internet aloqasi talab qilinadi (Three.js va React CDN'dan yuklanadi).
