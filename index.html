@@ -20,6 +20,7 @@
 <script src="data/facts.js"></script>
 <script src="data/uzbekistan.js"></script>
 <script src="data/details.js"></script>
+<script src="data/mendeleev.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -78,6 +79,7 @@
     #pt-info{flex:none !important;overflow:visible !important;border-left:none !important;border-top:1px solid var(--line-soft) !important;padding:18px 16px 46px !important}
     #pt-quickstats{grid-template-columns:repeat(2,1fr) !important}
     #pt-mendeleev-body{padding:22px 16px 56px !important}
+    #pt-m-hero{grid-template-columns:1fr !important}
   }
   @media (max-width:520px){
     .pt-vlabel{display:none}
@@ -235,8 +237,37 @@
       </header>
 
       <div id="pt-mendeleev-body" style="flex:1;min-height:0;overflow-y:auto;padding:36px 28px 70px">
-        <div style="max-width:820px;margin:0 auto">
-          <p style="font-size:17px;line-height:1.66;color:var(--body);margin-bottom:34px;text-wrap:pretty">{{ minfo.lead }}</p>
+        <div style="max-width:980px;margin:0 auto">
+          <div id="pt-m-hero" style="display:grid;grid-template-columns:minmax(200px,270px) 1fr;gap:28px;align-items:start;margin-bottom:34px">
+            <figure style="margin:0">
+              <img src="{{ minfo.portrait.src }}" alt="{{ minfo.portrait.caption }}" loading="lazy" style="display:block;width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:0 14px 40px rgba(0,0,0,.35)" />
+              <figcaption style="margin-top:8px;font-size:11px;line-height:1.4;color:var(--muted)">{{ minfo.portrait.caption }} · <a href="{{ minfo.portrait.page }}" target="_blank" rel="noopener" style="color:var(--violet)">Wikimedia Commons</a></figcaption>
+            </figure>
+            <div>
+              <p style="font-size:17px;line-height:1.66;color:var(--body);margin-bottom:22px;text-wrap:pretty">{{ minfo.lead }}</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+                <sc-for list="{{ minfo.stats }}" as="st" hint-placeholder-count="6">
+                  <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px">
+                    <div style="font-family:'IBM Plex Mono';font-size:24px;font-weight:600;color:var(--violet);line-height:1.1">{{ st.v }}</div>
+                    <div style="margin-top:4px;font-size:12px;line-height:1.35;color:var(--muted)">{{ st.l }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
+            <span style="width:7px;height:7px;border-radius:50%;background:#c08bff;box-shadow:0 0 10px #c08bff"></span>
+            <h3 style="font-size:18px;font-weight:700;color:var(--text);margin:0">{{ ui.mTimeline }}</h3>
+          </div>
+          <div style="display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;margin:0 0 30px 19px">
+            <sc-for list="{{ minfo.timeline }}" as="tl" hint-placeholder-count="10">
+              <div style="flex:0 0 158px;background:var(--panel);border:1px solid var(--line);border-top:3px solid #c08bff;border-radius:10px;padding:10px 12px">
+                <div style="font-family:'IBM Plex Mono';font-size:18px;font-weight:600;color:var(--violet)">{{ tl.y }}</div>
+                <div style="margin-top:4px;font-size:12.5px;line-height:1.4;color:var(--body)">{{ tl.t }}</div>
+              </div>
+            </sc-for>
+          </div>
           <sc-for list="{{ minfo.sections }}" as="s" hint-placeholder-count="6">
             <div style="margin-bottom:30px">
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:13px">
@@ -259,8 +290,31 @@
                   </sc-for>
                 </div>
               </sc-if>
+              <sc-if value="{{ s.hasProps }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 10px 19px">
+                  <sc-for list="{{ mprops }}" as="mp" hint-placeholder-count="5">
+                    <button onClick="{{ mp.set }}" style="background:{{ mp.bg }};border:1px solid {{ mp.bc }};color:{{ mp.fg }};border-radius:18px;font-family:'Space Grotesk';font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer">{{ mp.label }}</button>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ s.hasChart }}" hint-placeholder-val="{{ false }}">
+                <div id="{{ s.chartId }}" style="margin:8px 0 0 19px;min-height:{{ s.chartH }};position:relative"></div>
+              </sc-if>
             </div>
           </sc-for>
+
+          <div style="display:flex;align-items:center;gap:12px;margin:8px 0 13px">
+            <span style="width:7px;height:7px;border-radius:50%;background:#c08bff;box-shadow:0 0 10px #c08bff"></span>
+            <h3 style="font-size:18px;font-weight:700;color:var(--text);margin:0">{{ ui.mGallery }}</h3>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-left:19px">
+            <sc-for list="{{ minfo.gallery }}" as="im" hint-placeholder-count="3">
+              <figure style="margin:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px">
+                <a href="{{ im.page }}" target="_blank" rel="noopener"><img src="{{ im.src }}" alt="{{ im.caption }}" loading="lazy" style="display:block;width:100%;height:230px;object-fit:cover;object-position:top;border-radius:8px;background:#fff" /></a>
+                <figcaption style="padding:8px 4px 2px;font-size:12px;line-height:1.4;color:var(--body)">{{ im.caption }}<span style="display:block;margin-top:2px;font-size:10.5px;color:var(--muted)">Wikimedia Commons · public domain</span></figcaption>
+              </figure>
+            </sc-for>
+          </div>
         </div>
       </div>
     </div>
@@ -433,7 +487,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
 class Component extends DCLogic {
-  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list', uzOnly:false, theme:'dark' };
+  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list', uzOnly:false, theme:'dark', mProp:'ion' };
   PORTFOLIO = "https://najmiddinovanihona-hub.github.io/portfolio.html/";
 
   constructor(props){ super(props); this._engines = {atom:null, mat:null};
@@ -447,7 +501,7 @@ class Component extends DCLogic {
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",mTimeline:"Hayot yo'li",mGallery:"Tasvirlar",mPred:"Bashorat (1871)",mReal:"O'lchangan",mDiff:"farq",mCount:"Ma'lum elementlar soni",mAntiq:"qadimdan",mNoData:"ma'lumot yo'q",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
       cap:{solid:"Moddaning haqiqiy ko'rinishi",liquid:"Xona haroratida suyuq",glow:"Radioaktivligi tufayli qorong'ida xira yog'du sochadi",
         gas_discharge:"Rangsiz gaz — ampulada elektr razryadi nuri bilan",gas_colored:"Shisha ampulada — gazning o'z rangi",gas_colorless:"Rangsiz gaz, shisha ampulada",
         predicted:"Taxminiy model — ko'zga ko'rinadigan miqdorda hech qachon olinmagan",
@@ -458,7 +512,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnit",paramagnetic:"Paramagnit",ferromagnetic:"Ferromagnit",antiferromagnetic:"Antiferromagnit"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",mTimeline:"Life timeline",mGallery:"Images",mPred:"Predicted (1871)",mReal:"Measured",mDiff:"difference",mCount:"Known elements",mAntiq:"antiquity",mNoData:"no data",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
       cap:{solid:"How the substance really looks",liquid:"Liquid at room temperature",glow:"Glows faintly in the dark because of its radioactivity",
         gas_discharge:"Colourless gas — shown glowing in an electric discharge",gas_colored:"In a glass ampoule — the gas's own colour",gas_colorless:"Colourless gas in a glass ampoule",
         predicted:"Predicted model — never made in a visible amount",
@@ -469,7 +523,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnetic",paramagnetic:"Paramagnetic",ferromagnetic:"Ferromagnetic",antiferromagnetic:"Antiferromagnetic"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",mTimeline:"Хронология жизни",mGallery:"Изображения",mPred:"Предсказано (1871)",mReal:"Измерено",mDiff:"разница",mCount:"Известно элементов",mAntiq:"с древности",mNoData:"нет данных",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
       cap:{solid:"Как вещество выглядит на самом деле",liquid:"Жидкость при комнатной температуре",glow:"Слабо светится в темноте из-за радиоактивности",
         gas_discharge:"Бесцветный газ — показан свечением в электрическом разряде",gas_colored:"В стеклянной ампуле — собственный цвет газа",gas_colorless:"Бесцветный газ в стеклянной ампуле",
         predicted:"Предполагаемая модель — никогда не получен в видимом количестве",
@@ -538,14 +592,14 @@ class Component extends DCLogic {
   kc(k){ return k===null?'—':(Math.round((k-273.15)*10)/10)+' °C'; }
 
   // ---------- handlers ----------
-  toggleTheme(){ const t=this.state.theme==='light'?'dark':'light'; try{ localStorage.setItem('pt-theme', t); }catch(_){} this.setState({theme:t}); }
+  toggleTheme(){ const t=this.state.theme==='light'?'dark':'light'; try{ localStorage.setItem('pt-theme', t); }catch(_){} this.setState({theme:t}, ()=>this._drawMSoon()); }
   // darker shade of a #rrggbb colour (k = 0..1), used to keep neon category colours readable on the day theme
   shade(hex,k){ const n=parseInt(hex.slice(1),16), f=(v)=>Math.round(v*(1-k)).toString(16).padStart(2,'0'); return '#'+f((n>>16)&255)+f((n>>8)&255)+f(n&255); }
   // electron configuration with the noble-gas core abbreviated and superscript counts: [Ar] 4s² 3d⁶
   econfShort(el){ const DATA=window.PT_ELEMENTS||[]; const core=[86,54,36,18,10,2].find(z=>z<el.z); let txt=el.econf;
     if(core){ const c=DATA[core-1]; if(c && txt.startsWith(c.econf+' ')) txt='['+c.sym+'] '+txt.slice(c.econf.length+1); }
     const sup={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'}; return txt.replace(/([spdf])([0-9]+)/g,(_,o,n)=>o+n.split('').map(d=>sup[d]).join('')); }
-  setLang(l){ try{ localStorage.setItem('pt-lang', l); }catch(_){} this.setState({lang:l}, ()=>this._syncDocument()); }
+  setLang(l){ try{ localStorage.setItem('pt-lang', l); }catch(_){} this.setState({lang:l}, ()=>{ this._syncDocument(); this._drawMSoon(); }); }
   // keep <html lang> and the tab title in step with the chosen language and open element
   _syncDocument(){ const ui=this.STR(), el=this.state.selected;
     document.documentElement.lang=this.state.lang;
@@ -558,8 +612,8 @@ class Component extends DCLogic {
     const DATA=window.PT_ELEMENTS; if(!DATA) return;
     const h=decodeURIComponent(location.hash.slice(1)).trim().toLowerCase();
     if(h===this._routeKey) return; this._routeKey=h;
-    if(h==='mendeleyev'){ if(this.state.selected) this._closeEl(); this.setState({started:true, showMendeleev:true}); return; }
-    if(this.state.showMendeleev) this.setState({showMendeleev:false});
+    if(h==='mendeleyev'){ if(this.state.selected) this._closeEl(); this.setState({started:true, showMendeleev:true}, ()=>this._drawMSoon()); return; }
+    if(this.state.showMendeleev){ this.setState({showMendeleev:false}); this._disposeOne('land'); }
     const el = h ? DATA.find(e=>e.sym.toLowerCase()===h || String(e.z)===h) : null;
     if(el){ this.setState({started:true}); this.selectEl(el); }
     else if(this.state.selected) this._closeEl();
@@ -576,6 +630,124 @@ class Component extends DCLogic {
     const url=location.href; const done=()=>{ this.setState({linkCopied:true}); clearTimeout(this._copyT); this._copyT=setTimeout(()=>this.setState({linkCopied:false}),1600); };
     const fallback=()=>{ const t=document.createElement('textarea'); t.value=url; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); done(); }catch(_){} t.remove(); };
     if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback); else fallback();
+  }
+
+  // ---------- "About Mendeleev": charts and the 3D property landscape ----------
+  // [key in PT_ELEMENTS, label key in ui.f, unit]
+  MPROPS(){ return [['ion','ion','kJ/mol'],['radius','radius','pm'],['eneg','eneg',''],['melt','melt','K'],['density','density','g/cm³']]; }
+  setMProp(p){ this.setState({mProp:p}, ()=>this._drawMSoon()); }
+  _drawMSoon(){ clearTimeout(this._mT); this._mT=setTimeout(()=>this._drawMendeleev(), 80); }
+  _esc(t){ return String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  _drawMendeleev(){
+    if(!this.state.showMendeleev || !window.PT_MENDELEEV) return;
+    const ui=this.STR(), L=this.state.lang, light=this.state.theme==='light';
+    const ink=(c)=>light?this.shade(c,.5):c;
+    const DATA=window.PT_ELEMENTS||[];
+    const prop=this.MPROPS().find(p=>p[0]===this.state.mProp);
+    const val=(e)=> e[prop[0]]==null ? null : e[prop[0]];
+    const fmtNum=(v)=> v>=100 ? String(Math.round(v)) : String(Number(v.toPrecision(3)));
+
+    // predictions vs measurements: one card per element, a pair of bars per numeric row
+    const hp=document.getElementById('pt-m-predictions');
+    if(hp){
+      hp.innerHTML = window.PT_MENDELEEV.predictions.map(pr=>{
+        const rows = pr.rows.map(r=>{
+          const lab='<td style="padding:7px 10px 7px 0;color:var(--body);font-size:13px">'+this._esc(r.l[L])+'</td>';
+          if(r.p==null){ const pt=typeof r.pt==='object'?r.pt[L]:r.pt;
+            return '<tr>'+lab+'<td style="padding:7px 10px;font-family:IBM Plex Mono;color:var(--violet)">'+this._esc(pt)+'</td><td style="padding:7px 10px;font-family:IBM Plex Mono;color:var(--cyan)">'+this._esc(r.rt)+'</td><td></td></tr>'; }
+          const mx=Math.max(r.p,r.r), diff=Math.abs(r.r-r.p)/r.r*100;
+          const bar=(v,c)=>'<div style="height:7px;border-radius:4px;background:'+c+';width:'+(v/mx*100).toFixed(1)+'%"></div>';
+          return '<tr>'+lab+'<td style="padding:7px 10px;font-family:IBM Plex Mono;color:var(--violet)">'+r.p+'</td><td style="padding:7px 10px;font-family:IBM Plex Mono;color:var(--cyan)">'+r.r+'</td>'
+            +'<td style="padding:7px 0;width:38%"><div style="display:flex;flex-direction:column;gap:3px">'+bar(r.p,'#c08bff')+bar(r.r,'#4dd2ff')+'</div>'
+            +'<div style="margin-top:3px;font-size:10.5px;color:var(--muted)">'+ui.mDiff+': '+diff.toFixed(1)+'%</div></td></tr>';
+        }).join('');
+        return '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px">'
+          +'<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:6px"><b style="font-size:15px;color:var(--text)">'+this._esc(pr.eka[L])+'</b><span style="font-size:12px;color:var(--muted)">'+this._esc(pr.found[L])+'</span></div>'
+          +'<table style="width:100%;border-collapse:collapse"><thead><tr style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)"><th></th>'
+          +'<th style="text-align:left;padding:4px 10px;font-weight:600;color:var(--violet)">'+ui.mPred+'</th><th style="text-align:left;padding:4px 10px;font-weight:600;color:var(--cyan)">'+ui.mReal+'</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+      }).join('');
+    }
+
+    // the periodic law as a graph: chosen property against atomic number
+    const ht=document.getElementById('pt-m-trend');
+    if(ht){
+      const W=860,H=330,pl=52,pr=14,pt=34,pb=36, pts=DATA.map(e=>({e,v:val(e)}));
+      const vs=pts.filter(p=>p.v!=null).map(p=>p.v), vmax=Math.max(...vs), vmin=Math.min(0,...vs);
+      const X=z=>pl+(z-1)/(117)*(W-pl-pr), Y=v=>H-pb-(v-vmin)/(vmax-vmin)*(H-pt-pb);
+      let path='', pen=false; pts.forEach(p=>{ if(p.v==null){ pen=false; return; } path+=(pen?'L':'M')+X(p.e.z).toFixed(1)+' '+Y(p.v).toFixed(1); pen=true; });
+      let g='';
+      for(let i=0;i<=4;i++){ const v=vmin+(vmax-vmin)*i/4, y=Y(v); g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--line-soft)"/><text x="'+(pl-6)+'" y="'+(y+3.5)+'" text-anchor="end" style="fill:var(--muted);font:10px IBM Plex Mono">'+fmtNum(v)+'</text>'; }
+      for(let z=10;z<=118;z+=10) g+='<text x="'+X(z)+'" y="'+(H-pb+15)+'" text-anchor="middle" style="fill:var(--muted);font:10px IBM Plex Mono">'+z+'</text>';
+      g+='<text x="'+(W-pr)+'" y="'+(H-4)+'" text-anchor="end" style="fill:var(--muted);font:10.5px Space Grotesk">Z →</text>';
+      g+='<text x="'+pl+'" y="11" style="fill:var(--muted);font:10.5px Space Grotesk">'+this._esc(ui.f[prop[1]])+(prop[2]?', '+prop[2]:'')+'</text>';
+      const dots=pts.filter(p=>p.v!=null).map(p=>'<circle cx="'+X(p.e.z).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="3.3" fill="'+ink(this.catColor(p.e.cat))+'"><title>'+p.e.z+' '+p.e.sym+' ('+this._esc(p.e.name[L])+'): '+fmtNum(p.v)+(prop[2]?' '+prop[2]:'')+'</title></circle>').join('');
+      // label the noble gases (period ends) and alkali metals (period starts) where they have data
+      const marks=[2,10,18,36,54,86,3,11,19,37,55].map(z=>pts[z-1]).filter(p=>p&&p.v!=null)
+        .map(p=>'<text x="'+X(p.e.z)+'" y="'+(Y(p.v)-7)+'" text-anchor="middle" style="fill:'+ink(this.catColor(p.e.cat))+';font:600 10px Space Grotesk">'+p.e.sym+'</text>').join('');
+      ht.innerHTML='<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 8px 4px"><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">'
+        +g+'<path d="'+path+'" fill="none" style="stroke:var(--muted);stroke-width:1.2;opacity:.6"/>'+dots+marks+'</svg></div>';
+    }
+
+    // known elements over time, from the discovery years in the data
+    const hy=document.getElementById('pt-m-timeline');
+    if(hy){
+      const W=860,H=300,pl=44,pr=14,pt=16,pb=34, y0=1650, y1=2025;
+      const yr=e=>/^\d{4}$/.test(e.disc.year)?+e.disc.year:0;
+      const ancient=DATA.filter(e=>yr(e)<y0).length, years=DATA.map(yr).filter(y=>y>=y0).sort((a,b)=>a-b);
+      const X=y=>pl+(y-y0)/(y1-y0)*(W-pl-pr), Y=n=>H-pb-n/118*(H-pt-pb);
+      let n=ancient, d='M'+X(y0)+' '+Y(n);
+      years.forEach(y=>{ d+=' L'+X(y).toFixed(1)+' '+Y(n).toFixed(1); n++; d+=' L'+X(y).toFixed(1)+' '+Y(n).toFixed(1); });
+      d+=' L'+X(y1)+' '+Y(n);
+      const area=d+' L'+X(y1)+' '+Y(0)+' L'+X(y0)+' '+Y(0)+' Z';
+      const count=y=>DATA.filter(e=>yr(e)<=y).length;
+      let g='';
+      for(let k=0;k<=120;k+=30){ const y=Y(k); g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'" style="stroke:var(--line-soft)"/><text x="'+(pl-6)+'" y="'+(y+3.5)+'" text-anchor="end" style="fill:var(--muted);font:10px IBM Plex Mono">'+k+'</text>'; }
+      for(let y=1700;y<=2000;y+=50) g+='<text x="'+X(y)+'" y="'+(H-pb+15)+'" text-anchor="middle" style="fill:var(--muted);font:10px IBM Plex Mono">'+y+'</text>';
+      g+='<text x="'+pl+'" y="11" style="fill:var(--muted);font:10.5px Space Grotesk">'+ui.mCount+' ('+ancient+' — '+ui.mAntiq+')</text>';
+      const vline=(y,c,label,dy)=>'<line x1="'+X(y)+'" x2="'+X(y)+'" y1="'+pt+'" y2="'+(H-pb)+'" style="stroke:'+c+';stroke-dasharray:4 3;opacity:.8"/>'
+        +'<text x="'+(X(y)+4)+'" y="'+(pt+10+dy)+'" style="fill:'+c+';font:600 10.5px Space Grotesk">'+label+'</text>';
+      const vio=light?'#7036c8':'#c08bff', cy=light?'#0a78b0':'#4dd2ff';
+      g+=vline(1869,vio,'1869 · '+count(1869),0)+vline(1875,cy,'Ga',14)+vline(1879,cy,'Sc',28)+vline(1886,cy,'Ge',42);
+      hy.innerHTML='<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 8px 4px"><svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">'
+        +'<defs><linearGradient id="ptmA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c08bff" stop-opacity=".35"/><stop offset="1" stop-color="#c08bff" stop-opacity="0"/></linearGradient></defs>'
+        +g+'<path d="'+area+'" fill="url(#ptmA)"/><path d="'+d+'" fill="none" style="stroke:'+vio+';stroke-width:2"/></svg></div>';
+    }
+
+    // 3D: each element is a column on its place in the table, height = the chosen property
+    const hl=document.getElementById('pt-m-landscape');
+    if(hl && window.THREE) this._buildLandscape(hl, prop, val);
+  }
+  _buildLandscape(host, prop, val){
+    this._disposeOne('land');
+    const THREE=window.THREE, DATA=window.PT_ELEMENTS||[];
+    host.style.cssText+=';height:460px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(600px 380px at 50% 40%,#2b2452,#060914 75%)';
+    host.innerHTML='<div style="position:absolute;left:14px;bottom:10px;font:10.5px IBM Plex Mono;color:rgba(190,205,235,.75);pointer-events:none;z-index:2">'+this._esc(this.STR().dragHint)+'</div>';
+    const W=host.clientWidth||800, H=host.clientHeight||460;
+    const scene=new THREE.Scene(), camera=new THREE.PerspectiveCamera(38,W/H,0.1,500);
+    const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2)); renderer.setSize(W,H); renderer.outputEncoding=THREE.sRGBEncoding;
+    host.appendChild(renderer.domElement);
+    scene.add(new THREE.AmbientLight(0xffffff,0.55));
+    scene.add(new THREE.HemisphereLight(0xdfe8ff,0x20242e,0.6));
+    const sun=new THREE.DirectionalLight(0xffffff,1.1); sun.position.set(6,14,9); scene.add(sun);
+    const vs=DATA.map(val).filter(v=>v!=null), vmax=Math.max(...vs);
+    const lin=c=>new THREE.Color(c).convertSRGBToLinear();
+    const grid=new THREE.Group(); scene.add(grid);
+    const base=new THREE.Mesh(new THREE.BoxGeometry(19.4,0.12,11.6),new THREE.MeshStandardMaterial({color:lin('#141a2c'),roughness:.9}));
+    base.position.set(0,-0.07,0.3); grid.add(base);
+    DATA.forEach(e=>{ const v=val(e); const h= v==null ? 0.05 : 0.15+v/vmax*5;
+      const mat= v==null ? new THREE.MeshStandardMaterial({color:lin('#3a4256'),roughness:.8})
+        : new THREE.MeshStandardMaterial({color:lin(this.catColor(e.cat)),roughness:.42,metalness:.05,emissive:lin(this.catColor(e.cat)),emissiveIntensity:.12});
+      const b=new THREE.Mesh(new THREE.BoxGeometry(0.84,h,0.84),mat);
+      b.position.set(e.x-9.5, h/2, (e.y>7?e.y+0.4:e.y)-5.2); grid.add(b); });
+    camera.position.set(0,12,15);
+    const controls=this._makeOrbit(THREE,camera,renderer.domElement,true); controls.autoRotateSpeed=0.5; controls.minDistance=8; controls.maxDistance=40; controls.target.set(0,1,0.3); controls.sync();
+    const S={THREE,slot:'land',scene,camera,renderer,controls,host,raf:0,onResize:null};
+    S.onResize=()=>{ const w=host.clientWidth,h=host.clientHeight; if(!w||!h) return; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); };
+    window.addEventListener('resize',S.onResize);
+    this._engines.land=S;
+    const loop=()=>{ if(this._engines.land!==S) return; controls.update(); renderer.render(scene,camera); S.raf=requestAnimationFrame(loop); };
+    loop();
   }
 
   _handleKey(e){
@@ -724,8 +896,20 @@ class Component extends DCLogic {
     }
 
     const mraw=this.MINFO();
+    // page order: new biography sections, the original discovery section (with the quote), the prediction chart,
+    // the original "modern table" section, then the charts, 3D and the rest of the biography
+    const MD=window.PT_MENDELEEV, ms=(MD&&MD.sections[L])||[];
+    const ordered = MD ? [...ms.slice(0,3), mraw.sections[1], ms[3], mraw.sections[3], ...ms.slice(4)] : mraw.sections;
+    const CH={predictions:'auto',trend:'340px',landscape:'460px',timeline:'300px'};
     const minfo={ title:mraw.title, years:mraw.years, lead:mraw.lead,
-      sections: mraw.sections.map(s=>({ h:s.h, p:s.p||'', quote:s.quote||'', items:s.items||[], hasItems:!!(s.items&&s.items.length) })) };
+      portrait: MD ? {src:MD.images[0].src, page:MD.images[0].page, caption:MD.images[0].caption[L]} : {src:'',page:'',caption:''},
+      gallery: MD ? MD.images.slice(1).map(im=>({src:im.src, page:im.page, caption:im.caption[L]})) : [],
+      stats: MD ? MD.stats.map(x=>({v:x.v, l:x.l[L]})) : [],
+      timeline: MD ? MD.timeline.map(x=>({y:x.y, t:x.t[L]})) : [],
+      sections: ordered.map(s=>({ h:s.h, p:s.p||'', quote:s.quote||'', items:s.items||[], hasItems:!!(s.items&&s.items.length),
+        hasChart:!!s.chart, chartId:'pt-m-'+(s.chart||'none'), chartH:CH[s.chart]||'0', hasProps: s.chart==='trend'||s.chart==='landscape' })) };
+    const mprops = this.MPROPS().map(p=>{ const on=this.state.mProp===p[0]; return { label:ui.f[p[1]], set:()=>this.setMProp(p[0]),
+      bg: on?'rgba(192,139,255,.18)':'var(--btn)', bc: on?'#c08bff':'var(--line)', fg: on?'var(--violet)':'var(--muted)' }; });
 
     return { ui, langs, cats, elements, selected, search:this.state.search,
       noResults, noResultsText, clearFilters:()=>this.clearFilters(),
@@ -734,7 +918,7 @@ class Component extends DCLogic {
       copyLink:()=>this.copyLink(), copyLabel: this.state.linkCopied?'✓ '+ui.copied:ui.copyLink,
       copyFg: this.state.linkCopied?(light?'#16803a':'#7ee787'):'var(--text)',
       started:this.state.started, notStarted:!this.state.started, showPortfolio:this.state.showPortfolio, portfolioUrl:this.PORTFOLIO,
-      showMendeleev:this.state.showMendeleev, openMendeleev:()=>this.openMendeleev(), closeMendeleev:()=>this.closeMendeleev(), minfo,
+      mprops, showMendeleev:this.state.showMendeleev, openMendeleev:()=>this.openMendeleev(), closeMendeleev:()=>this.closeMendeleev(), minfo,
       start:()=>this.start(), openPortfolio:()=>this.openPortfolio(), closePortfolio:()=>this.closePortfolio(),
       onSearch:(e)=>this.onSearch(e), close:()=>this.close(),
       rotateA:()=>this._rotate('atom'), explodeA:()=>this._explodeA(), resetA:()=>this._resetOne('atom'),
@@ -750,7 +934,7 @@ class Component extends DCLogic {
     window.addEventListener('keydown', this._onKey);
     window.addEventListener('popstate', this._onNav); window.addEventListener('hashchange', this._onNav);
     this._syncDocument();
-    const tick=(n)=>{ if(window.PT_ELEMENTS && window.PT_DESC && window.PT_FACTS && window.PT_UZ && window.PT_DETAILS){ this.forceUpdate(); this._route(); } else if(n<80){ setTimeout(()=>tick(n+1),50); } }; tick(0); }
+    const tick=(n)=>{ if(window.PT_ELEMENTS && window.PT_DESC && window.PT_FACTS && window.PT_UZ && window.PT_DETAILS && window.PT_MENDELEEV){ this.forceUpdate(); this._route(); } else if(n<80){ setTimeout(()=>tick(n+1),50); } }; tick(0); }
 
   // ---------- Three.js engine (two independent viewers) ----------
   componentWillUnmount(){ this._disposeAll();
