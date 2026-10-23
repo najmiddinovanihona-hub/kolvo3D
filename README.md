@@ -4,9 +4,9 @@ Interaktiv 3D kimyo platformasi: har bir elementning atom modeli va moddaning re
 
 **Muallif:** Nihona Najmiddinova Irshodovna
 
-**Sayt:** https://najmiddinovanihona-hub.github.io/mendeleyev-3d/
+**Sayt:** https://najmiddinovanihona-hub.github.io/kolvo/
 
-Har bir elementning o'z havolasi bor, masalan: [#Au](https://najmiddinovanihona-hub.github.io/mendeleyev-3d/#Au) (oltin), [#26](https://najmiddinovanihona-hub.github.io/mendeleyev-3d/#26) (temir), [#mendeleyev](https://najmiddinovanihona-hub.github.io/mendeleyev-3d/#mendeleyev).
+Har bir elementning o'z havolasi bor, masalan: [#Au](https://najmiddinovanihona-hub.github.io/kolvo/#Au) (oltin), [#26](https://najmiddinovanihona-hub.github.io/kolvo/#26) (temir), [#mendeleyev](https://najmiddinovanihona-hub.github.io/kolvo/#mendeleyev).
 
 ## Ishga tushirish (lokal)
 
