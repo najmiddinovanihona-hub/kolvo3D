@@ -273,7 +273,9 @@
     list.forEach((m, mi) => { const at = ATOMS[m], cx = x0 + step * (mi + 0.5);
       at.forEach((el, k) => { let x = cx, y = cy;
         if (at.length === 2) { x = cx + (k ? 1 : -1) * u * 0.62; }
-        else if (k > 0) { const n = at.length - 1, a = (-150 + (120 / Math.max(1, n - 1)) * (k - 1)) * Math.PI / 180; x = cx + Math.cos(a) * u * 1.15; y = cy - Math.sin(a) * u * 1.15; }
+        else if (k > 0) { // small molecules fan out below the first atom, big ones form a full circle around it
+          const n = at.length - 1, big = n > 5, a = big ? (k - 1) / n * 2 * Math.PI : (-150 + (120 / Math.max(1, n - 1)) * (k - 1)) * Math.PI / 180, rr = u * (big ? 0.75 + n * 0.06 : 1.15);
+          x = cx + Math.cos(a) * rr; y = cy - Math.sin(a) * rr; }
         out.push({ el, x, y, mol: mi, label: LABEL[m] || pretty(m), cx }); }); });
     return out;
   }
@@ -287,7 +289,7 @@
     host.querySelector('.rx-play').addEventListener('click', () => { t0 = performance.now(); });
     const frame = (now) => {
       if (!alive) return;
-      const dpr = window.devicePixelRatio || 1, W = cv.width = cv.clientWidth * dpr, H = cv.height = cv.clientHeight * dpr, u = Math.min(W / 16, H / 6.5);
+      const dpr = window.devicePixelRatio || 1, W = cv.width = cv.clientWidth * dpr, H = cv.height = cv.clientHeight * dpr, u = Math.min(W / 16, H / 6.5) * (R[3] || 1);
       const A = layout(R[0], 0, W * 0.44, H * 0.5, u), B = layout(R[1], W * 0.56, W, H * 0.5, u);
       // pair every reactant atom with a product atom of the same element
       const used = new Set(), pair = A.map((a) => { const j = B.findIndex((b, i) => !used.has(i) && b.el === a.el); used.add(j); return B[j] || a; });
@@ -1065,15 +1067,378 @@
     }
   }
 
+  // ---------- part 4 additions: organic molecules from SMILES (3D and structural formulas), isomers, series, hybridisation ----------
+  Object.assign(CPK, { Br: '#a62929' });
+  // name → SMILES; hydrogens are added from the usual valences
+  const ORG = {
+    methane: 'C', ethane: 'CC', propane: 'CCC', butane: 'CCCC', isobutane: 'CC(C)C', pentane: 'CCCCC',
+    ethene: 'C=C', propene: 'C=CC', ethyne: 'C#C', butadiene: 'C=CC=C', isoprene: 'C=C(C)C=C',
+    cyclopropane: 'C1CC1', cyclohexane: 'C1CCCCC1', benzene: 'c1ccccc1', toluene: 'Cc1ccccc1',
+    chloromethane: 'CCl', tetrachloromethane: 'ClC(Cl)(Cl)Cl', vinyl_chloride: 'C=CCl',
+    methanol: 'CO', ethanol: 'CCO', ethylene_glycol: 'OCCO', glycerol: 'OCC(O)CO', phenol: 'Oc1ccccc1', diethyl_ether: 'CCOCC',
+    formaldehyde: 'C=O', acetaldehyde: 'CC=O', acetone: 'CC(=O)C', formic_acid: 'OC=O', acetic_acid: 'CC(=O)O', ethyl_acetate: 'CC(=O)OCC',
+    glucose: 'OCC(O)C(O)C(O)C(O)C=O', fructose: 'OCC(O)C(O)C(O)C(=O)CO', glycine: 'NCC(=O)O', alanine: 'CC(N)C(=O)O',
+    methylamine: 'CN', aniline: 'Nc1ccccc1', nitrobenzene: 'O=N(=O)c1ccccc1', urea: 'NC(=O)N',
+    // isomers only
+    m2butane: 'CC(C)CC', dm22propane: 'CC(C)(C)C', but1ene: 'C=CCC', but2ene: 'CC=CC', m2propene: 'C=C(C)C', cyclobutane: 'C1CCC1', mcyclopropane: 'CC1CC1',
+    dimethyl_ether: 'COC', propan1ol: 'CCCO', propan2ol: 'CC(O)C', methoxyethane: 'COCC', propanal: 'CCC=O'
+  };
+  const ORGN = {
+    methane: ['Metan', 'Methane', 'Метан'], ethane: ['Etan', 'Ethane', 'Этан'], propane: ['Propan', 'Propane', 'Пропан'], butane: ['Butan', 'Butane', 'Бутан'],
+    isobutane: ['2-metilpropan (izobutan)', '2-methylpropane (isobutane)', '2-метилпропан (изобутан)'], pentane: ['Pentan', 'Pentane', 'Пентан'],
+    ethene: ['Eten (etilen)', 'Ethene (ethylene)', 'Этен (этилен)'], propene: ['Propen (propilen)', 'Propene (propylene)', 'Пропен (пропилен)'], ethyne: ['Etin (atsetilen)', 'Ethyne (acetylene)', 'Этин (ацетилен)'],
+    butadiene: ['Buta-1,3-diyen', 'Buta-1,3-diene', 'Бута-1,3-диен'], isoprene: ['Izopren', 'Isoprene', 'Изопрен'], cyclopropane: ['Siklopropan', 'Cyclopropane', 'Циклопропан'],
+    cyclohexane: ['Siklogeksan', 'Cyclohexane', 'Циклогексан'], benzene: ['Benzol', 'Benzene', 'Бензол'], toluene: ['Toluol', 'Toluene', 'Толуол'],
+    chloromethane: ['Xlormetan', 'Chloromethane', 'Хлорметан'], tetrachloromethane: ['Tetraxlormetan', 'Tetrachloromethane', 'Тетрахлорметан'], vinyl_chloride: ['Vinilxlorid', 'Vinyl chloride', 'Винилхлорид'],
+    methanol: ['Metanol', 'Methanol', 'Метанол'], ethanol: ['Etanol', 'Ethanol', 'Этанол'], ethylene_glycol: ['Etilenglikol', 'Ethylene glycol', 'Этиленгликоль'], glycerol: ['Glitserin', 'Glycerol', 'Глицерин'],
+    phenol: ['Fenol', 'Phenol', 'Фенол'], diethyl_ether: ['Dietil efir', 'Diethyl ether', 'Диэтиловый эфир'], formaldehyde: ['Metanal (formaldegid)', 'Methanal (formaldehyde)', 'Метаналь (формальдегид)'],
+    acetaldehyde: ['Etanal (sirka aldegidi)', 'Ethanal (acetaldehyde)', 'Этаналь (уксусный альдегид)'], acetone: ['Propanon (atseton)', 'Propanone (acetone)', 'Пропанон (ацетон)'],
+    formic_acid: ['Metan (chumoli) kislota', 'Methanoic (formic) acid', 'Метановая (муравьиная) кислота'], acetic_acid: ['Etan (sirka) kislota', 'Ethanoic (acetic) acid', 'Этановая (уксусная) кислота'],
+    ethyl_acetate: ['Etilatsetat', 'Ethyl acetate', 'Этилацетат'], glucose: ['Glyukoza (ochiq zanjir)', 'Glucose (open chain)', 'Глюкоза (открытая цепь)'], fructose: ['Fruktoza (ochiq zanjir)', 'Fructose (open chain)', 'Фруктоза (открытая цепь)'],
+    glycine: ['Glitsin', 'Glycine', 'Глицин'], alanine: ['Alanin', 'Alanine', 'Аланин'], methylamine: ['Metilamin', 'Methylamine', 'Метиламин'], aniline: ['Anilin', 'Aniline', 'Анилин'],
+    nitrobenzene: ['Nitrobenzol', 'Nitrobenzene', 'Нитробензол'], urea: ['Karbamid (mochevina)', 'Urea', 'Карбамид (мочевина)'],
+    m2butane: ['2-metilbutan', '2-methylbutane', '2-метилбутан'], dm22propane: ['2,2-dimetilpropan', '2,2-dimethylpropane', '2,2-диметилпропан'], but1ene: ['Buten-1', 'But-1-ene', 'Бутен-1'],
+    but2ene: ['Buten-2', 'But-2-ene', 'Бутен-2'], m2propene: ['2-metilpropen', '2-methylpropene', '2-метилпропен'], cyclobutane: ['Siklobutan', 'Cyclobutane', 'Циклобутан'],
+    mcyclopropane: ['Metilsiklopropan', 'Methylcyclopropane', 'Метилциклопропан'], dimethyl_ether: ['Dimetil efir', 'Dimethyl ether', 'Диметиловый эфир'],
+    propan1ol: ['Propanol-1', 'Propan-1-ol', 'Пропанол-1'], propan2ol: ['Propanol-2', 'Propan-2-ol', 'Пропанол-2'], methoxyethane: ['Metiletil efir', 'Methoxyethane', 'Метилэтиловый эфир'], propanal: ['Propanal', 'Propanal', 'Пропаналь']
+  };
+  const LI = { uz: 0, en: 1, ru: 2 };
+  const orgName = (k, L) => (ORGN[k] || [k, k, k])[LI[L] || 0];
+
+  // tiny SMILES reader: atoms, bonds (1, 2, 3, 1.5 aromatic), branches and ring closures; returns heavy atoms with H counts and rings
+  function smiles(s) {
+    const A = [], B = [], stack = [], open = {}, closures = [];
+    let prev = null, bond = 1, i = 0;
+    const link = (a, b, o) => { const ord = o === 1 && A[a].ar && A[b].ar ? 1.5 : o; B.push([a, b, ord]); };
+    while (i < s.length) {
+      const c = s[i];
+      if (c === '(') { stack.push(prev); i++; continue; }
+      if (c === ')') { prev = stack.pop(); i++; continue; }
+      if (c === '=') { bond = 2; i++; continue; }
+      if (c === '#') { bond = 3; i++; continue; }
+      if (/\d/.test(c)) { if (open[c] != null) { link(open[c], prev, bond); closures.push([open[c], prev]); delete open[c]; } else open[c] = prev; bond = 1; i++; continue; }
+      let el; if (s.startsWith('Cl', i)) { el = 'Cl'; i += 2; } else if (s.startsWith('Br', i)) { el = 'Br'; i += 2; } else { el = c; i++; }
+      const ar = /^[cnos]$/.test(el); A.push({ el: ar ? el.toUpperCase() : el, ar });
+      if (prev != null) link(prev, A.length - 1, bond); prev = A.length - 1; bond = 1;
+    }
+    const VAL = { C: 4, N: 3, O: 2, S: 2, Cl: 1, Br: 1 };
+    A.forEach((a, k) => { const sum = B.reduce((t, b) => t + (b[0] === k || b[1] === k ? b[2] : 0), 0);
+      const v = a.el === 'N' && sum > 3 ? 5 : VAL[a.el] || 0; a.h = Math.max(0, Math.round(v - sum)); a.sum = sum; });
+    const nb = A.map(() => []); B.forEach(([a, b]) => { nb[a].push(b); nb[b].push(a); });
+    // each ring closure gives a ring: the shortest path between its two ends without the closing bond
+    const rings = closures.map(([a, b]) => { const prevOf = { [a]: -1 }, q = [a];
+      while (q.length) { const x = q.shift(); if (x === b) break; nb[x].forEach((y) => { if (prevOf[y] == null && !(x === a && y === b)) { prevOf[y] = x; q.push(y); } }); }
+      const r = []; for (let x = b; x !== -1 && x != null; x = prevOf[x]) r.push(x); return r; });
+    return { A, B, nb, rings };
+  }
+  const molFormula = (m) => { const c = {}; m.A.forEach((a) => { c[a.el] = (c[a.el] || 0) + 1; if (a.h) c.H = (c.H || 0) + a.h; });
+    const keys = ['C', 'H', ...Object.keys(c).filter((k) => k !== 'C' && k !== 'H').sort()].filter((k) => c[k]);
+    return pretty(keys.map((k) => k + (c[k] > 1 ? c[k] : '')).join('')); };
+
+  // simple deterministic random numbers, so a molecule always relaxes to the same picture
+  const rng = (seed) => () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+  // flat layout of the heavy-atom skeleton: unit bonds, 120° zig-zag, regular rings, extended chains
+  function layout2d(m) {
+    const n = m.A.length, P = [], R = rng(7 + n), cons = [];
+    for (let k = 0; k < n; k++) P.push([k * 0.9 + R() * 0.2, (k % 2 ? 0.5 : 0) + R() * 0.2]);
+    // rings start as regular polygons, otherwise small rings can relax into a crossed shape
+    m.rings.forEach((r) => { const rr = 0.5 / Math.sin(Math.PI / r.length), cx = P[r[0]][0], cy = P[r[0]][1] + rr;
+      r.forEach((k, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / r.length; P[k] = [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; }); });
+    if (n < 2) return P;
+    const inRing = (k) => m.rings.filter((r) => r.includes(k));
+    m.B.forEach(([a, b]) => cons.push([a, b, 1, 1]));
+    const lin = (k) => m.B.some((b) => (b[0] === k || b[1] === k) && b[2] === 3) || m.B.filter((b) => (b[0] === k || b[1] === k) && b[2] === 2).length === 2;
+    m.nb.forEach((ns, k) => { if (ns.length > 3) return;
+      for (let x = 0; x < ns.length; x++) for (let y = x + 1; y < ns.length; y++) { const i = ns[x], j = ns[y];
+        const ring = inRing(k).find((r) => r.includes(i) && r.includes(j));
+        let ang = lin(k) ? 180 : 120;
+        if (ring) ang = 180 * (ring.length - 2) / ring.length;
+        else if (inRing(k).length) { const r = inRing(k)[0]; ang = (360 - 180 * (r.length - 2) / r.length) / 2; }
+        cons.push([i, j, Math.sqrt(2 - 2 * Math.cos(ang * Math.PI / 180)), 0.6]); } });
+    // 1–4 pairs along open chains prefer the stretched (trans) zig-zag
+    m.B.forEach(([a, b]) => { if (m.rings.some((r) => r.includes(a) && r.includes(b))) return;
+      m.nb[a].forEach((i) => { if (i === b) return; m.nb[b].forEach((j) => { if (j === a || j === i) return; cons.push([i, j, 2.65, 0.15]); }); }); });
+    const near = new Set(cons.map((c) => c[0] + ',' + c[1]));
+    for (let it = 0; it < 1600; it++) { const st = 0.25 * (1 - it / 1800);
+      cons.forEach(([i, j, d, w]) => { const dx = P[j][0] - P[i][0], dy = P[j][1] - P[i][1], l = Math.hypot(dx, dy) || 1e-3, f = (l - d) / l * 0.5 * w * st * 2;
+        P[i][0] += dx * f; P[i][1] += dy * f; P[j][0] -= dx * f; P[j][1] -= dy * f; });
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { if (near.has(i + ',' + j) || near.has(j + ',' + i)) continue;
+        const dx = P[j][0] - P[i][0], dy = P[j][1] - P[i][1], l = Math.hypot(dx, dy) || 1e-3; if (l < 1.8) { const f = (l - 1.8) / l * 0.25 * st; P[i][0] += dx * f; P[i][1] += dy * f; P[j][0] -= dx * f; P[j][1] -= dy * f; } } }
+    // turn the long axis horizontal
+    const cx = P.reduce((s, p) => s + p[0], 0) / n, cy = P.reduce((s, p) => s + p[1], 0) / n;
+    let sxx = 0, syy = 0, sxy = 0; P.forEach((p) => { const x = p[0] - cx, y = p[1] - cy; sxx += x * x; syy += y * y; sxy += x * y; });
+    const th = 0.5 * Math.atan2(2 * sxy, sxx - syy), c = Math.cos(-th), s = Math.sin(-th);
+    return P.map((p) => { const x = p[0] - cx, y = p[1] - cy; return [x * c - y * s, x * s + y * c]; });
+  }
+
+  const SUBS = (k) => String(k).split('').map((d) => '₀₁₂₃₄₅₆₇₈₉'[+d]).join('');
+  // semi-structural formula as SVG: each heavy atom with its hydrogens (CH₃, OH, NH₂), bonds as 1–3 lines, aromatic rings with a circle
+  function structSVG(key, opt) {
+    const m = smiles(ORG[key] || ORG.ethanol), P = layout2d(m), s = (opt && opt.s) || 46, pad = 30;
+    const xs = P.map((p) => p[0]), ys = P.map((p) => p[1]), x0 = Math.min(...xs), y0 = Math.min(...ys);
+    const W = (Math.max(...xs) - x0) * s + pad * 2 + 20, H = (Math.max(...ys) - y0) * s + pad * 2;
+    const X = (k) => (P[k][0] - x0) * s + pad + 10, Y = (k) => (P[k][1] - y0) * s + pad;
+    const col = { C: 'var(--text)', O: '#ff5d6e', N: '#6f8bff', Cl: '#2ecc96', Br: '#c0584a', S: '#f2d23c' };
+    let out = '';
+    m.B.forEach(([a, b, o]) => { const dx = X(b) - X(a), dy = Y(b) - Y(a), l = Math.hypot(dx, dy), nx = -dy / l * 3.2, ny = dx / l * 3.2;
+      const offs = o === 3 ? [-1.4, 0, 1.4] : o === 2 ? [-0.8, 0.8] : [0];
+      offs.forEach((k) => { out += '<line x1="' + (X(a) + nx * k).toFixed(1) + '" y1="' + (Y(a) + ny * k).toFixed(1) + '" x2="' + (X(b) + nx * k).toFixed(1) + '" y2="' + (Y(b) + ny * k).toFixed(1) + '" style="stroke:var(--muted);stroke-width:1.8"/>'; }); });
+    m.rings.forEach((r) => { if (!r.every((k) => m.A[k].ar)) return; const cx = r.reduce((t, k) => t + X(k), 0) / r.length, cy = r.reduce((t, k) => t + Y(k), 0) / r.length;
+      out += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (s * 0.5).toFixed(1) + '" style="fill:none;stroke:var(--muted);stroke-width:1.6"/>'; });
+    m.A.forEach((a, k) => { const lab = a.el + (a.h ? 'H' + (a.h > 1 ? SUBS(a.h) : '') : '');
+      out += '<text x="' + X(k).toFixed(1) + '" y="' + (Y(k) + 5).toFixed(1) + '" text-anchor="middle" style="fill:' + (col[a.el] || 'var(--text)') + ';font:600 15px IBM Plex Mono,monospace;stroke:var(--input);stroke-width:7px;paint-order:stroke;stroke-linejoin:round">' + lab + '</text>'; });
+    return { svg: '<svg viewBox="0 0 ' + W.toFixed(0) + ' ' + H.toFixed(0) + '" style="width:100%;max-width:' + Math.round(W * 1.15) + 'px;height:auto;display:block;margin:0 auto">' + out + '</svg>', m };
+  }
+  function structure(host, spec, ctx) {
+    const k = ORG[spec.mol] ? spec.mol : 'ethanol', r = structSVG(k);
+    host.innerHTML = card('<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px"><b style="color:var(--text)">' + esc(orgName(k, ctx.lang)) + '</b><span style="font:600 14px IBM Plex Mono;color:var(--green)">' + molFormula(r.m) + '</span></div>' + r.svg);
+  }
+
+  const ISOM = {
+    C4H10: ['butane', 'isobutane'], C5H12: ['pentane', 'm2butane', 'dm22propane'], C4H8: ['but1ene', 'but2ene', 'm2propene', 'cyclobutane', 'mcyclopropane'],
+    C2H6O: ['ethanol', 'dimethyl_ether'], C3H8O: ['propan1ol', 'propan2ol', 'methoxyethane'], C3H6O: ['propanal', 'acetone']
+  };
+  function isomers(host, spec, ctx) {
+    const set = ISOM[spec.set] ? spec.set : 'C4H10', T = { uz: 'izomerlari', en: 'isomers', ru: 'изомеры' }[ctx.lang];
+    host.innerHTML = card('<div style="font:600 14px IBM Plex Mono;color:var(--green);margin-bottom:8px">' + pretty(set) + ' — ' + T + ' (' + ISOM[set].length + ')</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px">' + ISOM[set].map((k) => '<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;justify-content:space-between;gap:6px">'
+        + structSVG(k, { s: 38 }).svg + '<div style="text-align:center;font-size:12.5px;font-weight:600;color:var(--text)">' + esc(orgName(k, ctx.lang)) + '</div></div>').join('') + '</div>');
+  }
+
+  // 3D: hydrogens added, then bond lengths, bond angles and double-bond planarity relaxed together
+  function organic3d(host, spec, ctx) {
+    const m = smiles(ORG[spec.mol]), A = m.A.map((a) => ({ el: a.el, ar: a.ar })), Bd = m.B.map((b) => b.slice()), P2 = layout2d(m), R = rng(11 + A.length);
+    const P = P2.map((p) => [p[0] * 1.5, p[1] * 1.5, (R() - 0.5) * 0.6]);
+    m.A.forEach((a, k) => { for (let h = 0; h < a.h; h++) { A.push({ el: 'H' }); Bd.push([k, A.length - 1, 1]); P.push([P[k][0] + R() - 0.5, P[k][1] + R() - 0.5, P[k][2] + R() - 0.5]); } });
+    const n = A.length, nb = A.map(() => []); Bd.forEach(([a, b]) => { nb[a].push(b); nb[b].push(a); });
+    const LEN = (a, b, o) => { const e = [A[a].el, A[b].el].sort().join('');
+      if (o === 1.5) return 1.40; if (e === 'CC') return o === 3 ? 1.2 : o === 2 ? 1.34 : 1.54; if (e === 'CH') return 1.09; if (e === 'CO') return o === 2 ? 1.21 : 1.43;
+      if (e === 'HO') return 0.96; if (e === 'CN') return 1.47; if (e === 'HN') return 1.01; if (e === 'NO') return 1.22; if (e === 'CCl') return 1.77; if (e === 'BrC') return 1.94; return 1.45; };
+    const cons = [], ORD = {}; Bd.forEach(([a, b, o]) => { cons.push([a, b, LEN(a, b, o), 1]); ORD[a + ',' + b] = ORD[b + ',' + a] = o; });
+    const bl = (a, b) => LEN(a, b, ORD[a + ',' + b] || 1);
+    const ordAt = (k) => Bd.filter((b) => b[0] === k || b[1] === k).map((b) => b[2]);
+    const ringOf = (k, i, j) => m.rings.find((r) => r.includes(k) && r.includes(i) && r.includes(j));
+    for (let k = 0; k < n; k++) { const ns = nb[k]; if (ns.length < 2) continue; const os = ordAt(k);
+      const sp = os.includes(3) || os.filter((o) => o === 2).length === 2, sp2 = !sp && (os.includes(2) || os.includes(1.5) || (A[k].el === 'N' && os.length === 3 && os.reduce((t, o) => t + o, 0) > 3));
+      for (let x = 0; x < ns.length; x++) for (let y = x + 1; y < ns.length; y++) { const i = ns[x], j = ns[y], ring = ringOf(k, i, j);
+        let ang = sp ? 180 : sp2 ? 120 : A[k].el === 'O' ? 104.5 : A[k].el === 'N' ? 107 : 109.5;
+        if (ring && ring.length <= 5 && !sp2) ang = [0, 0, 0, 60, 88, 105][ring.length];
+        const li = bl(k, i), lj = bl(k, j), d = Math.sqrt(li * li + lj * lj - 2 * li * lj * Math.cos(ang * Math.PI / 180)); cons.push([i, j, d, 0.7]); } }
+    // keep the four neighbours of a C=C (or aromatic) bond in one plane: cis pairs short, trans pairs long
+    Bd.forEach(([a, b, o]) => { if (o !== 2 && o !== 1.5) return; const inR = (x) => (m.rings.some((r) => r.includes(a) && r.includes(b) && r.includes(x)) ? 0 : 1); // ring neighbours go first, so they come out cis
+      const sa = nb[a].filter((x) => x !== b).sort((x, y) => inR(x) - inR(y)), sb = nb[b].filter((x) => x !== a).sort((x, y) => inR(x) - inR(y)); if (!sa.length || !sb.length) return;
+      const L = LEN(a, b, o), pa = sa.map((x, i) => [Math.cos((i ? -120 : 120) * Math.PI / 180) * bl(a, x), Math.sin((i ? -120 : 120) * Math.PI / 180) * bl(a, x)]), pb = sb.map((x, i) => [L + Math.cos((i ? -60 : 60) * Math.PI / 180) * bl(b, x), Math.sin((i ? -60 : 60) * Math.PI / 180) * bl(b, x)]);
+      sa.forEach((x, i) => sb.forEach((y, j) => { if (x !== y) cons.push([x, y, Math.hypot(pa[i][0] - pb[j][0], pa[i][1] - pb[j][1]), 0.4]); })); });
+    const near = new Set(cons.map((c) => Math.min(c[0], c[1]) + ',' + Math.max(c[0], c[1])));
+    for (let it = 0; it < 1800; it++) { const st = 0.5 * (1 - it / 2000);
+      cons.forEach(([i, j, d, w]) => { const v = [0, 1, 2].map((q) => P[j][q] - P[i][q]), l = Math.hypot(...v) || 1e-3, f = (l - d) / l * 0.5 * w * st;
+        for (let q = 0; q < 3; q++) { P[i][q] += v[q] * f; P[j][q] -= v[q] * f; } });
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { if (near.has(i + ',' + j)) continue; const hh = (A[i].el === 'H') + (A[j].el === 'H'), dm = hh === 2 ? 2.0 : hh ? 2.4 : 2.8;
+        const v = [0, 1, 2].map((q) => P[j][q] - P[i][q]), l = Math.hypot(...v) || 1e-3; if (l < dm) { const f = (l - dm) / l * 0.2 * st; for (let q = 0; q < 3; q++) { P[i][q] += v[q] * f; P[j][q] -= v[q] * f; } } } }
+    const c = [0, 1, 2].map((q) => P.reduce((t, p) => t + p[q], 0) / n); P.forEach((p) => { for (let q = 0; q < 3; q++) p[q] -= c[q]; });
+    // face the camera with the widest side: main axes by power iteration, the flattest direction becomes z
+    const cov = [0, 1, 2].map((i) => [0, 1, 2].map((j) => P.reduce((t, p) => t + p[i] * p[j], 0)));
+    const mul = (v) => cov.map((r) => r[0] * v[0] + r[1] * v[1] + r[2] * v[2]), unit = (v) => { const l = Math.hypot(...v) || 1; return v.map((x) => x / l); };
+    let e1 = [1, 0.3, 0.2]; for (let k = 0; k < 60; k++) e1 = unit(mul(e1));
+    let e2 = [0.2, 1, 0.3]; for (let k = 0; k < 60; k++) { e2 = mul(e2); const d = e2[0] * e1[0] + e2[1] * e1[1] + e2[2] * e1[2]; e2 = unit(e2.map((x, q) => x - d * e1[q])); }
+    const e3 = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+    P.forEach((p, k) => { P[k] = [e1, e2, e3].map((e) => p[0] * e[0] + p[1] * e[1] + p[2] * e[2]); });
+    const rad = Math.max(...P.map((p) => Math.hypot(...p)));
+    const st = stage(host, ctx, 330), THREE = st.THREE, g = new THREE.Group(); st.scene.add(g);
+    A.forEach((a, k) => { const mm = new THREE.Mesh(new THREE.SphereGeometry((RAD[a.el] || 0.45) * (a.el === 'H' ? 0.85 : 0.95), 32, 22), new THREE.MeshStandardMaterial({ color: lin(THREE, CPK[a.el] || '#ccc'), roughness: 0.35 }));
+      mm.position.set(...P[k]); g.add(mm); });
+    const stick = (p, q, r) => { const A0 = new THREE.Vector3(...p), B0 = new THREE.Vector3(...q), d = B0.clone().sub(A0);
+      const mm = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d.length(), 14), new THREE.MeshStandardMaterial({ color: lin(THREE, '#c9ced8'), roughness: 0.5 }));
+      mm.position.copy(A0.clone().add(B0).multiplyScalar(0.5)); mm.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); g.add(mm); };
+    Bd.forEach(([a, b, o]) => { if (o === 1) return stick(P[a], P[b], 0.09);
+      // parallel sticks for double / triple / aromatic bonds, offset perpendicular to the bond
+      const d = [0, 1, 2].map((q) => P[b][q] - P[a][q]), ref = Math.abs(d[2]) < 0.9 * Math.hypot(...d) ? [0, 0, 1] : [1, 0, 0];
+      let pe = [d[1] * ref[2] - d[2] * ref[1], d[2] * ref[0] - d[0] * ref[2], d[0] * ref[1] - d[1] * ref[0]]; const pl = Math.hypot(...pe); pe = pe.map((v) => v / pl);
+      (o === 3 ? [-0.14, 0, 0.14] : [-0.08, 0.08]).forEach((k) => stick(P[a].map((v, q) => v + pe[q] * k), P[b].map((v, q) => v + pe[q] * k), 0.055)); });
+    st.start(Math.max(5.5, rad * 2.6 + 2.5), () => { g.rotation.y += 0.005; });
+    const legend = [...new Set(A.map((a) => a.el))].map((e) => '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px"><span style="width:10px;height:10px;border-radius:50%;background:' + (CPK[e] || '#ccc') + '"></span>' + e + '</span>').join('');
+    host.insertAdjacentHTML('beforeend', '<div style="position:absolute;left:12px;top:10px;font:600 13px Space Grotesk,sans-serif;color:#eef2ff;z-index:2">' + esc(orgName(spec.mol, ctx.lang)) + ' · ' + molFormula(m)
+      + '<div style="margin-top:5px;font:11px IBM Plex Mono,monospace;color:rgba(220,228,246,.85)">' + legend + '</div></div>');
+  }
+
+  // homologous series: n slider, formula, name, molar mass, state, boiling-point bars and the structure of the member
+  const HOM = {
+    alkane: { n0: 1, f: (n) => 'C' + (n > 1 ? n : '') + 'H' + (2 * n + 2), M: (n) => 14 * n + 2, s: (n) => 'C'.repeat(n), bp: [-162, -89, -42, -0.5, 36, 69, 98, 126, 151, 174],
+      nm: [['metan', 'etan', 'propan', 'butan', 'pentan', 'geksan', 'geptan', 'oktan', 'nonan', 'dekan'], ['methane', 'ethane', 'propane', 'butane', 'pentane', 'hexane', 'heptane', 'octane', 'nonane', 'decane'], ['метан', 'этан', 'пропан', 'бутан', 'пентан', 'гексан', 'гептан', 'октан', 'нонан', 'декан']], gen: 'CₙH₂ₙ₊₂' },
+    alkene: { n0: 2, f: (n) => 'C' + n + 'H' + 2 * n, M: (n) => 14 * n, s: (n) => 'C=C' + 'C'.repeat(n - 2), bp: [null, -104, -48, -6, 30, 63, 94, 121, 147, 171],
+      nm: [['', 'eten', 'propen', 'buten-1', 'penten-1', 'geksen-1', 'gepten-1', 'okten-1', 'nonen-1', 'deken-1'], ['', 'ethene', 'propene', 'but-1-ene', 'pent-1-ene', 'hex-1-ene', 'hept-1-ene', 'oct-1-ene', 'non-1-ene', 'dec-1-ene'], ['', 'этен', 'пропен', 'бутен-1', 'пентен-1', 'гексен-1', 'гептен-1', 'октен-1', 'нонен-1', 'децен-1']], gen: 'CₙH₂ₙ' },
+    alkyne: { n0: 2, f: (n) => 'C' + n + 'H' + (2 * n - 2), M: (n) => 14 * n - 2, s: (n) => 'C#C' + 'C'.repeat(n - 2), bp: [null, -84, -23, 8, 40, 71, 100, 126, 151, 174],
+      nm: [['', 'etin', 'propin', 'butin-1', 'pentin-1', 'geksin-1', 'geptin-1', 'oktin-1', 'nonin-1', 'dekin-1'], ['', 'ethyne', 'propyne', 'but-1-yne', 'pent-1-yne', 'hex-1-yne', 'hept-1-yne', 'oct-1-yne', 'non-1-yne', 'dec-1-yne'], ['', 'этин', 'пропин', 'бутин-1', 'пентин-1', 'гексин-1', 'гептин-1', 'октин-1', 'нонин-1', 'децин-1']], gen: 'CₙH₂ₙ₋₂' },
+    alcohol: { n0: 1, f: (n) => 'C' + (n > 1 ? n : '') + 'H' + (2 * n + 1) + 'OH', M: (n) => 14 * n + 18, s: (n) => 'C'.repeat(n) + 'O', bp: [65, 78, 97, 117, 138, 157, 176, 195, 214, 231],
+      nm: [['metanol', 'etanol', 'propanol-1', 'butanol-1', 'pentanol-1', 'geksanol-1', 'geptanol-1', 'oktanol-1', 'nonanol-1', 'dekanol-1'], ['methanol', 'ethanol', 'propan-1-ol', 'butan-1-ol', 'pentan-1-ol', 'hexan-1-ol', 'heptan-1-ol', 'octan-1-ol', 'nonan-1-ol', 'decan-1-ol'], ['метанол', 'этанол', 'пропанол-1', 'бутанол-1', 'пентанол-1', 'гексанол-1', 'гептанол-1', 'октанол-1', 'нонанол-1', 'деканол-1']], gen: 'CₙH₂ₙ₊₁OH' },
+    acid: { n0: 1, f: (n) => (n === 1 ? 'H' : n === 2 ? 'CH3' : 'C' + (n - 1) + 'H' + (2 * n - 1)) + 'COOH', M: (n) => 14 * n + 32, s: (n) => (n === 1 ? 'OC=O' : 'C'.repeat(n - 1) + 'C(=O)O'), bp: [101, 118, 141, 164, 186, 205, 223, 239, 254, 270],
+      nm: [['metan (chumoli)', 'etan (sirka)', 'propan', 'butan (moy)', 'pentan', 'geksan', 'geptan', 'oktan', 'nonan', 'dekan'], ['methanoic (formic)', 'ethanoic (acetic)', 'propanoic', 'butanoic (butyric)', 'pentanoic', 'hexanoic', 'heptanoic', 'octanoic', 'nonanoic', 'decanoic'], ['метановая (муравьиная)', 'этановая (уксусная)', 'пропановая', 'бутановая (масляная)', 'пентановая', 'гексановая', 'гептановая', 'октановая', 'нонановая', 'декановая']], gen: 'CₙH₂ₙ₊₁COOH' }
+  };
+  const HT = { uz: { title: 'Gomologik qator', bp: 'Qaynash harorati', M: 'Molyar massa', state: 'Holati (20 °C)', gas: 'gaz', liquid: 'suyuq', solid: 'qattiq', acid: 'kislota', diff: 'Har bir keyingi a\'zo CH₂ guruhga farq qiladi' },
+    en: { title: 'Homologous series', bp: 'Boiling point', M: 'Molar mass', state: 'State (20 °C)', gas: 'gas', liquid: 'liquid', solid: 'solid', acid: 'acid', diff: 'Each next member differs by one CH₂ group' },
+    ru: { title: 'Гомологический ряд', bp: 'Температура кипения', M: 'Молярная масса', state: 'Состояние (20 °C)', gas: 'газ', liquid: 'жидкость', solid: 'твёрдое', acid: 'кислота', diff: 'Каждый следующий член отличается на группу CH₂' } };
+  function homolog(host, spec, ctx) {
+    const S0 = HOM[spec.series] || HOM.alkane, L = ctx.lang, T = HT[L], li = LI[L] || 0;
+    host.innerHTML = card('<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="color:var(--text)">' + esc(T.title) + ' · <span style="font-family:IBM Plex Mono;color:var(--green)">' + S0.gen + '</span></b><span style="font-size:12px;color:var(--muted)">' + esc(T.diff) + '</span></div>'
+      + '<input class="h-n" type="range" min="' + S0.n0 + '" max="10" value="' + Math.max(S0.n0, 2) + '" style="width:100%;margin:10px 0 4px;accent-color:#2ecc96">'
+      + '<div class="h-o" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:center"></div>');
+    const r = host.querySelector('.h-n'), out = host.querySelector('.h-o');
+    const upd = () => { const n = +r.value, bp = S0.bp[n - 1], name = S0.nm[li][n - 1] + (spec.series === 'acid' ? ' ' + T.acid : ''), state = bp < 20 ? T.gas : spec.series === 'acid' && n >= 10 ? T.solid : T.liquid;
+      const vals = S0.bp.map((v, i) => ({ v, n: i + 1 })).filter((x) => x.v != null), mn = Math.min(0, ...vals.map((x) => x.v)), mx = Math.max(...vals.map((x) => x.v)), Hh = 120, zero = Hh * mx / (mx - mn);
+      const bars = vals.map((x, i) => { const h = Math.abs(x.v) / (mx - mn) * Hh, y = x.v >= 0 ? zero - h : zero; return '<rect x="' + (i * 26 + 4) + '" y="' + y.toFixed(1) + '" width="18" height="' + Math.max(1, h).toFixed(1) + '" rx="3" fill="' + (x.n === n ? '#2ecc96' : x.v < 0 ? '#4dd2ff66' : '#ff8a5c66') + '"/>'
+        + '<text x="' + (i * 26 + 13) + '" y="' + (Hh + 14) + '" text-anchor="middle" style="fill:var(--muted);font:10px IBM Plex Mono">' + x.n + '</text>'; }).join('');
+      const tmp = 'hom_' + spec.series + n; ORG[tmp] = S0.s(n);
+      out.innerHTML = '<div><div style="font:700 24px IBM Plex Mono;color:var(--green)">' + pretty(S0.f(n)) + '</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-top:2px">' + esc(name.charAt(0).toUpperCase() + name.slice(1)) + '</div>'
+        + '<div style="font-size:13px;color:var(--body);margin-top:6px;line-height:1.7">' + T.M + ': <b>' + S0.M(n) + ' g/mol</b><br>' + T.bp + ': <b>' + num(bp, L, bp % 1 ? 1 : 0) + ' °C</b><br>' + T.state + ': <b>' + state + '</b></div>'
+        + '<div style="margin-top:8px">' + structSVG(tmp, { s: 30 }).svg + '</div></div>'
+        + '<div><div style="font-size:11.5px;color:var(--muted);margin-bottom:4px">' + T.bp + ', °C</div><svg viewBox="0 0 ' + (vals.length * 26 + 8) + ' ' + (Hh + 18) + '" style="width:100%;height:auto;display:block"><line x1="0" x2="' + (vals.length * 26 + 8) + '" y1="' + zero.toFixed(1) + '" y2="' + zero.toFixed(1) + '" style="stroke:var(--line)"/>' + bars + '</svg></div>';
+      delete ORG[tmp]; };
+    r.addEventListener('input', upd); upd();
+  }
+
+  // sp³ / sp² / sp: orbital lobes around carbon, the angle between them and an example molecule
+  const HY = { uz: { sp3: ['sp³', '4 ta gibrid orbital, tetraedr', '109,5°', 'CH₄ — metan, alkanlar', 'faqat σ-bog\'lar'], sp2: ['sp²', '3 ta gibrid orbital tekislikda + 1 ta p-orbital', '120°', 'C₂H₄ — eten, alkenlar, benzol', '3 σ + 1 π bog\''], sp: ['sp', '2 ta gibrid orbital bir chiziqda + 2 ta p-orbital', '180°', 'C₂H₂ — etin, alkinlar', '2 σ + 2 π bog\''], mix: 'aralashadi', p: 'p-orbital' },
+    en: { sp3: ['sp³', '4 hybrid orbitals, tetrahedron', '109.5°', 'CH₄ — methane, alkanes', 'only σ bonds'], sp2: ['sp²', '3 hybrid orbitals in a plane + 1 p orbital', '120°', 'C₂H₄ — ethene, alkenes, benzene', '3 σ + 1 π bond'], sp: ['sp', '2 hybrid orbitals in a line + 2 p orbitals', '180°', 'C₂H₂ — ethyne, alkynes', '2 σ + 2 π bonds'], mix: 'mix', p: 'p orbital' },
+    ru: { sp3: ['sp³', '4 гибридные орбитали, тетраэдр', '109,5°', 'CH₄ — метан, алканы', 'только σ-связи'], sp2: ['sp²', '3 гибридные орбитали в плоскости + 1 p-орбиталь', '120°', 'C₂H₄ — этен, алкены, бензол', '3 σ + 1 π связь'], sp: ['sp', '2 гибридные орбитали на одной линии + 2 p-орбитали', '180°', 'C₂H₂ — этин, алкины', '2 σ + 2 π связи'], mix: 'смешиваются', p: 'p-орбиталь' } };
+  function hybrid(host, spec, ctx) {
+    const T = HY[ctx.lang]; let mode = 'sp3';
+    const lobe = (ang, c, len) => '<g transform="rotate(' + ang + ' 160 130)"><ellipse cx="' + (160 + len * 0.55) + '" cy="130" rx="' + len * 0.55 + '" ry="' + len * 0.22 + '" fill="' + c + '" opacity=".75"/><ellipse cx="' + (160 - 12) + '" cy="130" rx="12" ry="8" fill="' + c + '" opacity=".4"/></g>';
+    const pOrb = (ang) => '<g transform="rotate(' + ang + ' 160 130)" opacity=".55"><ellipse cx="160" cy="88" rx="16" ry="40" style="fill:none;stroke:#c08bff;stroke-width:2;stroke-dasharray:4 3"/><ellipse cx="160" cy="172" rx="16" ry="40" style="fill:none;stroke:#c08bff;stroke-width:2;stroke-dasharray:4 3"/></g>';
+    const draw = () => { const t = T[mode];
+      const shapes = mode === 'sp3' ? [-90, 20, 160, 230].map((a, i) => lobe(a, i === 3 ? '#4dd2ff99' : '#4dd2ff', i === 3 ? 70 : 100)).join('') + '<path d="M 160 70 A 60 60 0 0 1 212 100" style="fill:none;stroke:#ffd24d;stroke-width:2"/>'
+        : mode === 'sp2' ? pOrb(0) + [0, 120, 240].map((a) => lobe(a, '#2ecc96', 100)).join('') + '<path d="M 220 130 A 60 60 0 0 0 130 78" style="fill:none;stroke:#ffd24d;stroke-width:2"/>'
+          : pOrb(0) + pOrb(90) + [0, 180].map((a) => lobe(a, '#ff8a5c', 110)).join('') + '<path d="M 230 130 A 70 70 0 0 0 90 130" style="fill:none;stroke:#ffd24d;stroke-width:2"/>';
+      host.innerHTML = card('<div style="display:flex;gap:6px;margin-bottom:10px">' + ['sp3', 'sp2', 'sp'].map((k) => '<button data-k="' + k + '" style="flex:1;border-radius:9px;border:1px solid ' + (k === mode ? '#2ecc96' : 'var(--line)') + ';background:' + (k === mode ? 'rgba(46,204,150,.16)' : 'var(--btn)') + ';color:var(--text);font:700 14px IBM Plex Mono;padding:8px;cursor:pointer">' + T[k][0] + '</button>').join('') + '</div>'
+        + '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:center"><svg viewBox="0 0 320 260" style="width:100%;height:auto">' + shapes + '<circle cx="160" cy="130" r="14" fill="#4a4f57" stroke="#fff" stroke-width="1.5"/><text x="160" y="135" text-anchor="middle" style="fill:#fff;font:700 13px Space Grotesk">C</text>'
+        + '<text x="232" y="62" style="fill:#ffd24d;font:700 16px IBM Plex Mono">' + t[2] + '</text></svg>'
+        + '<div style="font-size:14px;line-height:1.7;color:var(--body)"><div style="font:700 26px IBM Plex Mono;color:var(--green)">' + t[0] + '</div>' + esc(t[1]) + '<br><b style="color:var(--text)">' + esc(t[3]) + '</b><br>' + esc(t[4])
+        + (mode !== 'sp3' ? '<br><span style="color:#c08bff">- - ' + esc(T.p) + '</span>' : '') + '</div></div>');
+    };
+    host.addEventListener('click', (e) => { const b = e.target.closest('button[data-k]'); if (b) { mode = b.dataset.k; draw(); } });
+    draw();
+  }
+
+  Object.assign(RX, {
+    ch4_cl2: [['CH4', 'Cl2'], ['CH3Cl', 'HCl'], 'CH₄ + Cl₂ → CH₃Cl + HCl'],
+    c2h4_br2: [['C2H4', 'Br2'], ['C2H4Br2'], 'C₂H₄ + Br₂ → C₂H₄Br₂'],
+    c2h4_h2: [['C2H4', 'H2'], ['C2H6'], 'C₂H₄ + H₂ → C₂H₆'],
+    c2h4_h2o: [['C2H4', 'H2O'], ['C2H5OH'], 'C₂H₄ + H₂O → C₂H₅OH'],
+    c2h2_h2o: [['C2H2', 'H2O'], ['CH3CHO'], 'C₂H₂ + H₂O → CH₃CHO'],
+    ester: [['CH3COOH', 'C2H5OH'], ['CH3COOC2H5', 'H2O'], 'CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O', 0.75],
+    c2h5oh_na: [['C2H5OH', 'C2H5OH', 'Na', 'Na'], ['C2H5ONa', 'C2H5ONa', 'H2'], '2C₂H₅OH + 2Na → 2C₂H₅ONa + H₂', 0.62],
+    glucose_ferm: [['C6H12O6'], ['C2H5OH', 'C2H5OH', 'CO2', 'CO2'], 'C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂', 0.6]
+  });
+  const Hs = (k) => Array(k).fill('H');
+  Object.assign(ATOMS, { CH3Cl: ['C', 'Cl', 'H', 'H', 'H'], C2H4: ['C', 'C', ...Hs(4)], Br2: ['Br', 'Br'], C2H4Br2: ['C', 'C', 'Br', 'Br', ...Hs(4)], C2H6: ['C', 'C', ...Hs(6)],
+    C2H5OH: ['C', 'C', 'O', ...Hs(6)], C2H2: ['C', 'C', 'H', 'H'], CH3CHO: ['C', 'C', 'O', ...Hs(4)], CH3COOH: ['C', 'C', 'O', 'O', ...Hs(4)], CH3COOC2H5: ['C', 'C', 'O', 'O', 'C', 'C', ...Hs(8)],
+    C2H5ONa: ['O', 'C', 'C', 'Na', ...Hs(5)], C6H12O6: ['C', 'C', 'C', 'C', 'C', 'C', ...Array(6).fill('O'), ...Hs(12)] });
+  Object.assign(LABEL, { CH3Cl: 'CH₃Cl', C2H4Br2: 'C₂H₄Br₂', C2H5OH: 'C₂H₅OH', CH3CHO: 'CH₃CHO', CH3COOH: 'CH₃COOH', CH3COOC2H5: 'CH₃COOC₂H₅', C2H5ONa: 'C₂H₅ONa', C6H12O6: 'C₆H₁₂O₆' });
+
+  const S4 = {
+    uz: { cls: { root: 'Organik birikmalar', hc: 'Uglevodorodlar', ox: 'Kislorodli birikmalar', nz: 'Azotli birikmalar',
+        hcL: ['Alkanlar CₙH₂ₙ₊₂', 'Alkenlar CₙH₂ₙ', 'Alkinlar CₙH₂ₙ₋₂', 'Alkadiyenlar CₙH₂ₙ₋₂', 'Sikloalkanlar CₙH₂ₙ', 'Arenlar (benzol)'], oxL: ['Spirtlar –OH', 'Fenollar', 'Aldegidlar –CHO', 'Ketonlar >C=O', 'Karbon kislotalar –COOH', 'Murakkab efirlar', 'Uglevodlar'], nzL: ['Nitrobirikmalar –NO₂', 'Aminlar –NH₂', 'Aminokislotalar', 'Oqsillar'] },
+      gen: { t: 'kat., t°', w: '+H₂O (H⁺)', o1: '[O], CuO', o2: '[O], Ag₂O', e: '+C₂H₅OH (H⁺)', d: '−H₂', alkane: 'Alkan', alkene: 'Alken', alc: 'Spirt', ald: 'Aldegid', acid: 'Karbon kislota', ester: 'Murakkab efir' },
+      oil: { title: 'Neftni haydash (rektifikatsiya kolonnasi)', crude: 'Qizdirilgan neft', fr: [['Gazlar', '< 40 °C', 'C₁–C₄'], ['Benzin', '40–180 °C', 'C₅–C₁₀'], ['Ligroin', '150–250 °C', 'C₈–C₁₄'], ['Kerosin', '180–300 °C', 'C₁₂–C₁₆'], ['Gazoyl (dizel)', '250–350 °C', 'C₁₅–C₂₀'], ['Mazut', '> 350 °C', 'C₂₀ va undan ko\'p']] },
+      poly: { mono: 'Monomerlar', pol: 'Polimer (polietilen)', n: 'n — polimerlanish darajasi', unit: 'Elementar zveno' },
+      tests: { head: ['Reagent', 'Nimani aniqlaydi', 'Kuzatiladi'], rows: [['Bromli suv', 'C=C, C≡C bog\'lar; fenol', 'Sariq-qo\'ng\'ir rang yo\'qoladi (fenolda oq cho\'kma)'], ['KMnO₄ eritmasi', 'C=C, C≡C bog\'lar, aldegidlar', 'Binafsha rang yo\'qoladi'], ['Ag₂O ning ammiakli eritmasi', 'Aldegidlar, glyukoza, chumoli kislota', '"Kumush ko\'zgu" hosil bo\'ladi'], ['Cu(OH)₂', 'Ko\'p atomli spirtlar; aldegidlar (qizdirilganda)', 'To\'q ko\'k eritma; qizil Cu₂O cho\'kmasi'], ['Yod eritmasi', 'Kraxmal', 'Ko\'k rang'], ['FeCl₃', 'Fenol', 'Binafsha rang'], ['CuSO₄ + NaOH (biuret)', 'Oqsillar (peptid bog\')', 'Binafsha rang'], ['Konsentrlangan HNO₃', 'Oqsillar (aromatik halqa)', 'Sariq rang']] },
+      pep: { t: 'Peptid bog\' hosil bo\'lishi', bond: 'peptid bog\'', water: 'suv ajraladi' },
+      carb: { mono: 'Monosaxaridlar', di: 'Disaxaridlar', poly: 'Polisaxaridlar', monoE: 'glyukoza, fruktoza', diE: 'saxaroza, maltoza', polyE: 'kraxmal, sellyuloza', hyd: 'gidroliz' } },
+    en: { cls: { root: 'Organic compounds', hc: 'Hydrocarbons', ox: 'Oxygen-containing', nz: 'Nitrogen-containing',
+        hcL: ['Alkanes CₙH₂ₙ₊₂', 'Alkenes CₙH₂ₙ', 'Alkynes CₙH₂ₙ₋₂', 'Dienes CₙH₂ₙ₋₂', 'Cycloalkanes CₙH₂ₙ', 'Arenes (benzene)'], oxL: ['Alcohols –OH', 'Phenols', 'Aldehydes –CHO', 'Ketones >C=O', 'Carboxylic acids –COOH', 'Esters', 'Carbohydrates'], nzL: ['Nitro compounds –NO₂', 'Amines –NH₂', 'Amino acids', 'Proteins'] },
+      gen: { t: 'cat., t°', w: '+H₂O (H⁺)', o1: '[O], CuO', o2: '[O], Ag₂O', e: '+C₂H₅OH (H⁺)', d: '−H₂', alkane: 'Alkane', alkene: 'Alkene', alc: 'Alcohol', ald: 'Aldehyde', acid: 'Carboxylic acid', ester: 'Ester' },
+      oil: { title: 'Fractional distillation of crude oil', crude: 'Heated crude oil', fr: [['Gases', '< 40 °C', 'C₁–C₄'], ['Petrol', '40–180 °C', 'C₅–C₁₀'], ['Naphtha (ligroin)', '150–250 °C', 'C₈–C₁₄'], ['Kerosene', '180–300 °C', 'C₁₂–C₁₆'], ['Gas oil (diesel)', '250–350 °C', 'C₁₅–C₂₀'], ['Fuel oil (mazut)', '> 350 °C', 'C₂₀ and more']] },
+      poly: { mono: 'Monomers', pol: 'Polymer (polyethylene)', n: 'n — degree of polymerisation', unit: 'Repeating unit' },
+      tests: { head: ['Reagent', 'Detects', 'Observation'], rows: [['Bromine water', 'C=C, C≡C bonds; phenol', 'Yellow-brown colour disappears (white precipitate with phenol)'], ['KMnO₄ solution', 'C=C, C≡C bonds, aldehydes', 'Purple colour disappears'], ['Ammoniacal Ag₂O', 'Aldehydes, glucose, formic acid', 'A "silver mirror" forms'], ['Cu(OH)₂', 'Polyhydric alcohols; aldehydes (on heating)', 'Deep blue solution; red Cu₂O precipitate'], ['Iodine solution', 'Starch', 'Blue colour'], ['FeCl₃', 'Phenol', 'Violet colour'], ['CuSO₄ + NaOH (biuret)', 'Proteins (peptide bonds)', 'Violet colour'], ['Concentrated HNO₃', 'Proteins (aromatic rings)', 'Yellow colour']] },
+      pep: { t: 'Forming a peptide bond', bond: 'peptide bond', water: 'water leaves' },
+      carb: { mono: 'Monosaccharides', di: 'Disaccharides', poly: 'Polysaccharides', monoE: 'glucose, fructose', diE: 'sucrose, maltose', polyE: 'starch, cellulose', hyd: 'hydrolysis' } },
+    ru: { cls: { root: 'Органические соединения', hc: 'Углеводороды', ox: 'Кислородсодержащие', nz: 'Азотсодержащие',
+        hcL: ['Алканы CₙH₂ₙ₊₂', 'Алкены CₙH₂ₙ', 'Алкины CₙH₂ₙ₋₂', 'Алкадиены CₙH₂ₙ₋₂', 'Циклоалканы CₙH₂ₙ', 'Арены (бензол)'], oxL: ['Спирты –OH', 'Фенолы', 'Альдегиды –CHO', 'Кетоны >C=O', 'Карбоновые кислоты –COOH', 'Сложные эфиры', 'Углеводы'], nzL: ['Нитросоединения –NO₂', 'Амины –NH₂', 'Аминокислоты', 'Белки'] },
+      gen: { t: 'кат., t°', w: '+H₂O (H⁺)', o1: '[O], CuO', o2: '[O], Ag₂O', e: '+C₂H₅OH (H⁺)', d: '−H₂', alkane: 'Алкан', alkene: 'Алкен', alc: 'Спирт', ald: 'Альдегид', acid: 'Карбоновая кислота', ester: 'Сложный эфир' },
+      oil: { title: 'Перегонка нефти (ректификационная колонна)', crude: 'Нагретая нефть', fr: [['Газы', '< 40 °C', 'C₁–C₄'], ['Бензин', '40–180 °C', 'C₅–C₁₀'], ['Лигроин', '150–250 °C', 'C₈–C₁₄'], ['Керосин', '180–300 °C', 'C₁₂–C₁₆'], ['Газойль (дизель)', '250–350 °C', 'C₁₅–C₂₀'], ['Мазут', '> 350 °C', 'C₂₀ и более']] },
+      poly: { mono: 'Мономеры', pol: 'Полимер (полиэтилен)', n: 'n — степень полимеризации', unit: 'Элементарное звено' },
+      tests: { head: ['Реактив', 'Что определяет', 'Наблюдение'], rows: [['Бромная вода', 'Связи C=C, C≡C; фенол', 'Жёлто-бурая окраска исчезает (с фенолом — белый осадок)'], ['Раствор KMnO₄', 'Связи C=C, C≡C, альдегиды', 'Фиолетовая окраска исчезает'], ['Аммиачный раствор Ag₂O', 'Альдегиды, глюкоза, муравьиная кислота', 'Образуется «серебряное зеркало»'], ['Cu(OH)₂', 'Многоатомные спирты; альдегиды (при нагревании)', 'Ярко-синий раствор; красный осадок Cu₂O'], ['Раствор иода', 'Крахмал', 'Синяя окраска'], ['FeCl₃', 'Фенол', 'Фиолетовая окраска'], ['CuSO₄ + NaOH (биуретовая)', 'Белки (пептидные связи)', 'Фиолетовая окраска'], ['Концентрированная HNO₃', 'Белки (ароматические кольца)', 'Жёлтая окраска']] },
+      pep: { t: 'Образование пептидной связи', bond: 'пептидная связь', water: 'выделяется вода' },
+      carb: { mono: 'Моносахариды', di: 'Дисахариды', poly: 'Полисахариды', monoE: 'глюкоза, фруктоза', diE: 'сахароза, мальтоза', polyE: 'крахмал, целлюлоза', hyd: 'гидролиз' } }
+  };
+  const TESTC = [['#c8742a', '#f3f1ea'], ['#7a2a9a', '#f3f1ea'], ['#e8e8e8', '#c0c6cf'], ['#5aa0e6', '#1a3fbf'], ['#d8b45a', '#20307a'], ['#e8c070', '#6a2a9a'], ['#8ab8f0', '#7a3aa8'], ['#f3f1ea', '#f2d23c']];
+  function diagram4(host, spec, ctx) {
+    const T = S4[ctx.lang], k = spec.kind;
+    const box = (x, y, w, h, t, c, s) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="9" style="fill:' + c + '22;stroke:' + c + '"/>' + (t ? tx(x + w / 2, y + h / 2 + 4, t, { s: s || 12 }) : '');
+    const ar = (d, c) => '<path class="pv-flow" d="' + d + '" stroke="' + (c || '#2ecc96') + '" stroke-width="2.2" fill="none" marker-end="url(#pvG)"/>';
+    if (k === 'org_classes') {
+      const D = T.cls, cols = [[D.hc, D.hcL, '#ffb454', 12], [D.ox, D.oxL, '#ff5d6e', 240], [D.nz, D.nzL, '#6f8bff', 468]];
+      host.innerHTML = svg(700, 330, box(250, 8, 200, 36, D.root, '#2ecc96', 13)
+        + cols.map((c) => ar('M350 46 L' + (c[3] + 110) + ' 70', c[2]) + box(c[3], 74, 220, 34, c[0], c[2], 12.5) + c[1].map((t, i) => box(c[3] + 14, 118 + i * 29, 192, 25, t, c[2], 11)).join('')).join(''));
+      return;
+    }
+    if (k === 'org_genetic') {
+      const D = T.gen, nodes = [[D.alkane, 'C₂H₆'], [D.alkene, 'C₂H₄'], [D.alc, 'C₂H₅OH'], [D.ald, 'CH₃CHO'], [D.acid, 'CH₃COOH'], [D.ester, 'CH₃COOC₂H₅']], labs = [D.d + ', ' + D.t, D.w, D.o1, D.o2, D.e];
+      const pos = [[20, 30], [250, 30], [480, 30], [480, 170], [250, 170], [20, 170]];
+      host.innerHTML = svg(700, 260, nodes.map((nd, i) => box(pos[i][0], pos[i][1], 200, 56, '', ['#ffb454', '#ffd24d', '#ff5d6e', '#c08bff', '#4dd2ff', '#2ecc96'][i]) + tx(pos[i][0] + 100, pos[i][1] + 24, nd[0], { s: 12.5 }) + tx(pos[i][0] + 100, pos[i][1] + 44, nd[1], { s: 12.5, w: 500, c: 'var(--muted)' })).join('')
+        + ar('M222 58 L246 58') + tx(234, 20, labs[0], { s: 10.5, c: 'var(--muted)' }) + ar('M452 58 L476 58') + tx(464, 100, labs[1], { s: 10.5, c: 'var(--muted)' })
+        + ar('M580 88 L580 166') + tx(640, 130, labs[2], { s: 10.5, c: 'var(--muted)' }) + ar('M478 198 L454 198') + tx(466, 246, labs[3], { s: 10.5, c: 'var(--muted)' })
+        + ar('M248 198 L224 198') + tx(236, 246, labs[4], { s: 10.5, c: 'var(--muted)' }));
+      return;
+    }
+    if (k === 'oil_column') {
+      const D = T.oil, F = D.fr, cols = ['#9aa3b8', '#ffd24d', '#ffb454', '#ff8a5c', '#ff5d6e', '#8a5a3a'];
+      host.innerHTML = svg(700, 360, tx(350, 20, D.title, { s: 13.5 }) + '<defs><linearGradient id="pvOC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4dd2ff" stop-opacity=".18"/><stop offset="1" stop-color="#ff5d6e" stop-opacity=".4"/></linearGradient></defs>'
+        + '<rect x="240" y="36" width="110" height="300" rx="18" fill="url(#pvOC)" style="stroke:var(--text);stroke-width:2"/>'
+        + F.map((f, i) => { const y = 60 + i * 46; return '<line x1="246" x2="344" y1="' + (y + 14) + '" y2="' + (y + 14) + '" style="stroke:var(--muted);stroke-dasharray:6 4"/>' + ar('M352 ' + y + ' L410 ' + y, cols[i]) + box(414, y - 18, 270, 36, '', cols[i])
+          + tx(424, y + 4, f[0], { a: 'start', s: 12.5 }) + tx(674, y - 2, f[1], { a: 'end', s: 11, c: 'var(--muted)', w: 500 }) + tx(674, y + 12, f[2], { a: 'end', s: 11, c: 'var(--muted)', w: 500 }); }).join('')
+        + ar('M140 300 L236 300', '#ff8a5c') + tx(130, 290, D.crude, { a: 'end', s: 12 }) + '<g class="pv-fl" style="transform-box:fill-box"><path d="M90 340 c-14 -14 -6 -30 0 -40 c6 10 14 26 0 40z" fill="#ff8a3a"/></g>'
+        + Array.from({ length: 6 }, (_, i) => '<circle class="pv-bub" style="animation-delay:' + (i * 0.4) + 's" cx="' + (270 + (i % 3) * 25) + '" cy="320" r="3" fill="#ffd24d"/>').join(''));
+      return;
+    }
+    if (k === 'polymer') {
+      const D = T.poly, mono = Array.from({ length: 5 }, (_, i) => { const x = 40 + i * 70; return '<g style="animation:pvJig 1.6s ease-in-out ' + (i * 0.2) + 's infinite"><circle cx="' + x + '" cy="70" r="11" fill="#4a4f57"/><circle cx="' + (x + 26) + '" cy="70" r="11" fill="#4a4f57"/><line x1="' + (x + 9) + '" y1="66" x2="' + (x + 17) + '" y2="66" stroke="#c9ced8" stroke-width="2.5"/><line x1="' + (x + 9) + '" y1="74" x2="' + (x + 17) + '" y2="74" stroke="#c9ced8" stroke-width="2.5"/></g>'; }).join('');
+      let chain = '', pts = []; for (let i = 0; i < 12; i++) pts.push([60 + i * 50, i % 2 ? 210 : 180]);
+      chain = '<polyline class="pv-chain" points="' + pts.map((p) => p.join(',')).join(' ') + '" style="fill:none;stroke:#c9ced8;stroke-width:3"/>' + pts.map((p) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="10" fill="#4a4f57"/>').join('');
+      host.innerHTML = svg(700, 290, '<style>@keyframes pvJig{50%{transform:translateY(-6px)}}.pv-chain{stroke-dasharray:600;animation:pvDraw 4s ease-in-out infinite}@keyframes pvDraw{0%{stroke-dashoffset:600}60%,100%{stroke-dashoffset:0}}</style>'
+        + tx(20, 30, D.mono + ':  n CH₂=CH₂', { a: 'start', s: 13 }) + mono + ar('M520 70 L600 70') + tx(560, 58, 't, p, kat.', { s: 11, c: 'var(--muted)' })
+        + ar('M350 96 L350 150') + tx(20, 150, D.pol + ':  (–CH₂–CH₂–)ₙ', { a: 'start', s: 13 }) + chain
+        + '<rect x="134" y="168" width="104" height="54" rx="8" style="fill:none;stroke:#ffd24d;stroke-dasharray:4 3"/>' + tx(186, 244, D.unit, { s: 11.5, c: '#ffd24d' }) + tx(20, 276, D.n, { a: 'start', s: 12, c: 'var(--muted)' }));
+      return;
+    }
+    if (k === 'org_tests') {
+      const D = T.tests;
+      host.innerHTML = card('<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>' + D.head.map((h) => '<th style="text-align:left;padding:6px 8px;color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--line)">' + esc(h) + '</th>').join('') + '<th></th></tr></thead><tbody>'
+        + D.rows.map((r, i) => '<tr><td style="padding:7px 8px;font-weight:600;color:var(--text);border-bottom:1px solid var(--line)">' + esc(r[0]) + '</td><td style="padding:7px 8px;color:var(--body);border-bottom:1px solid var(--line)">' + esc(r[1]) + '</td><td style="padding:7px 8px;color:var(--body);border-bottom:1px solid var(--line)">' + esc(r[2]) + '</td>'
+          + '<td style="padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap"><span style="display:inline-block;width:22px;height:22px;border-radius:6px;border:1px solid var(--line);vertical-align:middle;background:' + TESTC[i][0] + '"></span> → <span style="display:inline-block;width:22px;height:22px;border-radius:6px;border:1px solid var(--line);vertical-align:middle;background:' + TESTC[i][1] + '"></span></td></tr>').join('') + '</tbody></table></div>');
+      return;
+    }
+    if (k === 'peptide') {
+      const D = T.pep;
+      host.innerHTML = svg(700, 230, '<style>.pv-leave{animation:pvLeave 4s ease-in-out infinite}@keyframes pvLeave{0%,30%{transform:translate(0,0);opacity:1}70%,100%{transform:translate(0,70px);opacity:.9}}</style>'
+        + tx(350, 22, D.t, { s: 13.5 })
+        + tx(40, 80, 'H₂N–CH₂–C', { a: 'start', s: 17, w: 600 }) + tx(141, 58, 'O', { s: 15, c: '#ff5d6e' }) + '<line x1="141" y1="62" x2="141" y2="68" style="stroke:var(--muted);stroke-width:2"/>'
+        + '<g class="pv-leave"><rect x="150" y="62" width="40" height="26" rx="6" style="fill:rgba(255,93,110,.15);stroke:#ff5d6e"/>' + tx(170, 80, 'OH', { s: 15, c: '#ff5d6e' }) + '</g>'
+        + tx(210, 80, '+', { s: 18 })
+        + '<g class="pv-leave"><rect x="232" y="62" width="22" height="26" rx="6" style="fill:rgba(255,93,110,.15);stroke:#ff5d6e"/>' + tx(243, 80, 'H', { s: 15, c: '#ff5d6e' }) + '</g>'
+        + tx(256, 80, '–NH–CH(CH₃)–COOH', { a: 'start', s: 17, w: 600 }) + tx(560, 80, '→', { s: 20 })
+        + tx(40, 170, 'H₂N–CH₂–', { a: 'start', s: 16, w: 600 }) + '<rect x="128" y="148" width="98" height="32" rx="7" style="fill:rgba(46,204,150,.15);stroke:#2ecc96"/>' + tx(177, 170, 'CO–NH', { s: 16, c: 'var(--green)' })
+        + tx(230, 170, '–CH(CH₃)–COOH', { a: 'start', s: 16, w: 600 }) + tx(177, 200, D.bond, { s: 11.5, c: 'var(--green)' }) + tx(470, 170, '+  H₂O', { a: 'start', s: 16, c: '#4dd2ff' }) + tx(500, 200, D.water, { s: 11.5, c: 'var(--muted)' }));
+      return;
+    }
+    if (k === 'carb_classes') {
+      const D = T.carb, rows = [[D.poly, '(C₆H₁₀O₅)ₙ', D.polyE, '#c08bff'], [D.di, 'C₁₂H₂₂O₁₁', D.diE, '#4dd2ff'], [D.mono, 'C₆H₁₂O₆', D.monoE, '#2ecc96']];
+      host.innerHTML = svg(700, 280, rows.map((r, i) => { const y = 14 + i * 92; return box(130, y, 440, 64, '', r[3]) + tx(350, y + 24, r[0] + ' · ' + r[1], { s: 13.5 }) + tx(350, y + 46, r[2], { s: 12, w: 500, c: 'var(--muted)' })
+        + (i < 2 ? ar('M350 ' + (y + 66) + ' L350 ' + (y + 90)) + tx(400, y + 82, '+H₂O, ' + D.hyd, { a: 'start', s: 11, c: 'var(--muted)' }) : ''); }).join(''));
+    }
+  }
+
   window.PTV = {
     render(host, spec, ctx) {
       host.innerHTML = '';
       try {
         if (spec.type === 'chart' && (spec.kind === 'eneg' || spec.kind === 'radius')) return trend(host, spec.kind, ctx);
         if (spec.type === 'diagram' && (spec.kind === 'contact' || spec.kind === 'nitrogen_cycle')) return diagram2(host, spec, ctx);
+        if (spec.type === 'molecule3d' && ORG[spec.mol]) return organic3d(host, spec, ctx);
+        if (spec.type === 'diagram' && ['org_classes', 'org_genetic', 'oil_column', 'polymer', 'org_tests', 'peptide', 'carb_classes'].includes(spec.kind)) return diagram4(host, spec, ctx);
         if (spec.type === 'molecule3d' && (spec.mol === 'graphite' || spec.mol === 'SiO2')) return lattice3(host, spec, ctx);
         if (spec.type === 'diagram' && ['conductivity', 'electrolysis_nacl', 'corrosion', 'hardness', 'blast_furnace', 'converter', 'solvay', 'carbon_cycle', 'silicate'].includes(spec.kind)) return diagram3(host, spec, ctx);
-        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium, dissociation, phscale, activity }[spec.type];
+        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium, dissociation, phscale, activity, structure, isomers, homolog, hybrid }[spec.type];
         if (fn) fn(host, spec, ctx);
       } catch (e) { console.error('visual', spec, e); }
     },
