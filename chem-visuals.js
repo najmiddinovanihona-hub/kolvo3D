@@ -1428,17 +1428,98 @@
     }
   }
 
+  // ---------- part 5 additions: concentration, gas-law and electrolysis calculators, nuclear decay, KMnO₄ in three media ----------
+  const S5 = {
+    uz: { f: 'Formula', m: 'Erigan modda massasi, g', V: 'Eritma hajmi, ml', z: 'Ekvivalentlik soni z', p: 'Bosim, kPa', vol: 'Hajm, L', t: 'Harorat, °C', mass: 'Massa, g', find: 'Topiladigan kattalik',
+      c1: 'Boshlang\'ich konsentratsiya', v1: 'Boshlang\'ich hajm, ml', c2: 'Kerakli konsentratsiya', mixA: '1-eritma', mixB: '2-eritma', mixT: 'Ikki eritmani aralashtirish', dilT: 'Suyultirish: C₁V₁ = C₂V₂', water: 'qo\'shiladigan suv',
+      I: 'Tok kuchi, A', time: 'Vaqt, min', metal: 'Metall (katodda ajraladi)', zh: 'z — ion zaryadi', res: 'Natija', bad: 'Qiymatlarni tekshiring',
+      zHint: 'kislota: H soni, asos: OH soni, tuz: metall valentligi × atomlar soni', dec: { a: 'α-yemirilish', bm: 'β⁻-yemirilish', bp: 'β⁺-yemirilish', g: 'γ-nurlanish', aT: 'Yadrodan geliy yadrosi ⁴₂He uchib chiqadi: Z 2 ga, A 4 ga kamayadi', bmT: 'Neytron protonga aylanadi va elektron chiqadi: Z 1 ga ortadi, A o\'zgarmaydi', bpT: 'Proton neytronga aylanadi va pozitron chiqadi: Z 1 ga kamayadi, A o\'zgarmaydi', gT: 'Yuqori energiyali foton chiqadi: Z va A o\'zgarmaydi', p: 'proton', n: 'neytron' },
+      mn: { acid: 'Kislotali muhit (H⁺)', neu: 'Neytral muhit (H₂O)', alk: 'Ishqoriy muhit (OH⁻)', aR: 'Rangsizlanadi: Mn²⁺', nR: 'Qo\'ng\'ir cho\'kma: MnO₂', kR: 'Yashil eritma: MnO₄²⁻', title: 'KMnO₄ ning qaytarilishi muhitga bog\'liq', e: 'qabul qilgan elektronlar' } },
+    en: { f: 'Formula', m: 'Mass of solute, g', V: 'Solution volume, ml', z: 'Equivalence number z', p: 'Pressure, kPa', vol: 'Volume, L', t: 'Temperature, °C', mass: 'Mass, g', find: 'Find',
+      c1: 'Initial concentration', v1: 'Initial volume, ml', c2: 'Required concentration', mixA: 'Solution 1', mixB: 'Solution 2', mixT: 'Mixing two solutions', dilT: 'Dilution: C₁V₁ = C₂V₂', water: 'water to add',
+      I: 'Current, A', time: 'Time, min', metal: 'Metal (deposited at the cathode)', zh: 'z — ion charge', res: 'Result', bad: 'Check the values',
+      zHint: 'acid: number of H, base: number of OH, salt: metal valence × number of metal atoms', dec: { a: 'α decay', bm: 'β⁻ decay', bp: 'β⁺ decay', g: 'γ emission', aT: 'A helium nucleus ⁴₂He leaves the nucleus: Z drops by 2, A by 4', bmT: 'A neutron turns into a proton and an electron leaves: Z rises by 1, A stays', bpT: 'A proton turns into a neutron and a positron leaves: Z drops by 1, A stays', gT: 'A high-energy photon leaves: Z and A stay the same', p: 'protons', n: 'neutrons' },
+      mn: { acid: 'Acidic medium (H⁺)', neu: 'Neutral medium (H₂O)', alk: 'Alkaline medium (OH⁻)', aR: 'Decolourised: Mn²⁺', nR: 'Brown precipitate: MnO₂', kR: 'Green solution: MnO₄²⁻', title: 'How KMnO₄ is reduced depends on the medium', e: 'electrons gained' } },
+    ru: { f: 'Формула', m: 'Масса растворённого вещества, г', V: 'Объём раствора, мл', z: 'Число эквивалентности z', p: 'Давление, кПа', vol: 'Объём, л', t: 'Температура, °C', mass: 'Масса, г', find: 'Найти',
+      c1: 'Исходная концентрация', v1: 'Исходный объём, мл', c2: 'Нужная концентрация', mixA: 'Раствор 1', mixB: 'Раствор 2', mixT: 'Смешивание двух растворов', dilT: 'Разбавление: C₁V₁ = C₂V₂', water: 'добавить воды',
+      I: 'Сила тока, А', time: 'Время, мин', metal: 'Металл (выделяется на катоде)', zh: 'z — заряд иона', res: 'Результат', bad: 'Проверьте значения',
+      zHint: 'кислота: число H, основание: число OH, соль: валентность металла × число атомов металла', dec: { a: 'α-распад', bm: 'β⁻-распад', bp: 'β⁺-распад', g: 'γ-излучение', aT: 'Из ядра вылетает ядро гелия ⁴₂He: Z уменьшается на 2, A на 4', bmT: 'Нейтрон превращается в протон, вылетает электрон: Z растёт на 1, A не меняется', bpT: 'Протон превращается в нейтрон, вылетает позитрон: Z уменьшается на 1, A не меняется', gT: 'Вылетает фотон высокой энергии: Z и A не меняются', p: 'протонов', n: 'нейтронов' },
+      mn: { acid: 'Кислая среда (H⁺)', neu: 'Нейтральная среда (H₂O)', alk: 'Щелочная среда (OH⁻)', aR: 'Обесцвечивается: Mn²⁺', nR: 'Бурый осадок: MnO₂', kR: 'Зелёный раствор: MnO₄²⁻', title: 'Восстановление KMnO₄ зависит от среды', e: 'принятые электроны' } }
+  };
+  const inp = (cls, label, val, extra) => '<div><label style="' + lbl + '">' + label + '</label><input class="' + cls + '" value="' + val + '" ' + (extra || 'type="number" step="any"') + ' style="' + field + '"></div>';
+  const grid = (cells, n) => '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(' + (n || 150) + 'px,1fr));gap:10px">' + cells.join('') + '</div>';
+  const big = (main, sub) => '<div style="margin-top:12px;font:700 21px IBM Plex Mono;color:var(--green)">' + main + '</div>' + (sub ? '<div style="margin-top:6px;font-size:13px;color:var(--body);line-height:1.7">' + sub + '</div>' : '');
+  function calc5(host, spec, ctx) {
+    const L = ctx.lang, T = S5[L], k = spec.kind, n = (v, d) => num(v, L, d == null ? 2 : d);
+    if (k === 'molarity') host.innerHTML = card(grid([inp('f', T.f, 'H2SO4', 'type="text"'), inp('m', T.m, '9.8'), inp('V', T.V, '500'), inp('z', T.z, '2')]) + '<div style="font-size:11.5px;color:var(--muted);margin-top:6px">z: ' + esc(T.zHint) + '</div><div class="o"></div>');
+    if (k === 'clapeyron') host.innerHTML = card(grid([inp('f', T.f, 'O2', 'type="text"'), inp('m', T.mass, '16'), inp('t', T.t, '27'), inp('p', T.p, '101.3'), inp('V', T.vol, '')]) + '<div style="font-size:11.5px;color:var(--muted);margin-top:6px">' + esc(T.find) + ': ' + (L === 'ru' ? 'оставьте одно поле (p, V или m) пустым' : L === 'en' ? 'leave one field (p, V or m) empty' : 'bitta maydonni (p, V yoki m) bo\'sh qoldiring') + '</div><div class="o"></div>');
+    if (k === 'dilution') host.innerHTML = card('<b style="color:var(--text)">' + T.dilT + '</b>' + grid([inp('c1', T.c1 + ', %', '40'), inp('v1', T.mass + ' (1)', '200'), inp('c2', T.c2 + ', %', '10')]) + '<div class="o"></div>'
+      + '<div style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px"><b style="color:var(--text)">' + T.mixT + '</b>' + grid([inp('a1', T.mixA + ': ω, %', '20'), inp('a2', T.mixA + ': ' + T.mass, '150'), inp('b1', T.mixB + ': ω, %', '5'), inp('b2', T.mixB + ': ' + T.mass, '50')]) + '<div class="o2"></div></div>');
+    if (k === 'faraday') host.innerHTML = card(grid([inp('metal', T.metal, 'Cu', 'type="text"'), inp('z', T.zh, '2'), inp('I', T.I, '5'), inp('t', T.time, '30')]) + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' + [['Cu', 2], ['Ag', 1], ['Zn', 2], ['Ni', 2], ['Al', 3], ['Na', 1]].map((x) => '<button data-m="' + x[0] + '" data-z="' + x[1] + '" style="border-radius:16px;border:1px solid var(--line);background:var(--btn);color:var(--text);font:12.5px IBM Plex Mono;padding:5px 10px;cursor:pointer">' + x[0] + ' (z=' + x[1] + ')</button>').join('') + '</div><div class="o"></div>');
+    const g = (c) => { const e = host.querySelector('.' + c); return e ? e.value.trim().replace(',', '.') : ''; }, val = (c) => parseFloat(g(c));
+    const upd = () => { const o = host.querySelector('.o');
+      try {
+        if (k === 'molarity') { const M = molarOf(g('f'), ctx).M, nn = val('m') / M, V = val('V') / 1000, z = val('z') || 1; if (!(V > 0) || !(nn >= 0)) throw 0;
+          o.innerHTML = big('C<sub>M</sub> = ' + n(nn / V, 3) + ' mol/L · C<sub>N</sub> = ' + n(nn * z / V, 3) + ' N', 'M(' + esc(pretty(g('f'))) + ') = ' + n(M) + ' g/mol · n = m / M = ' + n(nn, 4) + ' mol<br>C<sub>M</sub> = n / V = ' + n(nn, 4) + ' / ' + n(V, 3) + ' · C<sub>N</sub> = z · C<sub>M</sub> = ' + z + ' · ' + n(nn / V, 3) + '<br>M(1/z) = ' + n(M / z) + ' g/mol'); }
+        if (k === 'clapeyron') { const M = molarOf(g('f'), ctx).M, Tk = val('t') + 273.15, R = 8.314, p = val('p'), V = val('V'), m = val('m'); let out;
+          if (!g('V')) { const v = (m / M) * R * Tk / p; out = ['V = ' + n(v, 3) + ' L', 'V = m·R·T / (M·p) = ' + n(m) + '·8,314·' + n(Tk, 1) + ' / (' + n(M) + '·' + n(p, 1) + ')']; }
+          else if (!g('p')) { const pp = (m / M) * R * Tk / V; out = ['p = ' + n(pp, 1) + ' kPa', 'p = m·R·T / (M·V) = ' + n(m) + '·8,314·' + n(Tk, 1) + ' / (' + n(M) + '·' + n(V, 3) + ')']; }
+          else { const mm = p * V * M / (R * Tk); out = ['m = ' + n(mm, 3) + ' g', 'm = p·V·M / (R·T) = ' + n(p, 1) + '·' + n(V, 3) + '·' + n(M) + ' / (8,314·' + n(Tk, 1) + ')']; }
+          if (!(Tk > 0) || /NaN|Infinity/.test(out[0])) throw 0; o.innerHTML = big(out[0], out[1] + '<br>pV = (m/M)·R·T · T = t + 273 · R = 8,314 J/(mol·K)'); }
+        if (k === 'dilution') { const c1 = val('c1'), m1 = val('v1'), c2 = val('c2'); if (!(c2 > 0 && c2 < c1)) throw 0; const m2 = c1 * m1 / c2;
+          o.innerHTML = big('m₂ = ' + n(m2, 1) + ' g · ' + T.water + ': ' + n(m2 - m1, 1) + ' g', 'ω₁·m₁ = ω₂·m₂ → m₂ = ' + n(c1, 1) + '·' + n(m1, 1) + ' / ' + n(c2, 1));
+          const a1 = val('a1'), a2 = val('a2'), b1 = val('b1'), b2 = val('b2'), w = (a1 * a2 + b1 * b2) / (a2 + b2);
+          host.querySelector('.o2').innerHTML = isFinite(w) ? big('ω = ' + n(w, 2) + '%', 'ω = (ω₁m₁ + ω₂m₂) / (m₁ + m₂) = (' + n(a1, 1) + '·' + n(a2, 1) + ' + ' + n(b1, 1) + '·' + n(b2, 1) + ') / ' + n(a2 + b2, 1)) : ''; }
+        if (k === 'faraday') { const el = (ctx.elements || []).find((e) => e.sym === g('metal')); if (!el) throw 0; const z = val('z'), I = val('I'), t = val('t') * 60, M = Math.round(el.mass * 10) / 10, mm = M * I * t / (z * 96500);
+          if (!isFinite(mm)) throw 0; o.innerHTML = big('m(' + el.sym + ') = ' + n(mm, 3) + ' g', 'm = M·I·t / (z·F) = ' + n(M, 1) + '·' + n(I, 1) + '·' + n(t, 0) + ' / (' + z + '·96 500)<br>Q = I·t = ' + n(I * t, 0) + ' C'); }
+      } catch (e) { o.innerHTML = '<div style="margin-top:10px;color:var(--warn);font-size:13px">' + esc(T.bad) + '</div>'; } };
+    host.querySelectorAll('input').forEach((x) => x.addEventListener('input', upd));
+    host.querySelectorAll('button[data-m]').forEach((b) => b.addEventListener('click', () => { host.querySelector('.metal').value = b.dataset.m; host.querySelector('.z').value = b.dataset.z; upd(); }));
+    upd();
+  }
+
+  // nuclear decay: the parent and daughter nucleus side by side with Z and A
+  const DEC = { a: ['U', 238, 92, 'Th', 234, 90, '⁴₂He'], bm: ['C', 14, 6, 'N', 14, 7, '⁰₋₁e'], bp: ['Na', 22, 11, 'Ne', 22, 10, '⁰₊₁e'], g: ['Co', 60, 27, 'Co', 60, 27, 'γ'] };
+  const SUP = (v) => String(v).split('').map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c]).join(''), SUB2 = (v) => String(v).split('').map((c) => '₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+  function decay(host, spec, ctx) {
+    const T = S5[ctx.lang].dec; let mode = 'a';
+    const nuc = (A, Z, x, c) => { const tot = Math.min(A, 46), pp = Math.round(tot * Z / A); let d = '';
+      for (let i = 0; i < tot; i++) { const a = i * 2.4, r = 3.4 * Math.sqrt(i); d += '<circle cx="' + (x + r * Math.cos(a)).toFixed(1) + '" cy="' + (90 + r * Math.sin(a)).toFixed(1) + '" r="4.4" fill="' + (i < pp ? '#ff5d6e' : '#6f8bff') + '"/>'; }
+      return d + (c ? '<circle cx="' + x + '" cy="90" r="34" fill="none" stroke="' + c + '" stroke-width="2" stroke-dasharray="4 3"/>' : ''); };
+    const draw = () => { const d = DEC[mode], col = { a: '#ffd24d', bm: '#4dd2ff', bp: '#ff8ad8', g: '#7ee787' }[mode];
+      host.innerHTML = card('<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">' + ['a', 'bm', 'bp', 'g'].map((k) => '<button data-k="' + k + '" style="flex:1;min-width:110px;border-radius:9px;border:1px solid ' + (k === mode ? '#2ecc96' : 'var(--line)') + ';background:' + (k === mode ? 'rgba(46,204,150,.16)' : 'var(--btn)') + ';color:var(--text);font:600 13px Space Grotesk;padding:8px;cursor:pointer">' + T[k] + '</button>').join('') + '</div>'
+        + '<svg viewBox="0 0 560 190" style="width:100%;height:auto;display:block"><style>.pv-fly{animation:pvFly 2.4s ease-in infinite}@keyframes pvFly{0%{transform:translate(0,0);opacity:1}100%{transform:translate(120px,-50px);opacity:0}}</style>'
+        + nuc(d[1], d[2], 100) + tx(100, 160, SUP(d[1]) + SUB2(d[2]) + d[0], { s: 16 }) + tx(100, 180, d[2] + ' ' + T.p + ' · ' + (d[1] - d[2]) + ' ' + T.n, { s: 10.5, c: 'var(--muted)', w: 500 })
+        + '<path class="pv-flow" d="M170 90 L330 90" stroke="#2ecc96" stroke-width="2.4" fill="none" marker-end="url(#pvG)"/>'
+        + '<g class="pv-fly"><circle cx="250" cy="70" r="' + (mode === 'a' ? 10 : 6) + '" fill="' + col + '"/>' + tx(250, 50, d[6], { s: 14, c: col }) + '</g>'
+        + nuc(d[4], d[5], 420, mode === 'g' ? col : '') + tx(420, 160, SUP(d[4]) + SUB2(d[5]) + d[3], { s: 16 }) + tx(420, 180, d[5] + ' ' + T.p + ' · ' + (d[4] - d[5]) + ' ' + T.n, { s: 10.5, c: 'var(--muted)', w: 500 }) + '</svg>'
+        + '<div style="margin-top:8px;font:600 16px IBM Plex Mono;color:var(--text)">' + SUP(d[1]) + SUB2(d[2]) + d[0] + ' → ' + SUP(d[4]) + SUB2(d[5]) + d[3] + ' + ' + d[6] + '</div><div style="margin-top:4px;font-size:13px;color:var(--body)">' + esc(T[mode + 'T']) + '</div>');
+    };
+    host.addEventListener('click', (e) => { const b = e.target.closest('button[data-k]'); if (b) { mode = b.dataset.k; draw(); } });
+    draw();
+  }
+
+  function kmno4(host, spec, ctx) {
+    const D = S5[ctx.lang].mn, cols = [[D.acid, '#f3f1ea', D.aR, 'MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O', 5, '#ff5d6e'], [D.neu, '#8a5a2a', D.nR, 'MnO₄⁻ + 2H₂O + 3e⁻ → MnO₂↓ + 4OH⁻', 3, '#9aa3b8'], [D.alk, '#3aa85a', D.kR, 'MnO₄⁻ + e⁻ → MnO₄²⁻', 1, '#4dd2ff']];
+    host.innerHTML = svg(700, 290, tx(350, 22, D.title, { s: 13.5 }) + cols.map((c, i) => { const x = 30 + i * 230;
+      return tx(x + 90, 52, c[0], { s: 12, c: c[5] }) + '<path d="M' + (x + 50) + ' 66 v110 a14 14 0 0 0 14 14 h52 a14 14 0 0 0 14 -14 v-110" style="' + glass + '"/>'
+        + '<rect x="' + (x + 52) + '" y="110" width="76" height="78" rx="12" fill="#7a2a9a" opacity=".85"><animate attributeName="fill" values="#7a2a9a;#7a2a9a;' + c[1] + ';' + c[1] + '" keyTimes="0;0.2;0.6;1" dur="4s" repeatCount="indefinite"/></rect>' + (i === 1 ? Array.from({ length: 6 }, (_, j) => '<circle cx="' + (x + 62 + j * 11) + '" cy="182" r="4" fill="#5a3a1a"/>').join('') : '')
+        + tx(x + 90, 214, c[2], { s: 12 }) + tx(x + 90, 238, c[3], { s: 10.5, w: 500, c: 'var(--muted)' }) + tx(x + 90, 262, 'Mn⁺⁷ + ' + c[4] + 'e⁻ → Mn' + ['⁺²', '⁺⁴', '⁺⁶'][i], { s: 12, c: c[5] }); }).join(''));
+  }
+
   window.PTV = {
     render(host, spec, ctx) {
       host.innerHTML = '';
       try {
         if (spec.type === 'chart' && (spec.kind === 'eneg' || spec.kind === 'radius')) return trend(host, spec.kind, ctx);
         if (spec.type === 'diagram' && (spec.kind === 'contact' || spec.kind === 'nitrogen_cycle')) return diagram2(host, spec, ctx);
+        if (spec.type === 'calc' && ['molarity', 'clapeyron', 'dilution', 'faraday'].includes(spec.kind)) return calc5(host, spec, ctx);
+        if (spec.type === 'diagram' && spec.kind === 'kmno4_media') return kmno4(host, spec, ctx);
         if (spec.type === 'molecule3d' && ORG[spec.mol]) return organic3d(host, spec, ctx);
         if (spec.type === 'diagram' && ['org_classes', 'org_genetic', 'oil_column', 'polymer', 'org_tests', 'peptide', 'carb_classes'].includes(spec.kind)) return diagram4(host, spec, ctx);
         if (spec.type === 'molecule3d' && (spec.mol === 'graphite' || spec.mol === 'SiO2')) return lattice3(host, spec, ctx);
         if (spec.type === 'diagram' && ['conductivity', 'electrolysis_nacl', 'corrosion', 'hardness', 'blast_furnace', 'converter', 'solvay', 'carbon_cycle', 'silicate'].includes(spec.kind)) return diagram3(host, spec, ctx);
-        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium, dissociation, phscale, activity, structure, isomers, homolog, hybrid }[spec.type];
+        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium, dissociation, phscale, activity, structure, isomers, homolog, hybrid, decay }[spec.type];
         if (fn) fn(host, spec, ctx);
       } catch (e) { console.error('visual', spec, e); }
     },
