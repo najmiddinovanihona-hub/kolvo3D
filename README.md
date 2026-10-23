@@ -37,6 +37,7 @@ data/
   descriptions.js   — element tavsiflari
   facts.js          — qo'llanilishi va qiziqarli faktlar
   uzbekistan.js     — O'zbekistonda qazib olinadigan / ishlab chiqariladigan elementlar
+  details.js        — batafsil bo'limlar (tarix, tarqalishi, olinishi, kimyosi, biologiyasi, izotoplari) va qo'shimcha fizik xossalar
 assets/
   intro-bg.png      — kirish ekrani foni
   app-bg.png        — asosiy ekran foni
