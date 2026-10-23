@@ -288,10 +288,10 @@
           <div style="flex:1;min-height:0;position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(460px 300px at 50% 40%,{{ selected.accentSoft }},rgba(7,10,20,.9) 74%);border:1px solid rgba(120,150,220,.18)">
             <div id="pt-host-atom" style="position:absolute;inset:0"></div>
             <div style="position:absolute;left:14px;top:12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:{{ selected.accent }};pointer-events:none">{{ ui.tabAtom }}</div>
-            <div style="position:absolute;left:14px;bottom:12px;display:flex;gap:13px;font-size:10.5px;font-family:'IBM Plex Mono';pointer-events:none">
+            <div style="position:absolute;left:14px;right:132px;bottom:12px;display:flex;flex-wrap:wrap;gap:3px 13px;font-size:10.5px;font-family:'IBM Plex Mono';pointer-events:none">
               <span style="color:#ff5d6e">● {{ ui.proton }} {{ selected.z }}</span>
               <span style="color:#6f9eff">● {{ ui.neutron }} {{ selected.neutrons }}</span>
-              <span style="color:#ffd24d">● {{ ui.electron }} {{ selected.z }}</span>
+              <span style="color:#f2f5ff">● {{ ui.electron }} {{ selected.z }}</span>
             </div>
             <div style="position:absolute;right:12px;bottom:12px;display:flex;gap:6px">
               <button onClick="{{ rotateA }}" title="{{ ui.autoRotate }}" style="width:34px;height:34px;border-radius:8px;background:rgba(8,12,24,.7);border:1px solid rgba(255,255,255,.16);color:#dbe4f7;cursor:pointer;font-size:15px">↻</button>
@@ -345,9 +345,9 @@
           <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:{{ selected.accent }};margin-bottom:11px;font-weight:600">{{ ui.shellsTitle }}</div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:24px">
             <sc-for list="{{ selected.shellChips }}" as="s" hint-placeholder-count="4">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(255,255,255,.04);border:1px solid rgba(120,150,220,.18);border-radius:10px;padding:8px 15px;min-width:56px">
-                <span style="font-family:'IBM Plex Mono';font-size:9px;color:rgba(170,188,228,.6)">{{ s.label }}</span>
-                <span style="font-family:'IBM Plex Mono';font-weight:600;font-size:17px;color:{{ selected.accent }}">{{ s.count }}</span>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:3px;background:{{ s.bg }};border:1px solid {{ s.border }};border-radius:10px;padding:8px 15px;min-width:56px">
+                <span style="font-family:'IBM Plex Mono';font-size:9px;font-weight:600;color:{{ s.color }};opacity:.8">{{ s.label }}</span>
+                <span style="font-family:'IBM Plex Mono';font-weight:600;font-size:17px;color:{{ s.color }}">{{ s.count }}</span>
               </div>
             </sc-for>
           </div>
@@ -393,15 +393,24 @@ class Component extends DCLogic {
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Mendeleyev Jadvali",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",matCaption:"Moddaning 3D ko'rinishi",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",uzTitle:"O'zbekistonda",periodFmt:"{n}-davr",lanthGroup:"Lantanoidlar",actGroup:"Aktinoidlar",viewList:"Ro'yxat",viewTable:"Jadval",copyLink:"Havolani nusxalash",copied:"Nusxalandi",prevEl:"Oldingi element",nextEl:"Keyingi element",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",uzTitle:"O'zbekistonda",
+      cap:{solid:"Moddaning haqiqiy ko'rinishi",liquid:"Xona haroratida suyuq",glow:"Radioaktivligi tufayli qorong'ida xira yog'du sochadi",
+        gas_discharge:"Rangsiz gaz — ampulada elektr razryadi nuri bilan",gas_colored:"Shisha ampulada — gazning o'z rangi",gas_colorless:"Rangsiz gaz, shisha ampulada",
+        predicted:"Taxminiy model — ko'zga ko'rinadigan miqdorda hech qachon olinmagan"},periodFmt:"{n}-davr",lanthGroup:"Lantanoidlar",actGroup:"Aktinoidlar",viewList:"Ro'yxat",viewTable:"Jadval",copyLink:"Havolani nusxalash",copied:"Nusxalandi",prevEl:"Oldingi element",nextEl:"Keyingi element",pageTitle:"Mendeleyev 3D — Interaktiv davriy jadval",noResults:"Hech qanday element topilmadi",noResultsFor:"bo'yicha hech qanday element topilmadi",clearFilters:"Filtrni tozalash",
       f:{symbol:"Belgisi",number:"Atom raqami",mass:"Atom massasi",cat:"Kategoriya",group:"Guruh",period:"Period",block:"Blok",econf:"Elektron konfiguratsiyasi",shells:"Qavatlar",valence:"Valent elektronlar",protons:"Protonlar",neutrons:"Neytronlar",electrons:"Elektronlar",ox:"Oksidlanish darajalari",phase:"Fizik holati",density:"Zichligi",melt:"Erish harorati",boil:"Qaynash harorati",radius:"Atom radiusi",ion:"Ionlanish energiyasi",eneg:"Elektrmanfiyligi"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Periodic Table",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",matCaption:"3D appearance of the substance",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",uzTitle:"In Uzbekistan",periodFmt:"Period {n}",lanthGroup:"Lanthanides",actGroup:"Actinides",viewList:"List",viewTable:"Table",copyLink:"Copy link",copied:"Copied",prevEl:"Previous element",nextEl:"Next element",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",uzTitle:"In Uzbekistan",
+      cap:{solid:"How the substance really looks",liquid:"Liquid at room temperature",glow:"Glows faintly in the dark because of its radioactivity",
+        gas_discharge:"Colourless gas — shown glowing in an electric discharge",gas_colored:"In a glass ampoule — the gas's own colour",gas_colorless:"Colourless gas in a glass ampoule",
+        predicted:"Predicted model — never made in a visible amount"},periodFmt:"Period {n}",lanthGroup:"Lanthanides",actGroup:"Actinides",viewList:"List",viewTable:"Table",copyLink:"Copy link",copied:"Copied",prevEl:"Previous element",nextEl:"Next element",pageTitle:"Mendeleev 3D — Interactive Periodic Table",noResults:"No elements found",noResultsFor:"— no matching elements",clearFilters:"Clear filters",
       f:{symbol:"Symbol",number:"Atomic number",mass:"Atomic mass",cat:"Category",group:"Group",period:"Period",block:"Block",econf:"Electron configuration",shells:"Shells",valence:"Valence electrons",protons:"Protons",neutrons:"Neutrons",electrons:"Electrons",ox:"Oxidation states",phase:"Phase",density:"Density",melt:"Melting point",boil:"Boiling point",radius:"Atomic radius",ion:"Ionization energy",eneg:"Electronegativity"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Таблица Менделеева",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",matCaption:"3D вид вещества",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",uzTitle:"В Узбекистане",periodFmt:"{n}-й период",lanthGroup:"Лантаноиды",actGroup:"Актиноиды",viewList:"Список",viewTable:"Таблица",copyLink:"Скопировать ссылку",copied:"Скопировано",prevEl:"Предыдущий элемент",nextEl:"Следующий элемент",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",uzTitle:"В Узбекистане",
+      cap:{solid:"Как вещество выглядит на самом деле",liquid:"Жидкость при комнатной температуре",glow:"Слабо светится в темноте из-за радиоактивности",
+        gas_discharge:"Бесцветный газ — показан свечением в электрическом разряде",gas_colored:"В стеклянной ампуле — собственный цвет газа",gas_colorless:"Бесцветный газ в стеклянной ампуле",
+        predicted:"Предполагаемая модель — никогда не получен в видимом количестве"},periodFmt:"{n}-й период",lanthGroup:"Лантаноиды",actGroup:"Актиноиды",viewList:"Список",viewTable:"Таблица",copyLink:"Скопировать ссылку",copied:"Скопировано",prevEl:"Предыдущий элемент",nextEl:"Следующий элемент",pageTitle:"Менделеев 3D — Интерактивная таблица Менделеева",noResults:"Элементы не найдены",noResultsFor:"— элементы не найдены",clearFilters:"Сбросить фильтр",
       f:{symbol:"Символ",number:"Атомный номер",mass:"Атомная масса",cat:"Категория",group:"Группа",period:"Период",block:"Блок",econf:"Электронная конфигурация",shells:"Оболочки",valence:"Валентные электроны",protons:"Протоны",neutrons:"Нейтроны",electrons:"Электроны",ox:"Степени окисления",phase:"Агрегатное состояние",density:"Плотность",melt:"Температура плавления",boil:"Температура кипения",radius:"Атомный радиус",ion:"Энергия ионизации",eneg:"Электроотрицательность"},
       ph:{solid:"Твёрдое",liquid:"Жидкое",gas:"Газ"}}
   }[this.state.lang]; }
@@ -452,6 +461,8 @@ class Component extends DCLogic {
     ['actinide','#ff7a9c',{uz:"Aktinoid",en:"Actinide",ru:"Актиноид"}],
     ['unknown','#8b95b5',{uz:"Noma'lum",en:"Unknown",ru:"Неизвестно"}],
   ]; }
+  // electron shells K…Q, inner to outer, in spectrum order
+  SHELL_COLORS = ['#ff8a5c','#ffd24d','#7ee787','#4dd2ff','#6f8bff','#c08bff','#ff7ad9'];
   catColor(c){ const f=this.CATS().find(x=>x[0]===c); return f?f[1]:'#8b95b5'; }
   catLabel(c){ const f=this.CATS().find(x=>x[0]===c); return f?f[2][this.state.lang]:c; }
   rgba(hex,a){ const n=parseInt(hex.slice(1),16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; }
@@ -602,8 +613,8 @@ class Component extends DCLogic {
       selected = { z:el.z, sym:el.sym, name:el.name[L], catName:this.catLabel(el.cat),
         massLabel: el.mass+' u', accent:col, accentSoft:this.rgba(col,.16),
         phaseLabel: ui.ph[el.phase], radioactive:this.isRadioactive(el.z), radioLabel:ui.radioLabel,
-        matCaption: ui.matCaption, neutrons, desc, facts, hasFacts: !!facts, uzText, hasUz: !!uzText, rows, quickStats,
-        shellChips: el.shells.map((c,i)=>({label:shellNames[i]||('n'+(i+1)), count:c})),
+        matCaption: ui.cap[this._matKind(this._matSpec(el))], neutrons, desc, facts, hasFacts: !!facts, uzText, hasUz: !!uzText, rows, quickStats,
+        shellChips: el.shells.map((c,i)=>{ const sc=this.SHELL_COLORS[i]||'#ffffff'; return {label:shellNames[i]||('n'+(i+1)), count:c, color:sc, border:this.rgba(sc,.45), bg:this.rgba(sc,.08)}; }),
         discYear: el.disc.year, discBy: el.disc.by };
       const prevEl=DATA.find(e=>e.z===el.z-1), nextEl=DATA.find(e=>e.z===el.z+1);
       Object.assign(selected, {
@@ -696,13 +707,14 @@ class Component extends DCLogic {
   _studioEnv(THREE){
     const c=document.createElement('canvas'); c.width=512; c.height=256; const x=c.getContext('2d');
     const g=x.createLinearGradient(0,0,0,256);
-    g.addColorStop(0,'#aebfda'); g.addColorStop(0.42,'#54637f'); g.addColorStop(0.5,'#3a4357'); g.addColorStop(0.62,'#2c3344'); g.addColorStop(1,'#161b27');
+    // neutral grey studio: a tinted environment would tint every metal (gold turned olive under a bluish one)
+    g.addColorStop(0,'#c9cbcf'); g.addColorStop(0.42,'#6b6e74'); g.addColorStop(0.5,'#4a4c51'); g.addColorStop(0.62,'#34363b'); g.addColorStop(1,'#1a1b1e');
     x.fillStyle=g; x.fillRect(0,0,512,256);
     const spot=(cx,cy,r,col)=>{ const rg=x.createRadialGradient(cx,cy,0,cx,cy,r); rg.addColorStop(0,col); rg.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=rg; x.fillRect(0,0,512,256); };
     spot(150,50,165,'rgba(255,255,255,1)');
     spot(300,26,175,'rgba(255,246,228,0.9)');
-    spot(400,88,140,'rgba(205,228,255,0.85)');
-    spot(70,150,150,'rgba(160,190,245,0.55)');
+    spot(400,88,140,'rgba(235,240,248,0.85)');
+    spot(70,150,150,'rgba(200,205,215,0.5)');
     const t=new THREE.CanvasTexture(c); t.mapping=THREE.EquirectangularReflectionMapping; t.encoding=THREE.sRGBEncoding; return t;
   }
 
@@ -738,10 +750,11 @@ class Component extends DCLogic {
     el.shells.forEach((count,si)=>{ const r=base+si*step; const g=new THREE.Group();
       g.rotation.x=(si*37)*Math.PI/180; g.rotation.y=(si*61)*Math.PI/180;
       const pts=[]; const seg=96; for(let i=0;i<=seg;i++){const a=i/seg*Math.PI*2;pts.push(new THREE.Vector3(Math.cos(a)*r,Math.sin(a)*r,0));}
-      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:accent,transparent:true,opacity:0.32,blending:THREE.AdditiveBlending})));
-      const eCol=new THREE.Color(0xffd24d);
-      const eGeo=new THREE.SphereGeometry(0.09,12,12), eMat=new THREE.MeshBasicMaterial({color:eCol});
-      const hGeo=new THREE.SphereGeometry(0.2,12,12), hMat=new THREE.MeshBasicMaterial({color:eCol,transparent:true,opacity:0.3,blending:THREE.AdditiveBlending});
+      // each shell has its own colour (same as the shell cards on the right); electrons are white with a halo in that colour
+      const sCol=new THREE.Color(this.SHELL_COLORS[si]||'#ffffff').convertSRGBToLinear();
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:sCol,transparent:true,opacity:0.55,blending:THREE.AdditiveBlending})));
+      const eGeo=new THREE.SphereGeometry(0.09,12,12), eMat=new THREE.MeshBasicMaterial({color:0xffffff});
+      const hGeo=new THREE.SphereGeometry(0.2,12,12), hMat=new THREE.MeshBasicMaterial({color:sCol,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending});
       for(let i=0;i<count;i++){const a=i/count*Math.PI*2;const e=new THREE.Mesh(eGeo,eMat);e.position.set(Math.cos(a)*r,Math.sin(a)*r,0);const h=new THREE.Mesh(hGeo,hMat);h.position.copy(e.position);g.add(e);g.add(h);}
       content.add(g); S.shells.push({group:g,speed:0.32/(si*0.5+1)});
     });
@@ -749,106 +762,61 @@ class Component extends DCLogic {
     S.camDist=outerR*2.55+1.5;
   }
 
-  _matSpec(el){
-    // realistic appearance: c=color, m=metalness, r=roughness, form, glow, translucent
-    const byEl={
-      // ---- gases -> glowing colored clouds ----
-      H:{c:0xdcebff,form:'orb',glow:0x5aa8ff,aura:0xffffff}, He:{c:0xf0d8ee,form:'orb',glow:0xc488ef,aura:0xc08bff,particles:true},
-      N:{c:0xcfe0ff,form:'orb',glow:0x3a6fff,aura:0x4a7bff,particles:true}, O:{c:0xdcefff,form:'orb',glow:0x4db8ff,aura:0x8fd0ff,particles:true},
-      F:{c:0xeaf7d0,form:'orb',glow:0xcde85a,aura:0xb6f56b,particles:true}, Ne:{c:0xffe0c8,form:'orb',glow:0xff7a2a,aura:0xff9a3d,particles:true},
-      Cl:{c:0xdcffcf,form:'orb',glow:0x7cfc00,aura:0x7cfc00,particles:true}, Ar:{c:0xd8d0ff,form:'orb',glow:0x6a5acd,aura:0x6a5acd,particles:true},
-      Kr:{c:0xcdeaff,form:'orb',glow:0x4db0ff,aura:0x87cefa,particles:true}, Xe:{c:0xd6fdff,form:'orb',glow:0x3ae0ff,aura:0x7df9ff,particles:true},
-      // ---- native / precious metals -> nuggets ----
-      Au:{c:0xffd700,m:1,r:0.1,form:'facet',glow:0xffcb3a}, Ag:{c:0xededed,m:1,r:0.06,form:'facet'},
-      Cu:{c:0xb87333,m:1,r:0.22,form:'facet'}, Pt:{c:0xf8f8ff,m:1,r:0.05,form:'gem'},
-      Cr:{c:0xc0c0c0,m:1,r:0.05,form:'facet'}, Mn:{c:0x5b4b6a,m:0.9,r:0.4,form:'facet',glow:0x7a5aa0},
-      Rh:{c:0xf5f5f5,m:1,r:0.05,form:'facet'}, Ru:{c:0x7a7a7a,m:1,r:0.3,form:'prism'},
-      Ga:{c:0xdcdcdc,m:1,r:0.04,form:'droplet'},
-      // ---- industrial / transition metals -> cast ingots ----
-      Fe:{c:0x6e737b,m:1,r:0.35,form:'prism',glow:0xff7a3a}, Pb:{c:0x7d8595,m:1,r:0.5,form:'ingot'},
-      Sn:{c:0xd6d9dc,m:1,r:0.14,form:'prism',glow:0xeef2ff}, Zn:{c:0xbcc6cc,m:1,r:0.32,form:'prism'},
-      Ni:{c:0xa8b5a2,m:1,r:0.2,form:'cube',glow:0x9fd9a0}, Al:{c:0xd9d9d9,m:1,r:0.12,form:'gem'},
-      Ti:{c:0x708090,m:1,r:0.4,form:'facet'}, Co:{c:0x0047ab,m:0.85,r:0.16,form:'gem',glow:0x2a6fff},
-      W:{c:0x9a9aa0,m:1,r:0.4,form:'ingot'}, Mo:{c:0x5f6a72,m:1,r:0.32,form:'cube',glow:0xdfe6ee},
-      Mg:{c:0xd2d7de,m:1,r:0.3,form:'prism'}, V:{c:0x8b5a2b,m:0.85,r:0.3,form:'facet',glow:0xc8641e},
-      Nb:{c:0x5d3fd3,m:0.85,r:0.2,form:'facet',glow:0x4a3fd3}, Tc:{c:0x39ff14,m:0.1,r:0.2,form:'dodeca',translucent:0.6,glow:0x39ff14},
-      Pd:{c:0xd8d8d8,m:1,r:0.22,form:'gem'}, Cd:{c:0xb8c6db,m:1,r:0.3,form:'prism'},
-      In:{c:0xc9d6e3,m:1,r:0.05,form:'droplet'}, Sc:{c:0xb0c4de,m:1,r:0.3,form:'prism'},
-      Y:{c:0x40e0d0,m:0.8,r:0.2,form:'prism',glow:0x40e0d0}, Zr:{c:0xe5e4e2,m:1,r:0.08,form:'facet'},
-      Sr:{c:0xf6f7fc,m:1,r:0.26,form:'prism'}, Ba:{c:0x98fb98,m:0.9,r:0.26,form:'prism',glow:0x7be08a},
-      La:{c:0xf5f5f0,m:0.5,r:0.18,form:'prism',translucent:0.4,glow:0xfff0c0}, Ce:{c:0xdaa520,m:0.6,r:0.25,form:'dodeca',glow:0xffb020},
-      Pr:{c:0x00a86b,m:0.7,r:0.2,form:'prism',glow:0x00d986},
-      // ---- soft alkali metals -> knife-cut shiny cubes ----
-      Li:{c:0xc4c8ce,m:1,r:0.44,form:'cube'}, Na:{c:0xdde0e6,m:1,r:0.3,form:'cube'},
-      K:{c:0x9370db,m:1,r:0.4,form:'cube'}, Rb:{c:0x7b68ee,m:1,r:0.4,form:'cube',glow:0x9a86ff},
-      Cs:{c:0xf4c430,m:1,r:0.32,form:'cube'}, Ra:{c:0x6f5f70,m:1,r:0.4,form:'cube',glow:0x9be0ff},
-      // ---- liquids ----
-      Hg:{c:0xc0c0c0,m:1,r:0.03,form:'droplet'}, Br:{c:0x8b2500,m:0.1,r:0.08,form:'liquid',translucent:0.7,glow:0xff5a1e},
-      // ---- crystalline non-metals / metalloids ----
-      S:{c:0xffd700,m:0.1,r:0.3,form:'dodeca',glow:0xffd700}, B:{c:0x24262c,m:0.55,r:0.32,form:'facet',glow:0xff5a2a},
-      As:{c:0x3d3d3d,m:0.7,r:0.3,form:'facet',glow:0x4a8f4a}, Sb:{c:0x4b4b5a,m:0.7,r:0.3,form:'facet',glow:0x8a6fc0},
-      Te:{c:0x6c7a5b,m:0.7,r:0.25,form:'crystal',glow:0x7be08a}, Bi:{c:0xb7a6c4,m:1,r:0.26,form:'crystal'},
-      // ---- faceted gems ----
-      C:{c:0x1c1e22,m:0.5,r:0.12,form:'facet'}, Si:{c:0x5e6b73,m:0.8,r:0.16,form:'gem',glow:0x3a8fff},
-      Ge:{c:0x7f8c8d,m:0.6,r:0.14,form:'gem',translucent:0.5,glow:0x3a9fff},
-      // ---- stacked flakes ----
-      I:{c:0x6a0dad,m:0.4,r:0.16,form:'gem',translucent:0.55,glow:0x9b30ff},
-      // ---- rough lumps ----
-      P:{c:0x8a2be2,m:0.3,r:0.18,form:'facet',translucent:0.6,glow:0x8a2be2}, Se:{c:0x8b0000,m:0.3,r:0.2,form:'crystal',translucent:0.6,glow:0xff5a1e},
-      Ca:{c:0xf2f3f8,m:1,r:0.28,form:'prism'}, Be:{c:0xd2d7de,m:1,r:0.24,form:'prism'},
-      // ---- lanthanides (silver-toned rare-earth metals) ----
-      Nd:{c:0x9370db,m:0.7,r:0.18,form:'gem',glow:0x7a5fff}, Pm:{c:0xff1493,m:0.1,r:0.2,form:'dodeca',translucent:0.6,glow:0xff1493},
-      Sm:{c:0x8b1e3f,m:0.8,r:0.24,form:'prism',glow:0xc83a5a}, Eu:{c:0xff3131,m:0.3,r:0.16,form:'gem',translucent:0.55,glow:0xff3131},
-      Gd:{c:0x5f9ea0,m:1,r:0.18,form:'facet',glow:0x8fd0e0}, Tb:{c:0x00c957,m:0.6,r:0.2,form:'crystal',glow:0x00ff7a},
-      Dy:{c:0x6f42c1,m:0.9,r:0.2,form:'facet',glow:0x9a6fff}, Ho:{c:0xff8c00,m:0.3,r:0.2,form:'facet',translucent:0.5,glow:0xffae3a},
-      Er:{c:0xffb6c1,m:0.3,r:0.16,form:'prism',translucent:0.5,glow:0xff8fb0}, Tm:{c:0x00ced1,m:0.3,r:0.18,form:'facet',translucent:0.5,glow:0x00ced1},
-      Yb:{c:0xf0e68c,m:1,r:0.16,form:'facet',glow:0xfff0b0}, Lu:{c:0xe5e4e2,m:1,r:0.08,form:'facet',glow:0xcfe0ff},
-      // ---- 5d transition metals ----
-      Hf:{c:0x5c5c5c,m:1,r:0.28,form:'dodeca',glow:0x6fb0e0}, Ta:{c:0x465a65,m:1,r:0.12,form:'gem',glow:0x4db0ff},
-      W:{c:0x4a4a4a,m:1,r:0.34,form:'cube',glow:0xffd98a}, Re:{c:0x6e4b3a,m:0.9,r:0.25,form:'facet',glow:0xff8a3a},
-      Os:{c:0x2f4f4f,m:1,r:0.18,form:'facet',glow:0x3a8fd0}, Ir:{c:0x5d478b,m:1,r:0.14,form:'facet',glow:0x9a6fff},
-      Tl:{c:0x708238,m:1,r:0.28,form:'prism',glow:0xc8d05a}, Pb:{c:0x545454,m:1,r:0.5,form:'cube'},
-      Bi:{form:'bismuth'},
-      // ---- gases (noble) ----
-      Rn:{c:0xdef4f7,form:'orb',glow:0x7fd0e0,aura:0xb0e0e6,particles:true}, Og:{form:'oganesson'},
-      // ---- dark non-metallic heavies ----
-      At:{c:0x2b0033,m:0.4,r:0.25,form:'facet',translucent:0.4,glow:0xb030ff}, Ts:{c:0xadff2f,m:0.2,r:0.18,form:'facet',translucent:0.55,glow:0xadff2f},
-      // ---- radioactive metals with glow ----
-      Fr:{c:0xc21807,m:1,r:0.4,form:'cube',glow:0xff4a3a}, Ra:{c:0x7fff00,m:0.5,r:0.2,form:'prism',glow:0x7fff00},
-      Ac:{c:0xeaf6ff,m:0.5,r:0.12,form:'facet',translucent:0.4,glow:0x8fd0ff}, Th:{c:0xb35a1f,m:1,r:0.2,form:'gem',glow:0xff8a3a},
-      Pa:{c:0x8a7f6b,m:0.9,r:0.22,form:'facet',glow:0x6fb0d0}, U:{c:0x32cd32,m:0.1,r:0.2,form:'facet',translucent:0.55,glow:0x32cd32},
-      Np:{c:0x007fff,m:0.6,r:0.16,form:'facet',glow:0x3aa0ff}, Pu:{c:0xff5a36,m:0.4,r:0.2,form:'facet',glow:0xff5a36},
-      Am:{c:0xff69b4,m:0.2,r:0.18,form:'dodeca',translucent:0.5,glow:0xff69b4}, Cm:{c:0xff6a00,m:0.4,r:0.22,form:'facet',glow:0xff6a00},
-      Bk:{c:0x008b5a,m:0.6,r:0.2,form:'prism',glow:0x00c87a}, Cf:{c:0xffc300,m:0.3,r:0.2,form:'dodeca',glow:0xffc300},
-      Es:{c:0x9400d3,m:0.3,r:0.18,form:'dodeca',translucent:0.5,glow:0x9400d3}, Fm:{c:0xe0ffff,m:0.3,r:0.12,form:'facet',translucent:0.45,glow:0x8fe0ff},
-      Md:{c:0x7f00ff,m:0.3,r:0.16,form:'ico',translucent:0.5,glow:0x7f00ff}, No:{c:0xd6f5ff,m:0.3,r:0.12,form:'dodeca',translucent:0.45,glow:0x8fe0ff},
-      Lr:{c:0x1f4e79,m:1,r:0.18,form:'facet',glow:0x3a8fd0},
-      Po:{c:0xefff00,m:0.1,r:0.2,form:'dodeca',translucent:0.55,glow:0xefff00},
-      // ---- superheavy synthetic elements ----
-      Rf:{c:0x4f5b66,m:1,r:0.3,form:'cube',glow:0xdfe6ee}, Db:{c:0x8c6239,m:0.9,r:0.24,form:'facet',glow:0xd0903a},
-      Sg:{c:0x2e2e2e,m:1,r:0.3,form:'prism',glow:0xff5a3a}, Bh:{c:0xb22222,m:0.4,r:0.2,form:'crystal',translucent:0.5,glow:0xff4a2a},
-      Hs:{c:0x36454f,m:1,r:0.14,form:'facet',glow:0x4db0ff}, Mt:{c:0x8a2be2,m:0.6,r:0.16,form:'facet',glow:0x8a2be2},
-      Ds:{c:0xeaeaea,m:1,r:0.05,form:'gem'}, Rg:{c:0xe6be8a,m:1,r:0.12,form:'facet',glow:0xffd98a},
-      Cn:{c:0xc8c8c8,m:1,r:0.03,form:'droplet'}, Nh:{c:0xff8c42,m:0.6,r:0.2,form:'prism',glow:0xffae5a},
-      Fl:{c:0x696969,m:1,r:0.3,form:'dodeca',glow:0xdfe6ee}, Mc:{c:0xc71585,m:0.3,r:0.2,form:'facet',translucent:0.5,glow:0xc71585},
-      Lv:{c:0x228b22,m:0.6,r:0.2,form:'crystal',glow:0x2ad14e},
-    };
-    if(byEl[el.sym]) return byEl[el.sym];
-    const accent=parseInt(this.catColor(el.cat).slice(1),16);
-    const cat=el.cat, ph=el.phase;
-    if(ph==='gas') return {c:accent,form:'cloud',glow:accent};
-    if(ph==='liquid') return {c:accent,m:0.2,r:0.1,form:'liquid',translucent:0.85};
-    if(cat==='alkali') return {c:0xccd0d6,m:1,r:0.4,form:'cube'};
-    if(cat==='alkaline') return {c:0xc8cdd4,m:1,r:0.42,form:'chunk'};
-    if(cat==='transition') return {c:0xc2c7d0,m:1,r:0.3,form:'ingot'};
-    if(cat==='post') return {c:0xbcc2cc,m:1,r:0.34,form:'ingot'};
-    if(cat==='lanthanide') return {c:0xc4c2cc,m:1,r:0.38,form:'ingot'};
-    if(cat==='actinide') return {c:0xb9bcc6,m:1,r:0.4,form:'ingot',glow:0x6fe08a};
-    if(cat==='metalloid') return {c:0x4a525f,m:0.7,r:0.2,form:'gem'};
-    if(cat==='nonmetal') return {c:accent,m:0,r:0.45,form:'chunk'};
-    if(cat==='halogen') return {c:accent,m:0.2,r:0.25,form:'crystal',translucent:0.8};
-    if(cat==='unknown') return {c:accent,form:'cloud',glow:accent};
-    return {c:accent,m:0.2,r:0.4,form:'chunk'};
+  // How each element really looks: on a lab bench, or (for gases) sealed in a glass ampoule.
+  // c = base colour in sRGB (for metals this is the reflectance colour), m = metalness (default 1), r = roughness.
+  // gas: 'discharge' = colourless gas shown glowing as in a gas-discharge tube, 'colored' = gas with a visible colour
+  //      of its own, 'colorless' = plain sealed ampoule.  glow = real luminescence (radioactive elements that glow).
+  MAT(){ return {
+    H:{form:'ampoule',gas:'discharge',c:0xd48cf0}, He:{form:'ampoule',gas:'discharge',c:0xffcba4},
+    Li:{form:'cube',c:0xc9c9c4,r:0.38}, Be:{form:'chunk',c:0xb8bcc2,r:0.32},
+    B:{form:'facet',c:0x2a2624,m:0.15,r:0.35}, C:{form:'flakes',c:0x232427,m:0.2,r:0.6},
+    N:{form:'ampoule',gas:'discharge',c:0xc69bff}, O:{form:'ampoule',gas:'discharge',c:0xe2d6ff},
+    F:{form:'ampoule',gas:'colored',c:0xf3ec98}, Ne:{form:'ampoule',gas:'discharge',c:0xff5a1e},
+    Na:{form:'cube',c:0xd6d7d2,r:0.32}, Mg:{form:'ingot',c:0xcfd2d4,r:0.3},
+    Al:{form:'ingot',c:0xe4e6e8,r:0.24}, Si:{form:'facet',c:0x4f555e,m:0.65,r:0.18},
+    P:{form:'chunk',c:0xefe6c8,m:0,r:0.55,translucent:0.25}, S:{form:'crystal',c:0xe0b000,m:0,r:0.5},
+    Cl:{form:'ampoule',gas:'colored',c:0xc8e05a}, Ar:{form:'ampoule',gas:'discharge',c:0xb58cff},
+    K:{form:'cube',c:0xcfd0cc,r:0.36}, Ca:{form:'chunk',c:0xd8d6cc,r:0.4},
+    Sc:{form:'chunk',c:0xd4d4cf,r:0.34}, Ti:{form:'ingot',c:0xc1bab1,r:0.32}, V:{form:'chunk',c:0xb9bdc6,r:0.3},
+    Cr:{form:'facet',c:0xc4c5c8,r:0.1}, Mn:{form:'chunk',c:0xb8b5ae,r:0.5}, Fe:{form:'chunk',c:0xc4c7c7,r:0.45},
+    Co:{form:'ingot',c:0xc7ccd4,r:0.28}, Ni:{form:'ingot',c:0xd3cbbe,r:0.26}, Cu:{form:'nugget',c:0xe8956b,r:0.28},
+    Zn:{form:'ingot',c:0xc9d6db,r:0.35}, Ga:{form:'crystal',c:0xd6d9dc,r:0.1}, Ge:{form:'facet',c:0xa9acaf,m:0.85,r:0.14},
+    As:{form:'facet',c:0x7d8085,m:0.75,r:0.35}, Se:{form:'facet',c:0x5a5c60,m:0.55,r:0.3},
+    Br:{form:'liquid',c:0x3a0e05,vapor:0xb5502a}, Kr:{form:'ampoule',gas:'discharge',c:0xe8e2ff},
+    Rb:{form:'cube',c:0xd4d3cf,r:0.34}, Sr:{form:'chunk',c:0xdcd6c4,r:0.4}, Y:{form:'chunk',c:0xcfd0cc,r:0.34},
+    Zr:{form:'ingot',c:0xcbc8c0,r:0.28}, Nb:{form:'ingot',c:0xb8b9c0,r:0.3}, Mo:{form:'ingot',c:0xbabcbe,r:0.3},
+    Tc:{form:'chunk',c:0xb5b8bc,r:0.35}, Ru:{form:'chunk',c:0xc3c4c6,r:0.3}, Rh:{form:'ingot',c:0xd6d8da,r:0.15},
+    Pd:{form:'ingot',c:0xd8d4ca,r:0.2}, Ag:{form:'nugget',c:0xf2f0ea,r:0.2}, Cd:{form:'ingot',c:0xc8d0d8,r:0.3},
+    In:{form:'ingot',c:0xd3d6da,r:0.25}, Sn:{form:'ingot',c:0xd8dadc,r:0.25}, Sb:{form:'facet',c:0xc3c5c8,m:0.9,r:0.2},
+    Te:{form:'facet',c:0xb8babd,m:0.8,r:0.22}, I:{form:'flakes',c:0x2a2035,m:0.35,r:0.2},
+    Xe:{form:'ampoule',gas:'discharge',c:0x8fb0ff}, Cs:{form:'cube',c:0xe3c26b,r:0.25}, Ba:{form:'chunk',c:0xd0ccbd,r:0.4},
+    // lanthanides: all silvery metals, a few with a slight yellowish tarnish
+    La:{form:'chunk',c:0xd0cfc9,r:0.36}, Ce:{form:'chunk',c:0xcfcbbd,r:0.4}, Pr:{form:'chunk',c:0xc9c7b8,r:0.4},
+    Nd:{form:'chunk',c:0xc6c5c0,r:0.38}, Pm:{form:'chunk',c:0xc8c9cc,r:0.36}, Sm:{form:'chunk',c:0xcfcbbf,r:0.36},
+    Eu:{form:'chunk',c:0xd6cfa8,r:0.45}, Gd:{form:'chunk',c:0xcfd0d0,r:0.32}, Tb:{form:'chunk',c:0xcbccc9,r:0.34},
+    Dy:{form:'chunk',c:0xcfcfcf,r:0.32}, Ho:{form:'chunk',c:0xcfcdc6,r:0.34}, Er:{form:'chunk',c:0xd0cfcc,r:0.32},
+    Tm:{form:'chunk',c:0xc8c9cb,r:0.32}, Yb:{form:'chunk',c:0xd6d2c3,r:0.34}, Lu:{form:'chunk',c:0xcfd0d2,r:0.3},
+    Hf:{form:'ingot',c:0xb7b8b9,r:0.3}, Ta:{form:'ingot',c:0xa8adb8,r:0.3}, W:{form:'ingot',c:0xb6b8bb,r:0.32},
+    Re:{form:'chunk',c:0xbabbbc,r:0.3}, Os:{form:'chunk',c:0x9eaabb,r:0.25}, Ir:{form:'chunk',c:0xcfd2d6,r:0.22},
+    Pt:{form:'nugget',c:0xd5d0c8,r:0.18}, Au:{form:'nugget',c:0xffc94a,r:0.16}, Hg:{form:'droplet',c:0xe3e3e3,r:0.03},
+    Tl:{form:'chunk',c:0xb3b6b8,r:0.4}, Pb:{form:'ingot',c:0x8e9196,r:0.45}, Bi:{form:'bismuth'},
+    Po:{form:'chunk',c:0xc6c6c8,r:0.35,glow:0x6f9dff}, Rn:{form:'ampoule',gas:'colorless',c:0xffffff},
+    Ra:{form:'chunk',c:0xd2d3ce,r:0.4,glow:0x7fb0ff}, Ac:{form:'chunk',c:0xc6c8cb,r:0.38,glow:0x8fc0ff},
+    // actinides that have been made in visible amounts: silvery metals
+    Th:{form:'ingot',c:0xbfc0bd,r:0.32}, Pa:{form:'chunk',c:0xc3c3c0,r:0.35}, U:{form:'ingot',c:0xb5b6b4,r:0.4},
+    Np:{form:'chunk',c:0xb8b9b6,r:0.38}, Pu:{form:'chunk',c:0xa9aaa6,r:0.5}, Am:{form:'chunk',c:0xd8d8d6,r:0.34},
+    Cm:{form:'chunk',c:0xc9c9c8,r:0.36}, Bk:{form:'chunk',c:0xc8c9c8,r:0.36}, Cf:{form:'chunk',c:0xcfcfcf,r:0.34},
+    Es:{form:'chunk',c:0xbfc3c8,r:0.38,glow:0x6fa8ff},
+  }; }
+  // anything not listed (At, Fr, and Fm onwards) has never been made in an amount you could see
+  _matSpec(el){ return this.MAT()[el.sym] || {form:'predicted'}; }
+  // which caption explains the material view
+  _matKind(spec){
+    if(spec.form==='predicted') return 'predicted';
+    if(spec.form==='ampoule') return 'gas_'+spec.gas;
+    if(spec.glow) return 'glow';
+    if(spec.form==='liquid'||spec.form==='droplet') return 'liquid';
+    return 'solid';
   }
 
   // rounded box: clamp each vertex to an inner box, then push out by corner radius
@@ -867,90 +835,71 @@ class Component extends DCLogic {
     const form=spec.form||'chunk';
     S.camDist=6.0;
     const sd=el.z*0.7393;
+    // MAT colours are sRGB; three r128 takes hex as linear, so convert or every colour comes out washed-out
+    const lin=(hex)=>new THREE.Color(hex).convertSRGBToLinear();
     const rnd=(i)=>{ const x=Math.sin(sd*9.71+i*53.27)*43758.5453; return x-Math.floor(x); };
-    const addGlow=(r)=>{ if(spec.glow) content.add(new THREE.Mesh(new THREE.SphereGeometry(r||2.6,30,30),new THREE.MeshBasicMaterial({color:spec.glow,transparent:true,opacity:0.09,blending:THREE.AdditiveBlending,depthWrite:false}))); };
-
-    // ---------- gas: glowing particle cloud ----------
-    if(form==='cloud'){
-      const col=new THREE.Color(spec.c);
-      // normal blending keeps the colour saturated (additive overload whitens under ACES tonemapping)
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.5,48,48),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.42,depthWrite:false})));
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(2.0,36,36),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.16,depthWrite:false})));
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(2.45,28,28),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.05,blending:THREE.AdditiveBlending,depthWrite:false})));
-      const N=820; const pos=new Float32Array(N*3);
-      for(let i=0;i<N;i++){ let v;do{v=new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1);}while(v.lengthSq()>1); v.multiplyScalar(0.4+Math.pow(Math.random(),0.6)*1.9); pos[i*3]=v.x;pos[i*3+1]=v.y;pos[i*3+2]=v.z; }
-      const pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
-      const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:col,size:0.07,transparent:true,opacity:0.92,depthWrite:false,sizeAttenuation:true}));
-      content.add(pts); S.gasPts=pts; S.matGroup=content; S.isGas=true; return;
-    }
-
+    // only for elements that really luminesce (radioactive glow): a faint coloured halo
+    const addGlow=(r)=>{ if(spec.glow) content.add(new THREE.Mesh(new THREE.SphereGeometry(r||2.5,30,30),new THREE.MeshBasicMaterial({color:spec.glow,transparent:true,opacity:0.08,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false}))); };
+    // unlit colour exactly as given (tone mapping would wash gas colours out to white)
+    const flat=(col,opacity,additive)=>new THREE.MeshBasicMaterial({color:col,transparent:true,opacity,depthWrite:false,toneMapped:false,blending:additive?THREE.AdditiveBlending:THREE.NormalBlending});
     const makeMat=(flat)=> spec.translucent
-      ? new THREE.MeshPhysicalMaterial({color:spec.c,metalness:spec.m||0,roughness:spec.r==null?0.2:spec.r,transmission:spec.translucent,transparent:true,opacity:Math.max(0.5,1-spec.translucent*0.45),depthWrite:false,envMapIntensity:1.4,clearcoat:0.7,clearcoatRoughness:0.1,flatShading:flat,emissive:spec.glow?new THREE.Color(spec.glow):0x000000,emissiveIntensity:spec.glow?0.4:0})
-      : new THREE.MeshStandardMaterial({color:spec.c,metalness:spec.m==null?1:spec.m,roughness:spec.r==null?0.35:spec.r,envMapIntensity:1.3,flatShading:flat,emissive:spec.glow?new THREE.Color(spec.glow):0x000000,emissiveIntensity:spec.glow?0.45:0});
+      ? new THREE.MeshPhysicalMaterial({color:lin(spec.c),metalness:spec.m||0,roughness:spec.r==null?0.3:spec.r,transmission:spec.translucent,transparent:true,opacity:0.95,envMapIntensity:1.1,clearcoat:0.3,flatShading:flat})
+      : new THREE.MeshStandardMaterial({color:lin(spec.c),metalness:spec.m==null?1:spec.m,roughness:spec.r==null?0.35:spec.r,envMapIntensity:1.25,flatShading:flat,
+          emissive:spec.glow?lin(spec.glow):0x000000,emissiveIntensity:spec.glow?0.07:0});
+    const points=(n,place,col,size,opacity)=>{ const pos=new Float32Array(n*3);
+      for(let i=0;i<n;i++){ const v=place(i); pos[i*3]=v.x; pos[i*3+1]=v.y; pos[i*3+2]=v.z; }
+      const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      return new THREE.Points(g,new THREE.PointsMaterial({color:col,size,transparent:true,opacity,depthWrite:false})); };
+    const inBall=(R)=>{ let v; do{ v=new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1); }while(v.lengthSq()>1); return v.multiplyScalar(R); };
 
-    // ---------- glass orb (hydrogen, helium): transparent crystal sphere + inner glow + aura ----------
-    if(form==='orb'){
-      S.camDist=5.6;
-      const auraCol=new THREE.Color(spec.aura||spec.c);
-      const coreCol=new THREE.Color(spec.glow||spec.c);
-      // saturated colored body — normal blending keeps the hue regardless of studio env
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.5,96,96), new THREE.MeshBasicMaterial({color:coreCol,transparent:true,opacity:0.42,depthWrite:false})));
-      // bright inner core
-      const core=new THREE.Mesh(new THREE.SphereGeometry(0.62,40,40),new THREE.MeshBasicMaterial({color:coreCol,transparent:true,opacity:0.6,blending:THREE.AdditiveBlending,depthWrite:false}));
-      content.add(core); S.orbCore=core;
-      // subtle tinted glossy shell for a glassy highlight (low env so it does not whiten)
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.52,64,64), new THREE.MeshStandardMaterial({color:auraCol,metalness:0,roughness:0.12,transparent:true,opacity:0.16,depthWrite:false,envMapIntensity:0.5})));
-      // glowing aura shells
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.74,48,48),new THREE.MeshBasicMaterial({color:auraCol,transparent:true,opacity:0.2,blending:THREE.AdditiveBlending,depthWrite:false})));
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(2.1,36,36),new THREE.MeshBasicMaterial({color:auraCol,transparent:true,opacity:0.1,blending:THREE.AdditiveBlending,depthWrite:false})));
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(2.5,28,28),new THREE.MeshBasicMaterial({color:auraCol,transparent:true,opacity:0.05,blending:THREE.AdditiveBlending,depthWrite:false})));
-      if(spec.particles){ const N=170; const pos=new Float32Array(N*3);
-        for(let i=0;i<N;i++){ let v;do{v=new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1);}while(v.lengthSq()>1); v.multiplyScalar(Math.pow(Math.random(),0.5)*1.3); pos[i*3]=v.x;pos[i*3+1]=v.y;pos[i*3+2]=v.z; }
-        const pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
-        const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:auraCol,size:0.07,transparent:true,opacity:0.95,depthWrite:false,blending:THREE.AdditiveBlending})); content.add(pts); S.gasPts=pts; }
-      S.matGroup=content; return;
-    }
-
-    // ---------- hexagonal crystal prism (beryllium) ----------
-    if(form==='prism'){
-      S.camDist=6.3; const m=makeMat(true); if(spec.glow) m.emissiveIntensity=0.18;
-      const prism=new THREE.Mesh(new THREE.CylinderGeometry(1.18,1.18,2.5,6,1,false), m);
-      prism.rotation.set(0.2,0.42,0.07); content.add(prism);
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(2.5,30,30),new THREE.MeshBasicMaterial({color:0xeaf2ff,transparent:true,opacity:0.05,blending:THREE.AdditiveBlending,depthWrite:false})));
-      addGlow(); S.matGroup=content; return;
-    }
-
-    // ---------- single icosahedron crystal (mendelevium) ----------
-    if(form==='ico'){
-      S.camDist=6.0; const m=makeMat(true); if(spec.glow) m.emissiveIntensity=spec.translucent?0.3:0.22;
-      const ico=new THREE.Mesh(new THREE.IcosahedronGeometry(1.6,0), m); ico.rotation.set(0.3,0.5,0.1); content.add(ico);
-      addGlow(); S.matGroup=content; return;
-    }
-
-    // ---------- cosmic sphere with orbiting energy rings (oganesson) ----------
-    if(form==='oganesson'){
+    // ---------- gas in a sealed glass ampoule ----------
+    if(form==='ampoule'){
       S.camDist=6.4;
-      const cA=new THREE.Color(0x4b0082), cB=new THREE.Color(0x00bfff); const mid=cA.clone().lerp(cB,0.5);
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.3,96,96), new THREE.MeshBasicMaterial({color:mid,transparent:true,opacity:0.4,depthWrite:false})));
-      const core=new THREE.Mesh(new THREE.SphereGeometry(0.6,40,40), new THREE.MeshBasicMaterial({color:cB,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false})); content.add(core); S.orbCore=core;
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.32,64,64), new THREE.MeshStandardMaterial({color:cB,metalness:0,roughness:0.08,transparent:true,opacity:0.18,depthWrite:false,envMapIntensity:0.6})));
-      const ringData=[[2.0,0x9a6fff,0],[2.4,0x4db0ff,1.1],[2.8,0x7a3ad0,2.0]];
-      ringData.forEach(rd=>{ const tor=new THREE.Mesh(new THREE.TorusGeometry(rd[0],0.035,12,90), new THREE.MeshBasicMaterial({color:rd[1],transparent:true,opacity:0.6,blending:THREE.AdditiveBlending,depthWrite:false})); tor.rotation.set(Math.PI/2.4+rd[2], rd[2]*0.7, rd[2]); content.add(tor); });
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.7,40,40), new THREE.MeshBasicMaterial({color:cA,transparent:true,opacity:0.12,blending:THREE.AdditiveBlending,depthWrite:false})));
-      const N=420; const pos=new Float32Array(N*3);
-      for(let i=0;i<N;i++){ let v;do{v=new THREE.Vector3(Math.random()*2-1,Math.random()*2-1,Math.random()*2-1);}while(v.lengthSq()>1); v.multiplyScalar(0.6+Math.pow(Math.random(),0.5)*2.4); pos[i*3]=v.x;pos[i*3+1]=v.y*0.5;pos[i*3+2]=v.z; }
-      const pg=new THREE.BufferGeometry(); pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
-      const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:cB,size:0.06,transparent:true,opacity:0.9,depthWrite:false,blending:THREE.AdditiveBlending})); content.add(pts); S.gasPts=pts;
+      const amp=new THREE.Group(); amp.position.y=-0.45; content.add(amp);
+      // glass: faint body plus a brighter rim drawn from the back faces, so the bulb outline reads clearly
+      const glass=new THREE.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.05,transparent:true,opacity:0.13,depthWrite:false,envMapIntensity:2.2});
+      const rim=new THREE.MeshBasicMaterial({color:0xdfe8f5,transparent:true,opacity:0.09,side:THREE.BackSide,depthWrite:false,toneMapped:false});
+      const glassPart=(geo,y)=>{ [glass,rim].forEach(m=>{ const mesh=new THREE.Mesh(geo,m); mesh.position.y=y; amp.add(mesh); }); };
+      glassPart(new THREE.SphereGeometry(1.45,64,48),0);
+      glassPart(new THREE.CylinderGeometry(0.2,0.32,1.25,32,1,true),1.9);
+      glassPart(new THREE.SphereGeometry(0.2,24,16),2.52);
+      const col=lin(spec.c);
+      if(spec.gas==='discharge'){
+        // colourless gas lit by an electric discharge, as in an element sample tube
+        amp.add(new THREE.Mesh(new THREE.SphereGeometry(1.36,48,36),flat(col,0.42)));
+        const core=new THREE.Mesh(new THREE.SphereGeometry(0.7,36,28),flat(col,0.45));
+        amp.add(core); S.orbCore=core;
+        amp.add(new THREE.Mesh(new THREE.SphereGeometry(1.85,36,28),flat(col,0.07,true)));
+      } else if(spec.gas==='colored'){
+        // the gas itself is coloured (fluorine pale yellow, chlorine yellow-green)
+        amp.add(new THREE.Mesh(new THREE.SphereGeometry(1.38,48,36),flat(col,0.72)));
+        const pts=points(220,()=>inBall(1.3),col,0.05,0.7); pts.material.toneMapped=false; amp.add(pts); S.gasPts=pts;
+      } else {
+        const pts=points(120,()=>inBall(1.3),0xffffff,0.035,0.25); amp.add(pts); S.gasPts=pts;
+      }
       S.matGroup=content; return;
     }
 
-    // ---------- iridescent stepped hopper crystal (bismuth) ----------
+    // ---------- never seen in bulk: wireframe "predicted" model ----------
+    if(form==='predicted'){
+      S.camDist=6.2;
+      const col=new THREE.Color(0x7fd6ff);
+      const geo=new THREE.IcosahedronGeometry(1.55,1);
+      content.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.07,depthWrite:false})));
+      content.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.75})));
+      [-0.8,0,0.8].forEach(y=>{ const r=Math.sqrt(Math.max(0,1.55*1.55-y*y))+0.18;
+        const ring=new THREE.Mesh(new THREE.TorusGeometry(r,0.012,6,90),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.35,depthWrite:false}));
+        ring.rotation.x=Math.PI/2; ring.position.y=y; content.add(ring); });
+      S.matGroup=content; return;
+    }
+
+    // ---------- iridescent stepped hopper crystal (bismuth; the colours come from a thin oxide layer) ----------
     if(form==='bismuth'){
       S.camDist=6.6;
       const cols=[0x4db0ff,0x9a6fff,0xff6fc0,0x6fe0a0,0xffd24d];
       const group=new THREE.Group(); const steps=6; const h=0.32;
-      for(let i=0;i<steps;i++){ const s=2.5-i*0.34; const col=new THREE.Color(cols[i%cols.length]);
-        const m=new THREE.MeshStandardMaterial({color:col,metalness:1,roughness:0.16,envMapIntensity:1.7,emissive:col,emissiveIntensity:0.16});
+      for(let i=0;i<steps;i++){ const s=2.5-i*0.34; const col=lin(cols[i%cols.length]);
+        const m=new THREE.MeshStandardMaterial({color:col,metalness:1,roughness:0.16,envMapIntensity:1.7});
         const t=0.34, half=s/2, y=(i-(steps-1)/2)*h;
         const bar=(w,d,x,z)=>{ const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); mesh.position.set(x,y,z); group.add(mesh); };
         bar(s,t,0,half-t/2); bar(s,t,0,-(half-t/2)); bar(t,s-2*t,half-t/2,0); bar(t,s-2*t,-(half-t/2),0);
@@ -958,16 +907,9 @@ class Component extends DCLogic {
       group.rotation.set(0.22,0.5,0.05); content.add(group); S.matGroup=content; return;
     }
 
-    // ---------- single dodecahedron crystal (sulfur) ----------
-    if(form==='dodeca'){
-      S.camDist=6.0; const m=makeMat(true); if(spec.glow) m.emissiveIntensity=0.3;
-      const gem=new THREE.Mesh(new THREE.DodecahedronGeometry(1.6,0), m); gem.rotation.set(0.3,0.5,0.1); content.add(gem);
-      addGlow(); S.matGroup=content; return;
-    }
-
-    // ---------- multi-faceted dark mineral cluster (boron) ----------
+    // ---------- multi-faceted mineral cluster (boron, silicon, metalloids, chromium) ----------
     if(form==='facet'){
-      S.camDist=6.4; const m=makeMat(true); if(spec.glow) m.emissiveIntensity=0.22;
+      S.camDist=6.4; const m=makeMat(true);
       const cluster=new THREE.Group();
       const shapes=[
         [new THREE.IcosahedronGeometry(1.35,0),0,0,0],
@@ -990,11 +932,13 @@ class Component extends DCLogic {
       S.matGroup=content; return;
     }
 
-    // ---------- liquid blob (e.g. bromine) ----------
+    // ---------- dark liquid with its own vapour (bromine) ----------
     if(form==='liquid'){
-      S.camDist=5.7; S.isLiquid=true;
-      content.add(new THREE.Mesh(new THREE.SphereGeometry(1.72,96,96), makeMat(false)));
-      addGlow(); S.matGroup=content; return;
+      S.camDist=6.0; S.isLiquid=true;
+      const blob=new THREE.Mesh(new THREE.SphereGeometry(1.45,96,96),new THREE.MeshPhysicalMaterial({color:lin(spec.c),metalness:0,roughness:0.06,clearcoat:1,clearcoatRoughness:0.04,envMapIntensity:1.1}));
+      blob.scale.set(1.15,0.78,1.15); blob.position.y=-0.55; content.add(blob);
+      if(spec.vapor){ const pts=points(260,()=>{ const v=inBall(1); return new THREE.Vector3(v.x*1.5, 0.2+Math.abs(v.y)*2.1, v.z*1.5); },lin(spec.vapor),0.07,0.45); content.add(pts); S.gasPts=pts; }
+      S.matGroup=content; return;
     }
 
     // ---------- cast ingot / bar ----------
@@ -1005,9 +949,9 @@ class Component extends DCLogic {
       addGlow(); S.matGroup=content; return;
     }
 
-    // ---------- knife-cut metal cube (alkali) ----------
+    // ---------- knife-cut metal cube (soft alkali metals) ----------
     if(form==='cube'){
-      S.camDist=6.1; const m=makeMat(false); if(spec.glow) m.emissiveIntensity=0.22;
+      S.camDist=6.1; const m=makeMat(false);
       const main=new THREE.Mesh(this._roundedBox(THREE,1.95,1.95,1.95,0.14,8), m);
       main.rotation.set(0.18,0.62,0.06); content.add(main);
       const chip=new THREE.Mesh(this._roundedBox(THREE,0.9,0.82,0.95,0.1,6), m);
@@ -1015,15 +959,7 @@ class Component extends DCLogic {
       addGlow(2.7); S.matGroup=content; return;
     }
 
-    // ---------- faceted gem (diamond, silicon, germanium) ----------
-    if(form==='gem'){
-      S.camDist=5.9; const m=makeMat(true);
-      const gem=new THREE.Mesh(new THREE.OctahedronGeometry(1.65,0), m); gem.scale.set(1,1.32,1);
-      gem.rotation.y=0.4; content.add(gem);
-      addGlow(); S.matGroup=content; return;
-    }
-
-    // ---------- crystal cluster (sulfur, boron, antimony…) ----------
+    // ---------- crystal cluster (sulfur, gallium) ----------
     if(form==='crystal'){
       S.camDist=7.0; const m=makeMat(true); const cluster=new THREE.Group();
       const n=4+Math.floor(rnd(20)*3);
@@ -1051,7 +987,7 @@ class Component extends DCLogic {
       stack.rotation.set(0.32,0,0.18); content.add(stack); addGlow(); S.matGroup=content; return;
     }
 
-    // ---------- irregular nugget / rough chunk (default) ----------
+    // ---------- irregular nugget (native metals) / rough chunk (default) ----------
     {
       const isNugget = form==='nugget';
       S.camDist = isNugget?5.8:6.0;
