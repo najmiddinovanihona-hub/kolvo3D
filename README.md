@@ -39,7 +39,7 @@ data/
   facts.js          — qo'llanilishi va qiziqarli faktlar
   uzbekistan.js     — O'zbekistonda qazib olinadigan / ishlab chiqariladigan elementlar
   mendeleev.js      — «Mendeleyev haqida» sahifasi: xronologiya, bo'limlar, bashoratlar, rasmlar (Wikimedia Commons)
-  chemistry.js      — «Umumiy kimyo»: Birinchi qism, 6 bob, 53 mavzu (3 tilda), test savollari
+  chemistry.js      — «Umumiy kimyo»: Birinchi qism (6 bob, 53 mavzu) va Ikkinchi qism (5 bob, 42 mavzu), 3 tilda, test savollari
   details.js        — batafsil bo'limlar (tarix, tarqalishi, olinishi, kimyosi, biologiyasi, izotoplari) va qo'shimcha fizik xossalar
 assets/
   intro-bg.png      — kirish ekrani foni

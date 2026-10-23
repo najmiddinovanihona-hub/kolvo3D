@@ -28,7 +28,8 @@
         colorless: "rangsiz" },
       st: { solid: "Qattiq", liquid: "Suyuq", gas: "Gaz", melt: "Erish", freeze: "Qotish", boil: "Bug'lanish", cond: "Kondensatlanish", subl: "Sublimatsiya", depo: "Desublimatsiya" },
       sol: { title: "100 g suvda eriydigan modda, g", t: "Harorat, °C" },
-      crust: "Yer po'stidagi massa ulushi, %"
+      crust: "Yer po'stidagi massa ulushi, %",
+      diamond: ["Olmos — atom kristall panjarasi", "Har bir C atomi 4 ta qo'shni bilan kovalent bog'langan"], metal: ["Metall kristall panjarasi", "Musbat ionlar va erkin elektronlar (e⁻)"]
     },
     en: { drag: "Rotate: drag · Zoom: wheel", solid: "Solid", liquid: "Liquid", gas: "Gas", play: "▶ Replay",
       before: "Before the reaction", after: "After the reaction", reactants: "Reactants", products: "Products",
@@ -51,7 +52,8 @@
         colorless: "colourless" },
       st: { solid: "Solid", liquid: "Liquid", gas: "Gas", melt: "Melting", freeze: "Freezing", boil: "Evaporation", cond: "Condensation", subl: "Sublimation", depo: "Deposition" },
       sol: { title: "Grams dissolving in 100 g of water", t: "Temperature, °C" },
-      crust: "Mass share in Earth's crust, %"
+      crust: "Mass share in Earth's crust, %",
+      diamond: ["Diamond — atomic crystal lattice", "Each C atom is covalently bonded to 4 neighbours"], metal: ["Metallic crystal lattice", "Positive ions and free electrons (e⁻)"]
     },
     ru: { drag: "Вращение: перетащите · Зум: колесо", solid: "Твёрдое", liquid: "Жидкое", gas: "Газ", play: "▶ Повторить",
       before: "До реакции", after: "После реакции", reactants: "Исходные вещества", products: "Продукты",
@@ -74,7 +76,8 @@
         colorless: "бесцветный" },
       st: { solid: "Твёрдое", liquid: "Жидкое", gas: "Газ", melt: "Плавление", freeze: "Отвердевание", boil: "Испарение", cond: "Конденсация", subl: "Возгонка", depo: "Десублимация" },
       sol: { title: "Граммов растворяется в 100 г воды", t: "Температура, °C" },
-      crust: "Массовая доля в земной коре, %"
+      crust: "Массовая доля в земной коре, %",
+      diamond: ["Алмаз — атомная кристаллическая решётка", "Каждый атом C связан ковалентно с 4 соседями"], metal: ["Металлическая кристаллическая решётка", "Положительные ионы и свободные электроны (e⁻)"]
     }
   };
 
@@ -87,8 +90,8 @@
   const lbl = 'display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 5px';
 
   // CPK-style atom colours and display radii
-  const CPK = { H: '#f4f6f8', C: '#4a4f57', N: '#3a62f0', O: '#ff3b3b', Cl: '#2fd14b', S: '#f2d23c', Na: '#a066f0', Zn: '#8a90b8', Fe: '#e0703a', Ca: '#58d65a' };
-  const RAD = { H: 0.3, C: 0.42, N: 0.42, O: 0.44, Cl: 0.58, S: 0.56, Na: 0.52, Zn: 0.5, Fe: 0.5, Ca: 0.56 };
+  const CPK = { H: '#f4f6f8', C: '#4a4f57', N: '#3a62f0', O: '#ff3b3b', Cl: '#2fd14b', S: '#f2d23c', Na: '#a066f0', Zn: '#8a90b8', Fe: '#e0703a', Ca: '#58d65a', F: '#90e050', Br: '#a62929', I: '#940094', P: '#ff8000' };
+  const RAD = { H: 0.3, C: 0.42, N: 0.42, O: 0.44, Cl: 0.58, S: 0.56, Na: 0.52, Zn: 0.5, Fe: 0.5, Ca: 0.56, F: 0.4, Br: 0.62, I: 0.7, P: 0.55 };
 
   // ---------- 3D stage shared by molecule3d / atom3d ----------
   function stage(host, ctx, h) {
@@ -125,7 +128,14 @@
     NH3: [[['N', 0, 0.12, 0], ['H', 0.94, -0.26, 0], ['H', -0.47, -0.26, 0.81], ['H', -0.47, -0.26, -0.81]], [[0, 1, 1], [0, 2, 1], [0, 3, 1]]],
     CH4: [[['C', 0, 0, 0], ['H', 0.63, 0.63, 0.63], ['H', -0.63, -0.63, 0.63], ['H', -0.63, 0.63, -0.63], ['H', 0.63, -0.63, -0.63]], [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1]]],
     O3: [[['O', 0, 0.33, 0], ['O', 1.09, -0.33, 0], ['O', -1.09, -0.33, 0]], [[0, 1, 1.5], [0, 2, 1.5]]],
-    SO2: [[['S', 0, 0.3, 0], ['O', 1.23, -0.42, 0], ['O', -1.23, -0.42, 0]], [[0, 1, 2], [0, 2, 2]]]
+    SO2: [[['S', 0, 0.3, 0], ['O', 1.23, -0.42, 0], ['O', -1.23, -0.42, 0]], [[0, 1, 2], [0, 2, 2]]],
+    F2: [[['F', -0.71, 0, 0], ['F', 0.71, 0, 0]], [[0, 1, 1]]],
+    Br2: [[['Br', -1.14, 0, 0], ['Br', 1.14, 0, 0]], [[0, 1, 1]]],
+    I2: [[['I', -1.33, 0, 0], ['I', 1.33, 0, 0]], [[0, 1, 1]]],
+    HF: [[['H', -0.46, 0, 0], ['F', 0.46, 0, 0]], [[0, 1, 1]]],
+    H2S: [[['S', 0, 0.3, 0], ['H', 0.96, -0.63, 0], ['H', -0.96, -0.63, 0]], [[0, 1, 1], [0, 2, 1]]],
+    SO3: [[['S', 0, 0, 0], ['O', 0, 1.43, 0], ['O', 1.24, -0.72, 0], ['O', -1.24, -0.72, 0]], [[0, 1, 2], [0, 2, 2], [0, 3, 2]]],
+    P4: [[['P', 0.78, 0.78, 0.78], ['P', 0.78, -0.78, -0.78], ['P', -0.78, 0.78, -0.78], ['P', -0.78, -0.78, 0.78]], [[0, 1, 1], [0, 2, 1], [0, 3, 1], [1, 2, 1], [1, 3, 1], [2, 3, 1]]]
   };
 
   function molecule3d(host, spec, ctx) {
@@ -143,6 +153,26 @@
         if (i < n - 1) stick([x, y, z], [x + a, y, z], 0.05, '#7b8399'); if (j < n - 1) stick([x, y, z], [x, y + a, z], 0.05, '#7b8399'); if (k < n - 1) stick([x, y, z], [x, y, z + a], 0.05, '#7b8399');
       }
       st.start(9, () => { g.rotation.y += 0.004; });
+    } else if (spec.mol === 'diamond') {
+      // atomic crystal: every carbon bonded to four neighbours (fcc lattice + a basis shifted by a/4)
+      const a = 3.4, P = [], F = [[0, 0, 0], [0, 0.5, 0.5], [0.5, 0, 0.5], [0.5, 0.5, 0]];
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) for (let k = 0; k < 2; k++) F.forEach((f) => [[0, 0, 0], [0.25, 0.25, 0.25]].forEach((b) => {
+        const x = f[0] + b[0] + i, y = f[1] + b[1] + j, z = f[2] + b[2] + k; if (x <= 1.01 && y <= 1.01 && z <= 1.01) P.push([x, y, z]); }));
+      const U = []; P.forEach((p) => { if (!U.some((q) => Math.hypot(q[0] - p[0], q[1] - p[1], q[2] - p[2]) < 0.01)) U.push(p); });
+      // bonds first, then only atoms that take part in at least one bond (corner atoms of the cell would float)
+      const B = [], used = new Set();
+      for (let i = 0; i < U.length; i++) for (let j = i + 1; j < U.length; j++) { const d = Math.hypot(U[i][0] - U[j][0], U[i][1] - U[j][1], U[i][2] - U[j][2]);
+        if (Math.abs(d - 0.433) < 0.02) { B.push([i, j]); used.add(i); used.add(j); } }
+      U.forEach((p, i) => { if (used.has(i)) sphere('C', (p[0] - 0.5) * a, (p[1] - 0.5) * a, (p[2] - 0.5) * a, 0.3); });
+      B.forEach(([i, j]) => stick(U[i].map((v) => (v - 0.5) * a), U[j].map((v) => (v - 0.5) * a), 0.08, '#9aa3b5'));
+      st.start(7.5, () => { g.rotation.y += 0.004; });
+    } else if (spec.mol === 'metal') {
+      // metallic crystal: positive ions in a lattice, free electrons wandering between them
+      const n = 3, a = 1.5, e = [];
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (let k = 0; k < n; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 24), new THREE.MeshStandardMaterial({ color: lin(THREE, '#b8bfc9'), metalness: 0.7, roughness: 0.3 })); m.position.set((i - 1) * a, (j - 1) * a, (k - 1) * a); g.add(m); }
+      const em = new THREE.MeshBasicMaterial({ color: lin(THREE, '#4dd2ff'), toneMapped: false });
+      for (let q = 0; q < 40; q++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.08, 10, 8), em); m.position.set((Math.random() - 0.5) * 3.4, (Math.random() - 0.5) * 3.4, (Math.random() - 0.5) * 3.4); m.userData.v = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(0.06); g.add(m); e.push(m); }
+      st.start(8.5, () => { g.rotation.y += 0.003; e.forEach((m) => { m.position.add(m.userData.v); ['x', 'y', 'z'].forEach((ax) => { if (Math.abs(m.position[ax]) > 1.9) m.userData.v[ax] *= -1; }); }); });
     } else {
       const m = MOL[spec.mol] || MOL.H2O, at = m[0], sc = 1.6;
       at.forEach((p) => sphere(p[0], p[1] * sc, p[2] * sc, p[3] * sc, RAD[p[0]] || 0.45));
@@ -152,6 +182,11 @@
           const k = Math.round(o) === 3 ? [-0.14, 0, 0.14] : o === 1.5 ? [-0.07, 0.07] : [-0.09, 0.09];
           k.forEach((off) => stick([A[0], A[1] + off, A[2] + off * 0.5], [B[0], B[1] + off, B[2] + off * 0.5], 0.055)); } });
       st.start(6.2, () => { g.rotation.y += 0.005; });
+    }
+    if (spec.mol === 'diamond' || spec.mol === 'metal') {
+      const T = S[ctx.lang], t = spec.mol === 'diamond' ? T.diamond : T.metal;
+      host.insertAdjacentHTML('beforeend', '<div style="position:absolute;left:12px;top:10px;font:600 13px Space Grotesk,sans-serif;color:#eef2ff;z-index:2">' + esc(t[0]) + '<div style="margin-top:5px;font:11px IBM Plex Mono,monospace;color:rgba(220,228,246,.85)">' + esc(t[1]) + '</div></div>');
+      return;
     }
     const legend = [...new Set((spec.mol === 'NaCl' ? ['Na', 'Cl'] : (MOL[spec.mol] || MOL.H2O)[0].map((a) => a[0])))]
       .map((e) => '<span style="display:inline-flex;align-items:center;gap:5px;margin-right:10px"><span style="width:10px;height:10px;border-radius:50%;background:' + CPK[e] + '"></span>' + e + '</span>').join('');
@@ -527,11 +562,173 @@
     upd();
   }
 
+  // ---------- part 2 additions ----------
+  Object.assign(RX, {
+    na_cl2: [['Na', 'Na', 'Cl2'], ['NaCl', 'NaCl'], '2Na + Cl₂ → 2NaCl'],
+    h2_cl2: [['H2', 'Cl2'], ['HCl', 'HCl'], 'H₂ + Cl₂ → 2HCl'],
+    n2_h2: [['N2', 'H2', 'H2', 'H2'], ['NH3', 'NH3'], 'N₂ + 3H₂ → 2NH₃'],
+    s_o2: [['S', 'O2'], ['SO2'], 'S + O₂ → SO₂'],
+    so2_o2: [['SO2', 'SO2', 'O2'], ['SO3', 'SO3'], '2SO₂ + O₂ → 2SO₃'],
+    nh3_hcl: [['NH3', 'HCl'], ['NH4Cl'], 'NH₃ + HCl → NH₄Cl'],
+    p_o2: [['P', 'P', 'P', 'P', 'O2', 'O2', 'O2', 'O2', 'O2'], ['P2O5', 'P2O5'], '4P + 5O₂ → 2P₂O₅']
+  });
+  Object.assign(ATOMS, { Na: ['Na'], Cl2: ['Cl', 'Cl'], N2: ['N', 'N'], NH3: ['N', 'H', 'H', 'H'], SO2: ['S', 'O', 'O'], SO3: ['S', 'O', 'O', 'O'],
+    NH4Cl: ['N', 'H', 'H', 'H', 'H', 'Cl'], P: ['P'], P2O5: ['P', 'P', 'O', 'O', 'O', 'O', 'O'] });
+  Object.assign(LABEL, { NH4Cl: 'NH₄Cl', P2O5: 'P₂O₅' });
+
+  const S2 = {
+    uz: { orb: "Energetik pog'onachalar", iso: "O'rtacha atom massasi", abund: "Tabiatda", radio: "radioaktiv", trace: "izlar", p: "p⁺", n: "n⁰",
+      eneg: "Elektrmanfiylik (Poling shkalasi), Z = 1–20", radius: "Atom radiusi, pm, Z = 1–20",
+      kin: { t: "Harorat", c: "Konsentratsiya", rate: "Samarali to'qnashuvlar / s", low: "past", high: "yuqori" },
+      eq: { p: "Bosim", t: "Harorat", up: "oshirish", down: "pasaytirish", rm: "NH₃ ni ajratib olish", reset: "Boshlang'ich holat", right: "Muvozanat o'ngga siljidi — NH₃ ko'proq hosil bo'ladi", left: "Muvozanat chapga siljidi — NH₃ parchalanadi", same: "Muvozanat holati", note: "N₂ + 3H₂ ⇌ 2NH₃ + Q (to'g'ri reaksiya ekzotermik, gaz hajmi kamayadi)" },
+      contact: { s: "Oltingugurt yoki pirit yondiriladi", clean: "Tozalash va quritish", app: "Kontakt apparati (V₂O₅, ~450 °C)", abs: "Yutish minorasi", oleum: "Oleum → sulfat kislota", so2: "SO₂", so3: "SO₃" },
+      ncyc: { air: "Havodagi N₂", fix: "Azot fiksatsiyasi (tuganak bakteriyalar, chaqmoq)", soil: "Tuproqdagi nitratlar va ammoniy", plant: "O'simliklar oqsil hosil qiladi", animal: "Hayvonlar o'simlik bilan oziqlanadi", decay: "Chirish — ammoniy qaytadi", denit: "Denitrifikatsiya — N₂ havoga qaytadi", fert: "Mineral o'g'itlar" } },
+    en: { orb: "Energy sublevels", iso: "Average atomic mass", abund: "In nature", radio: "radioactive", trace: "traces", p: "p⁺", n: "n⁰",
+      eneg: "Electronegativity (Pauling scale), Z = 1–20", radius: "Atomic radius, pm, Z = 1–20",
+      kin: { t: "Temperature", c: "Concentration", rate: "Effective collisions / s", low: "low", high: "high" },
+      eq: { p: "Pressure", t: "Temperature", up: "raise", down: "lower", rm: "Remove NH₃", reset: "Reset", right: "Equilibrium shifts right — more NH₃ forms", left: "Equilibrium shifts left — NH₃ breaks down", same: "At equilibrium", note: "N₂ + 3H₂ ⇌ 2NH₃ + Q (forward reaction is exothermic and reduces gas volume)" },
+      contact: { s: "Sulfur or pyrite is burned", clean: "Cleaning and drying", app: "Contact apparatus (V₂O₅, ~450 °C)", abs: "Absorption tower", oleum: "Oleum → sulfuric acid", so2: "SO₂", so3: "SO₃" },
+      ncyc: { air: "N₂ in the air", fix: "Nitrogen fixation (root-nodule bacteria, lightning)", soil: "Nitrates and ammonium in soil", plant: "Plants build proteins", animal: "Animals eat plants", decay: "Decay returns ammonium", denit: "Denitrification returns N₂ to the air", fert: "Mineral fertilisers" } },
+    ru: { orb: "Энергетические подуровни", iso: "Средняя атомная масса", abund: "В природе", radio: "радиоактивен", trace: "следы", p: "p⁺", n: "n⁰",
+      eneg: "Электроотрицательность (шкала Полинга), Z = 1–20", radius: "Атомный радиус, пм, Z = 1–20",
+      kin: { t: "Температура", c: "Концентрация", rate: "Эффективных столкновений / с", low: "низкая", high: "высокая" },
+      eq: { p: "Давление", t: "Температура", up: "повысить", down: "понизить", rm: "Отвести NH₃", reset: "Сбросить", right: "Равновесие сместилось вправо — образуется больше NH₃", left: "Равновесие сместилось влево — NH₃ разлагается", same: "Состояние равновесия", note: "N₂ + 3H₂ ⇌ 2NH₃ + Q (прямая реакция экзотермическая, объём газов уменьшается)" },
+      contact: { s: "Сжигание серы или пирита", clean: "Очистка и осушка", app: "Контактный аппарат (V₂O₅, ~450 °C)", abs: "Поглотительная башня", oleum: "Олеум → серная кислота", so2: "SO₂", so3: "SO₃" },
+      ncyc: { air: "N₂ воздуха", fix: "Фиксация азота (клубеньковые бактерии, молния)", soil: "Нитраты и аммоний в почве", plant: "Растения строят белки", animal: "Животные едят растения", decay: "Гниение возвращает аммоний", denit: "Денитрификация возвращает N₂ в воздух", fert: "Минеральные удобрения" } }
+  };
+  const CATC = { alkali: '#ff5d73', alkaline: '#ffb454', transition: '#4dd2ff', post: '#7ee787', metalloid: '#5af2c4', nonmetal: '#6ea8ff', halogen: '#ffd24d', noble: '#c08bff', lanthanide: '#ff8ad8', actinide: '#ff7a9c' };
+
+  // mini periodic table with some elements highlighted
+  function ptable(host, spec, ctx) {
+    const hl = new Set(spec.hl || []), E = ctx.elements || [];
+    const cells = E.map((e) => { const on = hl.has(e.sym), c = CATC[e.cat] || '#8b95b5';
+      return '<div title="' + e.z + ' ' + esc(e.name[ctx.lang] || e.name.en) + '" style="grid-column:' + e.x + ';grid-row:' + (e.y > 7 ? e.y + 0.0 : e.y) + ';aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font:600 ' + (on ? 11 : 9) + 'px Space Grotesk,sans-serif;'
+        + (on ? 'background:' + c + ';color:#0b1020;box-shadow:0 0 10px ' + c + ';transform:scale(1.08);z-index:2' : 'background:' + c + '1f;color:var(--muted);opacity:.55') + '">' + e.sym + '</div>'; }).join('');
+    host.innerHTML = card('<div style="display:grid;grid-template-columns:repeat(18,minmax(0,1fr));grid-template-rows:repeat(7,auto) 8px repeat(2,auto);gap:3px">' + cells + '</div>');
+  }
+
+  // energy sublevel diagram: boxes per orbital, arrows filled by Hund's rule, in filling order
+  function orbitals(host, spec, ctx) {
+    const el = (ctx.elements || []).find((e) => e.sym === spec.el); if (!el) return;
+    const T2 = S2[ctx.lang], N = { s: 1, p: 3, d: 5, f: 7 }, LC = { s: '#ff8a5c', p: '#4dd2ff', d: '#7ee787', f: '#c08bff' };
+    const subs = el.econf.split(' ').map((t) => { const m = t.match(/^(\d)([spdf])(\d+)$/); return m && { n: +m[1], l: m[2], e: +m[3] }; }).filter(Boolean);
+    const rows = subs.slice().reverse().map((sb) => { const k = N[sb.l], box = Array.from({ length: k }, () => '');
+      for (let i = 0; i < sb.e; i++) box[i % k] += i < k ? '↑' : '↓';
+      return '<div style="display:flex;align-items:center;gap:10px;margin:3px 0"><span style="width:34px;text-align:right;font:600 13px IBM Plex Mono;color:' + LC[sb.l] + '">' + sb.n + sb.l + '</span><div style="display:flex;gap:3px">'
+        + box.map((b) => '<span style="width:28px;height:26px;border:1.5px solid ' + LC[sb.l] + ';border-radius:4px;display:flex;align-items:center;justify-content:center;font:700 14px IBM Plex Mono;color:var(--text);letter-spacing:-2px">' + b + '</span>').join('') + '</div>'
+        + '<span style="font:12px IBM Plex Mono;color:var(--muted)">' + sb.e + ' e⁻</span></div>'; }).join('');
+    const conf = el.econf.replace(/([spdf])(\d+)/g, (m, l, d) => l + d.split('').map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c]).join(''));
+    host.innerHTML = card('<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px"><b style="color:var(--text)">' + esc(el.sym) + ' (Z = ' + el.z + ') · ' + esc(T2.orb) + '</b><span style="font:13px IBM Plex Mono;color:var(--green)">' + esc(conf) + '</span></div>'
+      + '<div style="max-height:380px;overflow:auto">' + rows + '</div>');
+  }
+
+  // isotopes of an element: nucleus make-up, abundance, weighted average mass
+  const ISO = { H: [[1, 99.985], [2, 0.015], [3, 0]], C: [[12, 98.9], [13, 1.1], [14, 0]], O: [[16, 99.76], [17, 0.04], [18, 0.2]], Cl: [[35, 75.8], [37, 24.2]], U: [[234, 0.005], [235, 0.72], [238, 99.275]] };
+  const ZOF = { H: 1, C: 6, O: 8, Cl: 17, U: 92 };
+  function isotopes(host, spec, ctx) {
+    const el = ISO[spec.el] ? spec.el : 'Cl', L = ctx.lang, T2 = S2[L], z = ZOF[el], list = ISO[el];
+    const avg = list.reduce((s, i) => s + i[0] * i[1], 0) / list.reduce((s, i) => s + i[1], 0);
+    const nuc = (p, n) => { const tot = Math.min(p + n, 40), pp = Math.round(tot * p / (p + n)); let d = '';
+      for (let i = 0; i < tot; i++) { const a = i * 2.4, r = 3.2 * Math.sqrt(i); d += '<circle cx="' + (30 + r * Math.cos(a)).toFixed(1) + '" cy="' + (30 + r * Math.sin(a)).toFixed(1) + '" r="4.2" fill="' + (i < pp ? '#ff5d6e' : '#6f8bff') + '"/>'; }
+      return '<svg viewBox="0 0 60 60" style="width:60px;height:60px">' + d + '</svg>'; };
+    host.innerHTML = card('<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">' + list.map((i) => {
+      const n = i[0] - z, w = i[1];
+      return '<div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:center">' + nuc(z, n)
+        + '<div><div style="font:700 18px Space Grotesk;color:var(--text)"><sup style="font-size:11px">' + i[0] + '</sup>' + el + '</div><div style="font:12px IBM Plex Mono;color:var(--muted)">' + T2.p + ' ' + z + ' · ' + T2.n + ' ' + n + '</div>'
+        + '<div style="margin-top:4px;font:12px IBM Plex Mono;color:var(--green)">' + (w ? num(w, L, w < 1 ? 3 : 2) + '%' : T2.trace + ', ' + T2.radio) + '</div></div></div>'; }).join('') + '</div>'
+      + '<div style="margin-top:10px;font-size:13.5px;color:var(--body)">' + esc(T2.iso) + ': A<sub>r</sub>(' + el + ') ≈ ' + list.filter((i) => i[1]).map((i) => i[0] + '·' + num(i[1] / 100, L, i[1] < 1 ? 5 : 3)).join(' + ') + ' ≈ <b style="color:var(--text)">' + num(avg, L, 2) + '</b></div>');
+  }
+
+  // electronegativity / atomic radius across the first 20 elements
+  function trend(host, kind, ctx) {
+    const E = (ctx.elements || []).slice(0, 20), T2 = S2[ctx.lang], key = kind === 'eneg' ? 'eneg' : 'radius';
+    const W = 560, H = 270, pl = 40, pr = 12, pt = 16, pb = 30, vs = E.map((e) => e[key]).filter((v) => v != null), mx = Math.max(...vs);
+    const X = (z) => pl + (z - 1) / 19 * (W - pl - pr), Y = (v) => H - pb - v / mx * (H - pt - pb);
+    let d = '', pen = false; E.forEach((e) => { const v = e[key]; if (v == null) { pen = false; return; } d += (pen ? 'L' : 'M') + X(e.z) + ' ' + Y(v); pen = true; });
+    const dots = E.filter((e) => e[key] != null).map((e) => '<circle cx="' + X(e.z) + '" cy="' + Y(e[key]) + '" r="4" fill="' + (CATC[e.cat] || '#999') + '"><title>' + e.sym + ': ' + e[key] + '</title></circle><text x="' + X(e.z) + '" y="' + (Y(e[key]) - 8) + '" text-anchor="middle" style="fill:var(--muted);font:600 9.5px Space Grotesk">' + e.sym + '</text>').join('');
+    host.innerHTML = card('<div style="font-size:12px;color:var(--muted);margin-bottom:4px">' + esc(kind === 'eneg' ? T2.eneg : T2.radius) + '</div><svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">'
+      + [3, 11, 19].map((z) => '<line x1="' + X(z - 0.5) + '" x2="' + X(z - 0.5) + '" y1="' + pt + '" y2="' + (H - pb) + '" style="stroke:var(--line);stroke-dasharray:3 3"/>').join('')
+      + '<path d="' + d + '" fill="none" style="stroke:var(--muted);stroke-width:1.4;opacity:.7"/>' + dots
+      + [1, 5, 10, 15, 20].map((z) => '<text x="' + X(z) + '" y="' + (H - 10) + '" text-anchor="middle" style="fill:var(--muted);font:10px IBM Plex Mono">' + z + '</text>').join('') + '</svg>');
+  }
+
+  // collision model: higher temperature → faster particles and more collisions above the activation energy
+  function kinetics(host, spec, ctx) {
+    const T2 = S2[ctx.lang].kin;
+    host.innerHTML = card('<canvas style="display:block;width:100%;height:220px;border-radius:9px;background:rgba(10,14,30,.85)"></canvas>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px"><label style="font-size:12px;color:var(--muted)">' + T2.t + ' <input class="k-t" type="range" min="1" max="10" value="4" style="width:100%;accent-color:#ff8a5c"></label>'
+      + '<label style="font-size:12px;color:var(--muted)">' + T2.c + ' <input class="k-c" type="range" min="6" max="40" value="16" style="width:100%;accent-color:#4dd2ff"></label></div>'
+      + '<div class="k-out" style="margin-top:6px;font:600 15px IBM Plex Mono;color:var(--green)"></div>');
+    const cv = host.querySelector('canvas'), c2 = cv.getContext('2d'), tI = host.querySelector('.k-t'), cI = host.querySelector('.k-c'), out = host.querySelector('.k-out');
+    let P = [], flashes = [], hits = [], raf = 0, alive = true;
+    const reset = () => { const n = +cI.value; P = []; for (let i = 0; i < n * 2; i++) P.push({ x: Math.random(), y: Math.random(), a: Math.random() * 6.283, k: i % 2 }); };
+    cI.addEventListener('input', reset); reset();
+    const frame = (now) => {
+      if (!alive) return;
+      const dpr = window.devicePixelRatio || 1, W = cv.width = cv.clientWidth * dpr, H = cv.height = cv.clientHeight * dpr, r = 7 * dpr, T = +tI.value;
+      c2.clearRect(0, 0, W, H);
+      P.forEach((p) => { const sp = (0.0012 + T * 0.0007) * (0.6 + Math.random() * 0.8); p.x += Math.cos(p.a) * sp; p.y += Math.sin(p.a) * sp * W / H;
+        if (p.x < 0 || p.x > 1) { p.a = Math.PI - p.a; p.x = Math.min(1, Math.max(0, p.x)); } if (p.y < 0 || p.y > 1) { p.a = -p.a; p.y = Math.min(1, Math.max(0, p.y)); } });
+      for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) { const A = P[i], B = P[j]; if (A.k === B.k) continue;
+        if (Math.hypot((A.x - B.x) * W, (A.y - B.y) * H) < r * 2) { // only energetic enough collisions react
+          if (Math.random() < T / 12) { flashes.push({ x: (A.x + B.x) / 2 * W, y: (A.y + B.y) / 2 * H, t: now }); hits.push(now); }
+          const t = A.a; A.a = B.a; B.a = t; } }
+      flashes = flashes.filter((f) => now - f.t < 400); hits = hits.filter((h) => now - h < 1000);
+      flashes.forEach((f) => { c2.beginPath(); c2.arc(f.x, f.y, r * 2.2 * (1 - (now - f.t) / 400) + r, 0, 6.283); c2.fillStyle = 'rgba(255,210,77,.45)'; c2.fill(); });
+      P.forEach((p) => { c2.beginPath(); c2.arc(p.x * W, p.y * H, r, 0, 6.283); c2.fillStyle = p.k ? '#ff5d6e' : '#4dd2ff'; c2.fill(); });
+      out.textContent = T2.rate + ': ' + hits.length;
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    ctx.onDispose(() => { alive = false; cancelAnimationFrame(raf); });
+  }
+
+  // Le Chatelier for N2 + 3H2 ⇌ 2NH3 (+Q): a qualitative model of the NH3 share
+  function equilibrium(host, spec, ctx) {
+    const T2 = S2[ctx.lang].eq, L = ctx.lang; let P = 1, T = 1, msg = T2.same, shown = 0.2;
+    const btn = (k, t, c) => '<button data-k="' + k + '" style="border-radius:9px;border:1px solid ' + c + ';background:' + c + '22;color:var(--text);font:600 12.5px Space Grotesk;padding:7px 10px;cursor:pointer">' + t + '</button>';
+    host.innerHTML = card('<div style="font:600 14px IBM Plex Mono;color:var(--text);margin-bottom:10px">' + esc(T2.note) + '</div>'
+      + '<div style="display:flex;height:34px;border-radius:9px;overflow:hidden;border:1px solid var(--line)"><div class="e-n" style="background:#3a62f0;transition:width .8s"></div><div class="e-h" style="background:#c9ced8;transition:width .8s"></div><div class="e-a" style="background:#2ecc96;transition:width .8s"></div></div>'
+      + '<div class="e-l" style="display:flex;justify-content:space-between;font:12px IBM Plex Mono;color:var(--muted);margin-top:4px"></div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">' + btn('p+', T2.p + ' ↑ ' + T2.up, '#4dd2ff') + btn('p-', T2.p + ' ↓ ' + T2.down, '#4dd2ff') + btn('t+', T2.t + ' ↑ ' + T2.up, '#ff8a5c') + btn('t-', T2.t + ' ↓ ' + T2.down, '#ff8a5c') + btn('rm', T2.rm, '#2ecc96') + btn('r', T2.reset, '#9aa3b8') + '</div>'
+      + '<div class="e-m" style="margin-top:10px;font-size:14px;font-weight:600"></div>');
+    const upd = () => { const nh3 = Math.max(0.04, Math.min(0.75, 0.2 + 0.12 * (P - 1) - 0.08 * (T - 1))); const rest = 1 - nh3;
+      host.querySelector('.e-n').style.width = (rest * 25) + '%'; host.querySelector('.e-h').style.width = (rest * 75) + '%'; host.querySelector('.e-a').style.width = (nh3 * 100) + '%';
+      host.querySelector('.e-l').innerHTML = '<span style="color:#6f8bff">N₂ ' + num(rest * 25, L, 0) + '%</span><span>H₂ ' + num(rest * 75, L, 0) + '%</span><span style="color:#2ecc96">NH₃ ' + num(nh3 * 100, L, 0) + '%</span>';
+      const m = host.querySelector('.e-m'); m.textContent = msg; m.style.color = msg === T2.right ? 'var(--green)' : msg === T2.left ? 'var(--warn)' : 'var(--muted)'; shown = nh3; };
+    host.addEventListener('click', (e) => { const b = e.target.closest('button[data-k]'); if (!b) return; const k = b.dataset.k;
+      if (k === 'p+') { P = Math.min(4, P + 1); msg = T2.right; } if (k === 'p-') { P = Math.max(0, P - 1); msg = T2.left; }
+      if (k === 't+') { T = Math.min(4, T + 1); msg = T2.left; } if (k === 't-') { T = Math.max(0, T - 1); msg = T2.right; }
+      if (k === 'rm') { msg = T2.right; P = Math.min(4, P + 0.5); } if (k === 'r') { P = 1; T = 1; msg = T2.same; } upd(); });
+    upd();
+  }
+
+  function diagram2(host, spec, ctx) {
+    if (spec.kind === 'contact') {
+      const D = S2[ctx.lang].contact, box = (x, y, w, h, t, c) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="10" style="fill:' + c + '22;stroke:' + c + '"/>' + tx(x + w / 2, y + h + 18, t, { s: 11.5 });
+      const ar = (x1, x2, y, lab) => '<path class="pv-flow" d="M' + x1 + ' ' + y + ' L' + x2 + ' ' + y + '" stroke="#2ecc96" stroke-width="2.5" fill="none" marker-end="url(#pvG)"/>' + (lab ? tx((x1 + x2) / 2, y - 8, lab, { s: 12, c: 'var(--green)' }) : '');
+      host.innerHTML = svg(700, 230, box(10, 60, 110, 90, D.s, '#ffb454') + '<g class="pv-fl" style="transform-box:fill-box"><path d="M65 140 c-20 -20 -8 -48 0 -62 c8 14 20 42 0 62z" fill="#ffb454"/></g>'
+        + ar(124, 170, 105, D.so2) + box(174, 70, 100, 70, D.clean, '#9aa3b8') + ar(278, 324, 105, D.so2)
+        + box(328, 40, 120, 130, D.app, '#c08bff') + [70, 100, 130].map((y) => '<rect x="342" y="' + y + '" width="92" height="12" rx="3" fill="#c08bff" opacity=".5"/>').join('')
+        + ar(452, 498, 105, D.so3) + box(502, 30, 90, 150, D.abs, '#4dd2ff') + '<path d="M512 150 h70 v20 h-70z" fill="#4dd2ff" opacity=".35"/>'
+        + ar(596, 690, 105, '') + tx(645, 140, D.oleum, { s: 11 }));
+      return;
+    }
+    const D = S2[ctx.lang].ncyc, node = (x, y, t, c) => '<rect x="' + (x - 90) + '" y="' + (y - 20) + '" width="180" height="40" rx="10" style="fill:' + c + '22;stroke:' + c + '"/>' + tx(x, y + 4, t, { s: 11.5 });
+    const ar = (d, t, tx0, ty0) => '<path class="pv-flow" d="' + d + '" stroke="#2ecc96" stroke-width="2.2" fill="none" marker-end="url(#pvG)"/>' + (t ? tx(tx0, ty0, t, { s: 10.5, c: 'var(--muted)', w: 500 }) : '');
+    host.innerHTML = svg(700, 320, node(350, 34, D.air, '#4dd2ff') + node(120, 160, D.soil, '#b08a5a') + node(580, 160, D.plant, '#4fbf5a') + node(350, 286, D.animal, '#ff8a5c')
+      + ar('M270 50 C 190 70 140 100 125 136', D.fix, 150, 92) + ar('M212 160 L486 160', '', 0, 0) + ar('M560 182 C 520 250 450 280 444 282', '', 0, 0)
+      + ar('M258 286 C 190 280 140 230 126 184', D.decay, 160, 262) + ar('M150 136 C 190 90 260 70 300 56', '', 0, 0) + tx(255, 120, D.denit, { s: 10.5, c: 'var(--muted)', w: 500 })
+      + tx(560, 230, D.fert + ' →', { s: 10.5, c: '#ffd24d', w: 600 }));
+  }
+
   window.PTV = {
     render(host, spec, ctx) {
       host.innerHTML = '';
       try {
-        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc }[spec.type];
+        if (spec.type === 'chart' && (spec.kind === 'eneg' || spec.kind === 'radius')) return trend(host, spec.kind, ctx);
+        if (spec.type === 'diagram' && (spec.kind === 'contact' || spec.kind === 'nitrogen_cycle')) return diagram2(host, spec, ctx);
+        const fn = { molecule3d, atom3d, particles, reaction, balance, chart, diagram, calc, ptable, orbitals, isotopes, kinetics, equilibrium }[spec.type];
         if (fn) fn(host, spec, ctx);
       } catch (e) { console.error('visual', spec, e); }
     },
