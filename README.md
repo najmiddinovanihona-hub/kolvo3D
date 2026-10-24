@@ -33,6 +33,7 @@ python -m http.server 8000
 index.html          — asosiy ilova
 support.js          — ishlash uchun zarur kutubxona
 chem-visuals.js     — kimyo darslari uchun 3D, animatsiya, diagramma, grafik va kalkulyatorlar
+lab.js              — virtual laboratoriya: reaktivlar javoni, probirka, reaksiyalar mexanizmi (#lab)
 data/
   elements.js       — 118 element ma'lumotlari
   descriptions.js   — element tavsiflari
