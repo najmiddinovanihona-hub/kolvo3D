@@ -647,7 +647,21 @@
     return drops + '<g transform="translate(120 ' + y.toFixed(1) + ')"><path d="M-4 0 v40 l4 10 l4 -10 v-40z" fill="rgba(220,236,255,.25)" style="stroke:var(--text);stroke-opacity:.6"/><rect x="-7" y="-26" width="14" height="28" rx="7" fill="#2a2a2e"/></g>';
   }
   function animating() { const now = Date.now(); return !!st.act || st.heated || st.temp > 21 || (st.gas && now - st.gasT < 6500) || (st.cloud && now - st.cloudT < 7000) || st.flame || (st.flags.na && now - st.flags.na < 4500) || st.solids.some((s) => s.kind === 'ppt' && now - (s.t0 || 0) < 3300); }
-  function draw() { const t = host && host.querySelector('.lb-tube'); if (t) t.innerHTML = tubeSVG(); const th = host && host.querySelector('.lb-t'); if (th) th.textContent = '🌡️ ' + Math.round(st.temp) + ' °C'; }
+  // what the 3D bench needs to know about the tube, recomputed every frame
+  function vm() {
+    if (!st) return null; const md = medium(), lq = liquidColour(md), now = Date.now(), na = st.flags.na && now - st.flags.na < 4500;
+    const metals = st.solids.filter((s) => s.kind === 'metal').map((m) => { const d = st.solids.find((x) => x.kind === 'deposit' && x.c === m.f); return { f: m.f, dep: d ? d.color : null }; });
+    if (na && !metals.some((m) => m.f === 'Na')) metals.push({ f: 'Na' });
+    return { vol: st.vol, liqCol: lq.c, liqOp: lq.c ? Math.min(0.9, 0.42 + lq.k * 0.12) : 0.22, boil: st.boiling && st.vol > 0, heated: st.heated,
+      ppts: st.solids.filter((s) => s.kind === 'ppt').map((s) => ({ f: s.f, color: s.color || '#eeeeee', tex: s.tex || 'fine', n: s.n, age: (now - (s.t0 || 0)) / 1000 })),
+      crystals: st.solids.filter((s) => s.kind === 'crystal').map((s) => ({ color: s.color || '#f4f4f0', n: s.n })),
+      powders: st.solids.filter((s) => s.kind === 'solid').map((s) => ({ color: s.color || '#eeeeee', big: s.f === 'CaCO3' })), metals,
+      gas: st.gas ? Math.max(0, 1 - (now - st.gasT) / 6500) : 0, gasSrc: st.gasSrc, cloud: st.cloud && now - st.cloudT < 7000 ? st.cloud : null,
+      mirror: st.mirror, ring: st.ring, hg: st.hg, naBall: na, naAge: na ? (now - st.flags.na) / 1000 : 0, flameTest: st.flame,
+      act: st.act ? Object.assign({}, st.act, { t0p: performance.now() - (now - st.act.t0) }) : null };
+  }
+  let view3d = null;
+  function draw() { const t = host && host.querySelector('.lb-tube'); if (t && !view3d) t.innerHTML = tubeSVG(); const th = host && host.querySelector('.lb-t'); if (th) th.textContent = '🌡️ ' + Math.round(st.temp) + ' °C'; }
   function render() {
     if (!host) return;
     const md = medium(), mdc = { acid: '#ff5d6e', base: '#6f8bff', neutral: '#2ecc96', none: 'var(--muted)' }[md.k];
@@ -708,6 +722,9 @@
     host.querySelector('.lb-clear').addEventListener('click', clear);
     host.querySelector('.lb-st-stop').addEventListener('click', () => { runTok++; timers.forEach(clearTimeout); timers = []; st.act = null; if (st.heated) heat(); stepUI(null); render(); });
     host.querySelector('.lb-run').addEventListener('click', () => runPreset(+host.querySelector('.lb-pre').value));
+    // the 3D bench when Three.js is on the page, the flat drawing otherwise
+    if (view3d) { view3d.dispose(); view3d = null; }
+    if (ctx.THREE && window.PTLAB3D) { try { view3d = window.PTLAB3D.create(host.querySelector('.lb-tube'), { THREE: ctx.THREE, orbit: ctx.orbit, light: ctx.light, getVM: vm }); } catch (e) { console.error('lab3d', e); view3d = null; } }
     render();
   }
   let tick = 0, last = 0;
@@ -715,7 +732,7 @@
   window.PTLAB = {
     mount(h, c) { host = h; ctx = c; T = S[c.lang] || S.uz; if (!st) st = fresh(); build(); clearInterval(tick); last = Date.now(); tick = setInterval(loop, 120); },
     setCtx(c) { ctx = c; T = S[c.lang] || S.uz; if (host) build(); },
-    unmount() { timers.forEach(clearTimeout); timers = []; clearInterval(tick); host = null; },
+    unmount() { timers.forEach(clearTimeout); timers = []; clearInterval(tick); if (view3d) { view3d.dispose(); view3d = null; } host = null; },
     // for testing: run reagent ids ('heat' heats for the given seconds) and return the log, oldest first
     _test(ids, secs) { st = fresh(); ids.forEach((x) => { if (x === 'heat') { st.heated = true; for (let i = 0; i < (secs || 40) / 0.12; i++) { lastDec = 0; step(0.12); } } else add(x); }); return st.log.slice().reverse(); },
     _tube: () => tubeSVG(), _state: () => st, _reagents: () => RG.map((r) => [r.id, r.t, r.grp || '', r.code || '', r.n[0]]),

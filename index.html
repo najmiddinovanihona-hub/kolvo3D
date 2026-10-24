@@ -1025,12 +1025,13 @@ class Component extends DCLogic {
   openLab(){ this._go('lab'); }
   closeLab(){ this._back(); }
   _loadLab(){
-    if(!this._labP) this._labP=new Promise(res=>{ const el=document.createElement("script"); el.src="lab.js?v=11"; el.onload=el.onerror=()=>res(); document.head.appendChild(el); }).then(()=>{ if(!window.PTLAB) this._labP=null; });
+    const add=(src)=>new Promise(res=>{ const el=document.createElement("script"); el.src=src; el.onload=el.onerror=()=>res(); document.head.appendChild(el); });
+    if(!this._labP) this._labP=Promise.all([add("lab.js?v=12"), add("lab3d.js?v=3")]).then(()=>{ if(!window.PTLAB) this._labP=null; });
     return this._labP;
   }
   // (re)draw the bench in the current language and theme; the tube contents survive a language switch
   _labCtx(mount){ if(!this.state.showLab || !window.PTLAB) return; const h=document.getElementById('pt-lab-host'); if(!h) return;
-    const c={lang:this.state.lang, light:this.state.theme==='light'}; if(mount || !h.firstChild) window.PTLAB.mount(h, c); else window.PTLAB.setCtx(c); }
+    const c={lang:this.state.lang, light:this.state.theme==='light', THREE:window.THREE, orbit:(cam,dom)=>this._makeOrbit(window.THREE,cam,dom,false)}; if(mount || !h.firstChild) window.PTLAB.mount(h, c); else window.PTLAB.setCtx(c); }
   openChem(){ this._go(kimyo); }
   closeChem(){ this._back(); }
   _chemReady(){ return !!(window.PT_CHEM && window.PTV); }
