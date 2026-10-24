@@ -34,6 +34,7 @@ index.html          — asosiy ilova
 support.js          — ishlash uchun zarur kutubxona
 chem-visuals.js     — kimyo darslari uchun 3D, animatsiya, diagramma, grafik va kalkulyatorlar
 lab.js              — virtual laboratoriya (#lab): eruvchanlik jadvalidagi barcha kislota, asos va tuzlar (272 reaktiv), reaksiyalar mexanizmi, qizdirish, bug'lanish, termik parchalanish
+apparatus.js        — kimyoviy asboblar (#asboblar): 38 ta laboratoriya asbobining 3D modeli
 data/
   elements.js       — 118 element ma'lumotlari
   descriptions.js   — element tavsiflari
@@ -41,6 +42,7 @@ data/
   uzbekistan.js     — O'zbekistonda qazib olinadigan / ishlab chiqariladigan elementlar
   mendeleev.js      — «Mendeleyev haqida» sahifasi: xronologiya, bo'limlar, bashoratlar, rasmlar (Wikimedia Commons)
   chemistry.js      — «Umumiy kimyo»: Birinchi qism (6 bob, 53 mavzu), Ikkinchi qism (5 bob, 42 mavzu) Uchinchi qism (4 bob, 39 mavzu) To'rtinchi qism — organik kimyo (4 bob, 35 mavzu) va Beshinchi qism (8 bob, 33 mavzu), 3 tilda, test savollari
+  apparatus.js      — asboblar haqida ma'lumot: vazifasi, materiali, ishlatilishi, ixtirochisi, tarixi (3 tilda)
   details.js        — batafsil bo'limlar (tarix, tarqalishi, olinishi, kimyosi, biologiyasi, izotoplari) va qo'shimcha fizik xossalar
 assets/
   intro-bg.png      — kirish ekrani foni

@@ -102,7 +102,7 @@
     #pt-quickstats{grid-template-columns:repeat(2,1fr) !important}
     #pt-mendeleev-body{padding:22px 16px 56px !important}
     #pt-m-hero{grid-template-columns:1fr !important}
-    #pt-chem-header,#pt-lab-header{flex-wrap:wrap;padding:11px 14px !important;gap:10px !important}
+    #pt-chem-header,#pt-lab-header,#pt-app-header{flex-wrap:wrap;padding:11px 14px !important;gap:10px !important}
     #pt-lab-host .lb-wrap{padding:12px !important}
     #pt-chem-body{flex-direction:column !important}
     #pt-chem-nav{flex:0 0 auto !important;flex-direction:row !important;overflow-x:auto;overflow-y:hidden;padding:10px 12px !important;border-right:none !important;border-bottom:1px solid var(--line-soft)}
@@ -139,6 +139,8 @@
     <button onClick="{{ openChem }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(46,204,150,.12);border:1px solid rgba(46,204,150,.45);border-radius:11px;color:var(--green);font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s" style-hover="background:rgba(46,204,150,.22)"><span style="font-size:14px">⚗️</span> {{ ui.chemBtn }}</button>
 
     <button onClick="{{ openLab }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,138,92,.12);border:1px solid rgba(255,138,92,.45);border-radius:11px;color:#ff8a5c;font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s" style-hover="background:rgba(255,138,92,.22)"><span style="font-size:14px">🧪</span> {{ ui.labBtn }}</button>
+
+    <button onClick="{{ openApp }}" style="display:inline-flex;align-items:center;gap:8px;background:rgba(77,210,255,.12);border:1px solid rgba(77,210,255,.45);border-radius:11px;color:var(--cyan);font-family:'Space Grotesk';font-weight:600;font-size:12.5px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s" style-hover="background:rgba(77,210,255,.22)"><span style="font-size:14px">🔬</span> {{ ui.appBtn }}</button>
 
     <div style="display:flex;gap:4px;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:4px">
       <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
@@ -379,7 +381,31 @@
       <sc-if value="{{ labLoading }}" hint-placeholder-val="{{ false }}">
         <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)">⏳ {{ ui.chemLoading }}</div>
       </sc-if>
+
       <div id="pt-lab-host" style="flex:1;min-height:0;overflow:auto"></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showApp }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:radial-gradient(1100px 720px at 85% -8%,rgba(77,210,255,.12),transparent 60%),radial-gradient(900px 600px at 0% 110%,rgba(77,160,255,.12),transparent 55%),var(--overlay);animation:ptfade .25s ease">
+      <header id="pt-app-header" style="flex:0 0 auto;display:flex;align-items:center;gap:16px;padding:14px 26px;border-bottom:1px solid var(--line);background:var(--hdr);backdrop-filter:blur(12px)">
+        <div style="flex:0 0 auto;width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:rgba(77,210,255,.14);border:1px solid rgba(77,210,255,.45);box-shadow:0 0 22px rgba(77,210,255,.25)">🔬</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:23px;font-weight:700;line-height:1.1">{{ ui.appTitle }}</div>
+          <div class="pt-chem-sub" style="font-size:12.5px;color:var(--muted);margin-top:3px">{{ ui.appSub }}</div>
+        </div>
+        <div style="flex:0 0 auto;display:flex;gap:3px;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:3px">
+          <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="3">
+            <button onClick="{{ lg.set }}" style="background:{{ lg.bg }};color:{{ lg.fg }};border:none;border-radius:8px;font-family:'Space Grotesk';font-weight:600;font-size:12px;letter-spacing:.05em;padding:9px 10px;cursor:pointer;transition:.15s">{{ lg.label }}</button>
+          </sc-for>
+        </div>
+        <button onClick="{{ toggleTheme }}" title="{{ themeTitle }}" style="flex:0 0 auto;width:42px;height:42px;display:inline-flex;align-items:center;justify-content:center;border-radius:11px;background:var(--input);border:1px solid var(--line);color:var(--text);font-size:16px;cursor:pointer" style-hover="background:var(--btn-hover)">{{ themeIcon }}</button>
+        <button onClick="{{ closeApp }}" title="Esc" style="flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 18px;border-radius:11px;background:var(--btn);border:1px solid var(--btn-line);color:var(--text);font-family:'Space Grotesk';font-weight:600;font-size:14px;cursor:pointer" style-hover="background:var(--btn-hover)"><span style="font-size:17px;line-height:1">←</span> {{ ui.backToTable }}</button>
+      </header>
+      <sc-if value="{{ appLoading }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)">⏳ {{ ui.chemLoading }}</div>
+      </sc-if>
+      <div id="pt-app-host" style="flex:1;min-height:0;overflow:auto"></div>
     </div>
   </sc-if>
 
@@ -690,7 +716,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
 class Component extends DCLogic {
-  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list', uzOnly:false, theme:'dark', mProp:'ion', showChem:false, chemTopic:'', chemAns:{}, chemNavOpen:true, chemOpen:{}, chemQ:"", chemPart:null, showLab:false, labLoading:false };
+  state = { lang:'uz', search:'', activeCats:[], selected:null, autoRotateA:true, autoRotateM:true, explode:false, started:false, showPortfolio:false, showMendeleev:false, fullView:null, linkCopied:false, mobileView:'list', uzOnly:false, theme:'dark', mProp:'ion', showChem:false, chemTopic:'', chemAns:{}, chemNavOpen:true, chemOpen:{}, chemQ:"", chemPart:null, showLab:false, labLoading:false, showApp:false, appLoading:false };
   PORTFOLIO = "https://najmiddinovanihona-hub.github.io/portfolio.html/";
 
   constructor(props){ super(props); this._engines = {atom:null, mat:null};
@@ -705,7 +731,7 @@ class Component extends DCLogic {
   // ---------- i18n ----------
   STR(){ return {
     uz:{title:"Kolvo",subtitle:"Interaktiv 3D Kimyo Platformasi",searchPh:"Qidiruv: nom, belgi yoki raqam…",atomModel:"3D Atom modeli",proton:"Proton",neutron:"Neytron",electron:"Elektron",autoRotate:"Avto-aylanish",explode:"Qavatlarni yoyish",reset:"Qayta tiklash",dragHint:"Aylantirish: sudrang · Zoom: g'ildirak",shellsTitle:"Elektron qavatlari",propsTitle:"Xossalari",discoveryTitle:"Kashf etilishi",year:"Yil",radioLabel:"Radioaktiv",
-      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",mTimeline:"Hayot yo'li",chemBtn:"Umumiy kimyo",labBtn:"Laboratoriya",labTitle:"Virtual laboratoriya",labSub:"Reaktivlarni probirkaga quying — reaksiyani kuzating",chemTitle:"Umumiy kimyo",chemSub:"Asosiy tushunchalar va formulalar",chemOf:"MAVZU {n} / {t}",chemQuiz:"O'zingizni sinang",chemFindPh:"Mavzu qidirish…",chemAll:"Hammasi",chemPartN:"{n}-qism",chemNone:"Hech narsa topilmadi",chemNavHide:"Mavzular ro'yxatini yopish",chemNavShow:"Mavzular ro'yxatini ochish",chemRight:"To'g'ri! ",chemWrong:"Noto'g'ri. ",chemTopicN:"{n}-mavzu",chemLab:"Amaliy",chemProb:"Masalalar",chemLoading:"Mavzular yuklanmoqda…",chemEmptyT:"Mavzular tez orada qo'shiladi",chemEmptyS:"Bu bo'limda umumiy kimyo bo'yicha mavzular joylashadi.",mGallery:"Tasvirlar",mPred:"Bashorat (1871)",mReal:"O'lchangan",mDiff:"farq",mCount:"Ma'lum elementlar soni",mAntiq:"qadimdan",mNoData:"ma'lumot yo'q",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
+      welcomeT:"Kimyoviy moddalar olamiga xush kelibsiz",welcomeS:"Mendeleyev davriy jadvalining interaktiv 3D olami. Istalgan elementni tanlab, uning atom tuzilishi va moddaning 3D ko'rinishini kashf eting.",startBtn:"Boshlash",authorLbl:"Muallif",backBtn:"Orqaga qaytish",tabAtom:"Atom modeli",tabMat:"Modda 3D",backToTable:"Jadvalga qaytish",aboutTitle:"Umumiy ma'lumot",factsTitle:"Qo'llanilishi va qiziqarli faktlar",independentHint:"har bir model alohida aylanadi",mendeleevBtn:"Mendeleyev haqida",fullscreen:"To'liq ekran",collapse:"Kichraytirish",blockSfx:"-blok",tipHint:"Bosing — batafsil ma'lumot",mTimeline:"Hayot yo'li",chemBtn:"Umumiy kimyo",labBtn:"Laboratoriya",appBtn:"Asboblar",appTitle:"Kimyoviy asboblar",appSub:"Laboratoriya asboblari 3D ko'rinishda — vazifasi, tarixi va ixtirochisi",labTitle:"Virtual laboratoriya",labSub:"Reaktivlarni probirkaga quying — reaksiyani kuzating",chemTitle:"Umumiy kimyo",chemSub:"Asosiy tushunchalar va formulalar",chemOf:"MAVZU {n} / {t}",chemQuiz:"O'zingizni sinang",chemFindPh:"Mavzu qidirish…",chemAll:"Hammasi",chemPartN:"{n}-qism",chemNone:"Hech narsa topilmadi",chemNavHide:"Mavzular ro'yxatini yopish",chemNavShow:"Mavzular ro'yxatini ochish",chemRight:"To'g'ri! ",chemWrong:"Noto'g'ri. ",chemTopicN:"{n}-mavzu",chemLab:"Amaliy",chemProb:"Masalalar",chemLoading:"Mavzular yuklanmoqda…",chemEmptyT:"Mavzular tez orada qo'shiladi",chemEmptyS:"Bu bo'limda umumiy kimyo bo'yicha mavzular joylashadi.",mGallery:"Tasvirlar",mPred:"Bashorat (1871)",mReal:"O'lchangan",mDiff:"farq",mCount:"Ma'lum elementlar soni",mAntiq:"qadimdan",mNoData:"ma'lumot yo'q",themeDay:"Kunduzgi rejim",themeNight:"Tungi rejim",uzTitle:"O'zbekistonda",
       cap:{solid:"Moddaning haqiqiy ko'rinishi",liquid:"Xona haroratida suyuq",glow:"Radioaktivligi tufayli qorong'ida xira yog'du sochadi",
         gas_discharge:"Rangsiz gaz — ampulada elektr razryadi nuri bilan",gas_colored:"Shisha ampulada — gazning o'z rangi",gas_colorless:"Rangsiz gaz, shisha ampulada",
         predicted:"Taxminiy model — ko'zga ko'rinadigan miqdorda hech qachon olinmagan",
@@ -716,7 +742,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnit",paramagnetic:"Paramagnit",ferromagnetic:"Ferromagnit",antiferromagnetic:"Antiferromagnit"},
       ph:{solid:"Qattiq",liquid:"Suyuq",gas:"Gaz"}},
     en:{title:"Kolvo",subtitle:"Interactive 3D Chemistry Platform",searchPh:"Search: name, symbol or number…",atomModel:"3D Atom model",proton:"Proton",neutron:"Neutron",electron:"Electron",autoRotate:"Auto-rotate",explode:"Expand shells",reset:"Reset view",dragHint:"Rotate: drag · Zoom: wheel",shellsTitle:"Electron shells",propsTitle:"Properties",discoveryTitle:"Discovery",year:"Year",radioLabel:"Radioactive",
-      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",mTimeline:"Life timeline",chemBtn:"General chemistry",labBtn:"Laboratory",labTitle:"Virtual laboratory",labSub:"Pour reagents into the test tube and watch the reaction",chemTitle:"General chemistry",chemSub:"Core concepts and formulas",chemOf:"TOPIC {n} / {t}",chemQuiz:"Test yourself",chemFindPh:"Find a topic…",chemAll:"All",chemPartN:"Part {n}",chemNone:"Nothing found",chemNavHide:"Hide the topic list",chemNavShow:"Show the topic list",chemRight:"Correct! ",chemWrong:"Not quite. ",chemTopicN:"Topic {n}",chemLab:"Lab",chemProb:"Problems",chemLoading:"Loading topics…",chemEmptyT:"Topics coming soon",chemEmptyS:"General chemistry topics will appear in this section.",mGallery:"Images",mPred:"Predicted (1871)",mReal:"Measured",mDiff:"difference",mCount:"Known elements",mAntiq:"antiquity",mNoData:"no data",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
+      welcomeT:"Welcome to the world of chemical elements",welcomeS:"An interactive 3D universe of the periodic table. Pick any element to explore its atomic structure and the 3D look of the substance.",startBtn:"Start",authorLbl:"Author",backBtn:"Back",tabAtom:"Atom model",tabMat:"Material 3D",backToTable:"Back to table",aboutTitle:"Overview",factsTitle:"Uses & interesting facts",independentHint:"each model rotates independently",mendeleevBtn:"About Mendeleev",fullscreen:"Fullscreen",collapse:"Exit fullscreen",blockSfx:"-block",tipHint:"Click for full details",mTimeline:"Life timeline",chemBtn:"General chemistry",labBtn:"Laboratory",appBtn:"Apparatus",appTitle:"Laboratory apparatus",appSub:"Lab equipment in 3D — purpose, history and inventors",labTitle:"Virtual laboratory",labSub:"Pour reagents into the test tube and watch the reaction",chemTitle:"General chemistry",chemSub:"Core concepts and formulas",chemOf:"TOPIC {n} / {t}",chemQuiz:"Test yourself",chemFindPh:"Find a topic…",chemAll:"All",chemPartN:"Part {n}",chemNone:"Nothing found",chemNavHide:"Hide the topic list",chemNavShow:"Show the topic list",chemRight:"Correct! ",chemWrong:"Not quite. ",chemTopicN:"Topic {n}",chemLab:"Lab",chemProb:"Problems",chemLoading:"Loading topics…",chemEmptyT:"Topics coming soon",chemEmptyS:"General chemistry topics will appear in this section.",mGallery:"Images",mPred:"Predicted (1871)",mReal:"Measured",mDiff:"difference",mCount:"Known elements",mAntiq:"antiquity",mNoData:"no data",themeDay:"Day mode",themeNight:"Night mode",uzTitle:"In Uzbekistan",
       cap:{solid:"How the substance really looks",liquid:"Liquid at room temperature",glow:"Glows faintly in the dark because of its radioactivity",
         gas_discharge:"Colourless gas — shown glowing in an electric discharge",gas_colored:"In a glass ampoule — the gas's own colour",gas_colorless:"Colourless gas in a glass ampoule",
         predicted:"Predicted model — never made in a visible amount",
@@ -727,7 +753,7 @@ class Component extends DCLogic {
       magn:{diamagnetic:"Diamagnetic",paramagnetic:"Paramagnetic",ferromagnetic:"Ferromagnetic",antiferromagnetic:"Antiferromagnetic"},
       ph:{solid:"Solid",liquid:"Liquid",gas:"Gas"}},
     ru:{title:"Kolvo",subtitle:"Интерактивная 3D химическая платформа",searchPh:"Поиск: имя, символ или номер…",atomModel:"3D модель атома",proton:"Протон",neutron:"Нейтрон",electron:"Электрон",autoRotate:"Авто-вращение",explode:"Развернуть слои",reset:"Сбросить вид",dragHint:"Вращение: перетащите · Зум: колесо",shellsTitle:"Электронные оболочки",propsTitle:"Свойства",discoveryTitle:"Открытие",year:"Год",radioLabel:"Радиоактивен",
-      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",mTimeline:"Хронология жизни",chemBtn:"Общая химия",labBtn:"Лаборатория",labTitle:"Виртуальная лаборатория",labSub:"Наливайте реактивы в пробирку и наблюдайте реакцию",chemTitle:"Общая химия",chemSub:"Основные понятия и формулы",chemOf:"ТЕМА {n} / {t}",chemQuiz:"Проверьте себя",chemFindPh:"Поиск темы…",chemAll:"Все",chemPartN:"Часть {n}",chemNone:"Ничего не найдено",chemNavHide:"Скрыть список тем",chemNavShow:"Показать список тем",chemRight:"Верно! ",chemWrong:"Неверно. ",chemTopicN:"Тема {n}",chemLab:"Практикум",chemProb:"Задачи",chemLoading:"Темы загружаются…",chemEmptyT:"Темы скоро появятся",chemEmptyS:"Здесь будут темы по общей химии.",mGallery:"Изображения",mPred:"Предсказано (1871)",mReal:"Измерено",mDiff:"разница",mCount:"Известно элементов",mAntiq:"с древности",mNoData:"нет данных",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
+      welcomeT:"Добро пожаловать в мир химических элементов",welcomeS:"Интерактивная 3D вселенная таблицы Менделеева. Выберите элемент, чтобы изучить его атомное строение и 3D вид вещества.",startBtn:"Начать",authorLbl:"Автор",backBtn:"Назад",tabAtom:"Модель атома",tabMat:"Вещество 3D",backToTable:"К таблице",aboutTitle:"Обзор",factsTitle:"Применение и интересные факты",independentHint:"каждая модель вращается отдельно",mendeleevBtn:"О Менделееве",fullscreen:"На весь экран",collapse:"Свернуть",blockSfx:"-блок",tipHint:"Нажмите — подробнее",mTimeline:"Хронология жизни",chemBtn:"Общая химия",labBtn:"Лаборатория",appBtn:"Приборы",appTitle:"Химическая посуда и приборы",appSub:"Лабораторное оборудование в 3D — назначение, история, изобретатели",labTitle:"Виртуальная лаборатория",labSub:"Наливайте реактивы в пробирку и наблюдайте реакцию",chemTitle:"Общая химия",chemSub:"Основные понятия и формулы",chemOf:"ТЕМА {n} / {t}",chemQuiz:"Проверьте себя",chemFindPh:"Поиск темы…",chemAll:"Все",chemPartN:"Часть {n}",chemNone:"Ничего не найдено",chemNavHide:"Скрыть список тем",chemNavShow:"Показать список тем",chemRight:"Верно! ",chemWrong:"Неверно. ",chemTopicN:"Тема {n}",chemLab:"Практикум",chemProb:"Задачи",chemLoading:"Темы загружаются…",chemEmptyT:"Темы скоро появятся",chemEmptyS:"Здесь будут темы по общей химии.",mGallery:"Изображения",mPred:"Предсказано (1871)",mReal:"Измерено",mDiff:"разница",mCount:"Известно элементов",mAntiq:"с древности",mNoData:"нет данных",themeDay:"Дневной режим",themeNight:"Ночной режим",uzTitle:"В Узбекистане",
       cap:{solid:"Как вещество выглядит на самом деле",liquid:"Жидкость при комнатной температуре",glow:"Слабо светится в темноте из-за радиоактивности",
         gas_discharge:"Бесцветный газ — показан свечением в электрическом разряде",gas_colored:"В стеклянной ампуле — собственный цвет газа",gas_colorless:"Бесцветный газ в стеклянной ампуле",
         predicted:"Предполагаемая модель — никогда не получен в видимом количестве",
@@ -796,14 +822,14 @@ class Component extends DCLogic {
   kc(k){ return k===null?'—':(Math.round((k-273.15)*10)/10)+' °C'; }
 
   // ---------- handlers ----------
-  toggleTheme(){ const t=this.state.theme==='light'?'dark':'light'; try{ localStorage.setItem('pt-theme', t); }catch(_){} this.setState({theme:t}, ()=>{ this._drawMSoon(); this._drawChemSoon(); this._labCtx(); }); }
+  toggleTheme(){ const t=this.state.theme==='light'?'dark':'light'; try{ localStorage.setItem('pt-theme', t); }catch(_){} this.setState({theme:t}, ()=>{ this._drawMSoon(); this._drawChemSoon(); this._labCtx(); this._appCtx(); }); }
   // darker shade of a #rrggbb colour (k = 0..1), used to keep neon category colours readable on the day theme
   shade(hex,k){ const n=parseInt(hex.slice(1),16), f=(v)=>Math.round(v*(1-k)).toString(16).padStart(2,'0'); return '#'+f((n>>16)&255)+f((n>>8)&255)+f(n&255); }
   // electron configuration with the noble-gas core abbreviated and superscript counts: [Ar] 4s² 3d⁶
   econfShort(el){ const DATA=window.PT_ELEMENTS||[]; const core=[86,54,36,18,10,2].find(z=>z<el.z); let txt=el.econf;
     if(core){ const c=DATA[core-1]; if(c && txt.startsWith(c.econf+' ')) txt='['+c.sym+'] '+txt.slice(c.econf.length+1); }
     const sup={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹'}; return txt.replace(/([spdf])([0-9]+)/g,(_,o,n)=>o+n.split('').map(d=>sup[d]).join('')); }
-  setLang(l){ try{ localStorage.setItem('pt-lang', l); }catch(_){} this.setState({lang:l}, ()=>{ this._syncDocument(); this._drawMSoon(); this._drawChemSoon(); this._labCtx(); }); }
+  setLang(l){ try{ localStorage.setItem('pt-lang', l); }catch(_){} this.setState({lang:l}, ()=>{ this._syncDocument(); this._drawMSoon(); this._drawChemSoon(); this._labCtx(); this._appCtx(); }); }
   // keep <html lang> and the tab title in step with the chosen language and open element
   _syncDocument(){ const ui=this.STR(), el=this.state.selected;
     document.documentElement.lang=this.state.lang;
@@ -816,6 +842,12 @@ class Component extends DCLogic {
     const DATA=window.PT_ELEMENTS; if(!DATA) return;
     const h=decodeURIComponent(location.hash.slice(1)).trim().toLowerCase();
     if(h===this._routeKey) return; this._routeKey=h;
+    // #asboblar opens the 3D apparatus encyclopedia; its script and texts are fetched the first time
+    if(h==='asboblar'){ if(this.state.selected) this._closeEl(); if(this.state.showMendeleev){ this.setState({showMendeleev:false}); this._disposeOne('land'); } if(this.state.showChem){ this.setState({showChem:false}); this._disposeChem(); }
+      if(this.state.showLab){ this.setState({showLab:false}); if(window.PTLAB) window.PTLAB.unmount(); }
+      if(!window.PTAPP || !window.PT_APP){ this.setState({started:true, showApp:true, appLoading:true}); this._loadApp().then(()=>{ this.setState({appLoading:false}); this._routeKey=null; this._route(); }); return; }
+      this.setState({started:true, showApp:true}, ()=>this._appCtx(true)); return; }
+    if(this.state.showApp){ this.setState({showApp:false}); if(window.PTAPP) window.PTAPP.unmount(); }
     // #lab opens the virtual laboratory; lab.js is fetched the first time
     if(h==='lab'){ if(this.state.selected) this._closeEl(); if(this.state.showMendeleev){ this.setState({showMendeleev:false}); this._disposeOne('land'); } if(this.state.showChem){ this.setState({showChem:false}); this._disposeChem(); }
       if(!window.PTLAB){ this.setState({started:true, showLab:true, labLoading:true}); this._loadLab().then(()=>{ this.setState({labLoading:false}); this._routeKey=null; this._route(); }); return; }
@@ -980,6 +1012,16 @@ class Component extends DCLogic {
   }
 
   // ---------- "General chemistry" screen ----------
+  openApp(){ this._go('asboblar'); }
+  closeApp(){ this._back(); }
+  _loadApp(){
+    const add=(src)=>new Promise(res=>{ const el=document.createElement("script"); el.src=src; el.onload=el.onerror=()=>res(); document.head.appendChild(el); });
+    if(!this._appP) this._appP=Promise.all([add("data/apparatus.js?v=1"), add("apparatus.js?v=3")]).then(()=>{ if(!window.PTAPP) this._appP=null; });
+    return this._appP;
+  }
+  _appCtx(mount){ if(!this.state.showApp || !window.PTAPP) return; const h=document.getElementById('pt-app-host'); if(!h) return;
+    const c={lang:this.state.lang, light:this.state.theme==='light', THREE:window.THREE, orbit:(cam,dom)=>this._makeOrbit(window.THREE,cam,dom,false)};
+    if(mount || !h.firstChild) window.PTAPP.mount(h, c); else window.PTAPP.setCtx(c); }
   openLab(){ this._go('lab'); }
   closeLab(){ this._back(); }
   _loadLab(){
@@ -1072,6 +1114,7 @@ class Component extends DCLogic {
       else if(this.state.showPortfolio) this.closePortfolio();
       else if(this.state.showChem) this.closeChem();
       else if(this.state.showLab) this.closeLab();
+      else if(this.state.showApp) this.closeApp();
       else if(this.state.showMendeleev) this.closeMendeleev();
       else if(this.state.selected) this.close();
       else if(tag==='INPUT' && (this.state.search || this.state.activeCats.length || this.state.uzOnly)) this.clearFilters();
@@ -1236,6 +1279,7 @@ class Component extends DCLogic {
       copyFg: this.state.linkCopied?(light?'#16803a':'#7ee787'):'var(--text)',
       started:this.state.started, notStarted:!this.state.started, showPortfolio:this.state.showPortfolio, portfolioUrl:this.PORTFOLIO,
       ...this._chemVals(ui, L),
+      showApp:this.state.showApp, appLoading:this.state.appLoading, openApp:()=>this.openApp(), closeApp:()=>this.closeApp(),
       showLab:this.state.showLab, labLoading:this.state.labLoading, openLab:()=>this.openLab(), closeLab:()=>this.closeLab(),
       mprops, showMendeleev:this.state.showMendeleev, openMendeleev:()=>this.openMendeleev(), closeMendeleev:()=>this.closeMendeleev(), minfo,
       start:()=>this.start(), openPortfolio:()=>this.openPortfolio(), closePortfolio:()=>this.closePortfolio(),
