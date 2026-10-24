@@ -35,6 +35,8 @@ support.js          — ishlash uchun zarur kutubxona
 chem-visuals.js     — kimyo darslari uchun 3D, animatsiya, diagramma, grafik va kalkulyatorlar
 lab.js              — virtual laboratoriya (#lab): eruvchanlik jadvalidagi barcha kislota, asos va tuzlar (272 reaktiv), reaksiyalar mexanizmi, qizdirish, bug'lanish, termik parchalanish
 lab3d.js            — laboratoriyaning 3D ko'rinishi: stol, shtativ, shisha probirka, spirt lampasi, cho'kma, pufakcha va bug' zarrachalari
+labfx.js            — xavfli hodisalar effektlari: olov, vodorod "po'k"i, portlash va shisha parchalari, ko'pik, magniy chaqnashi, tovush
+labroom.js          — erkin 3D laboratoriya xonasi: javondagi moddalar, 4 probirka, stakan, kolba, spirt lampalari, gorelka; moddani o'zingiz solasiz
 apparatus.js        — kimyoviy asboblar (#asboblar): 38 ta laboratoriya asbobining 3D modeli
 data/
   elements.js       — 118 element ma'lumotlari

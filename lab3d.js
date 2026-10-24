@@ -148,7 +148,7 @@
     const place = () => { const d = 15.5 * Math.max(1, 0.85 / Math.max(0.4, cam.aspect)); cam.position.set(0.22 * d, 4.9 + 0.08 * d, d); if (controls) { controls.target.set(0.3, 4.4, 0); controls.sync(); } cam.lookAt(0.3, 4.4, 0); };
     const size = () => { const w = el.clientWidth || 400, h = el.clientHeight || 400; cam.aspect = w / h; cam.updateProjectionMatrix(); renderer.setSize(w, h, false); place(); };
     const ro = new ResizeObserver(size); ro.observe(el); size();
-    let raf = 0, alive = true, pptKey = '';
+    let raf = 0, alive = true, pptKey = '', lastT = 0; const fx = window.PTLABFX ? window.PTLABFX(THREE, scene) : null, seen = new Set();
     function frame(now) {
       if (!alive) return; const v = opt.getVM(); if (!v) { raf = requestAnimationFrame(frame); return; }
       const level = v.vol > 0 ? Math.min(TOPY - 0.5, BOT + 0.22 + v.vol * 0.56) : BOT, surf = v.vol > 0 ? level : BOT + 0.1;
@@ -203,7 +203,13 @@
       // flame test on the burner
       tf.material.opacity = v.flameTest ? 0.75 : 0; loop.visible = wire.visible = !!v.flameTest; flameLight.intensity = v.flameTest ? 1.6 : 0; if (v.flameTest) { tf.material.color.copy(lin(v.flameTest)); flameLight.color.copy(lin(v.flameTest)); tf.scale.y = 1 + Math.sin(now / 50) * 0.08; }
       animateHand(v.act, surf);
-      if (controls) controls.update(); renderer.render(scene, cam); raf = requestAnimationFrame(frame);
+      // fire, pops, foam, burning magnesium and explosions; a broken tube disappears with its contents
+      (v.events || []).forEach((e) => { const k = e.type + e.t0; if (seen.has(k)) return; seen.add(k); if (!fx) return;
+        fx.spawn(e, new THREE.Vector3(0, e.type === 'bright' ? BOT + 0.3 : e.type === 'explosion' ? BOT + 1.2 : e.type === 'foam' ? TOPY : Math.max(surf, BOT + 0.4), 0.02)); });
+      tube.visible = contents.visible = !v.broken;
+      const dt = lastT ? Math.min(0.05, (now - lastT) / 1000) : 0.016; lastT = now; const sh = fx ? fx.update(now, dt) : 0;
+      if (controls) controls.update(); if (sh > 0.002) { cam.position.x += (Math.random() - 0.5) * sh; cam.position.y += (Math.random() - 0.5) * sh; }
+      renderer.render(scene, cam); if (sh > 0.002 && !controls) place(); raf = requestAnimationFrame(frame);
     }
     raf = requestAnimationFrame(frame);
     return { dispose() { alive = false; cancelAnimationFrame(raf); ro.disconnect(); controls && controls.dispose && controls.dispose(); renderer.dispose(); try { renderer.forceContextLoss(); } catch (e) {} el.innerHTML = ''; } };

@@ -112,21 +112,23 @@
     RG.push({ id, t: 'salt', c, a, n: A3(k[4] + ' ' + an[4] + extra[0], k[5] + ' ' + an[5] + extra[1], an[6] + ' ' + k[6] + extra[2]), solid: code !== 'R', code, grp: a }); }));
   [['KSCN', 'K', 'SCN', A3('Kaliy rodanid', 'Potassium thiocyanate', 'Роданид калия')], ['KMnO4', 'K', 'MnO4', A3('Kaliy permanganat', 'Potassium permanganate', 'Перманганат калия')]]
     .forEach(([id, c, a, n]) => RG.push({ id, t: 'salt', c, a, n, grp: 'spec' }));
-  [['Na', A3('Natriy (bo\'lakcha)', 'Sodium (small piece)', 'Натрий (кусочек)')], ['Mg', A3('Magniy (lenta)', 'Magnesium (ribbon)', 'Магний (лента)')], ['Al', A3('Alyuminiy (folga)', 'Aluminium (foil)', 'Алюминий (фольга)')],
+  [['Li', A3('Litiy (bo\'lakcha)', 'Lithium (small piece)', 'Литий (кусочек)')], ['K', A3('Kaliy (bo\'lakcha)', 'Potassium (small piece)', 'Калий (кусочек)')], ['Ca', A3('Kalsiy (qirindi)', 'Calcium (turnings)', 'Кальций (стружка)')],
+    ['Na', A3('Natriy (bo\'lakcha)', 'Sodium (small piece)', 'Натрий (кусочек)')], ['Mg', A3('Magniy (lenta)', 'Magnesium (ribbon)', 'Магний (лента)')], ['Al', A3('Alyuminiy (folga)', 'Aluminium (foil)', 'Алюминий (фольга)')],
     ['Zn', A3('Rux (granula)', 'Zinc (granule)', 'Цинк (гранула)')], ['Fe', A3('Temir (mix)', 'Iron (nail)', 'Железо (гвоздь)')], ['Cu', A3('Mis (sim)', 'Copper (wire)', 'Медь (проволока)')]]
     .forEach(([id, n]) => RG.push({ id, t: 'metal', n, solid: true }));
   [['php', A3('Fenolftalein', 'Phenolphthalein', 'Фенолфталеин')], ['litmus', A3('Lakmus', 'Litmus', 'Лакмус')], ['mo', A3('Metilzarg\'aldog\'i', 'Methyl orange', 'Метилоранж')]]
     .forEach(([id, n]) => RG.push({ id, t: 'ind', n }));
-  [['H2O', A3('Distillangan suv', 'Distilled water', 'Дистиллированная вода')], ['H2O2', A3('Vodorod peroksid (3%)', 'Hydrogen peroxide (3%)', 'Пероксид водорода (3%)')],
+  [['H2O', A3('Distillangan suv', 'Distilled water', 'Дистиллированная вода')], ['H2O2', A3('Vodorod peroksid (3%)', 'Hydrogen peroxide (3%)', 'Пероксид водорода (3%)')], ['H2O2c', A3('Vodorod peroksid (30%, konsentrlangan)', 'Hydrogen peroxide (30%, concentrated)', 'Пероксид водорода (30%, конц.)')],
+    ['KMnO4s', A3('Kaliy permanganat (kristallar)', 'Potassium permanganate (crystals)', 'Перманганат калия (кристаллы)')],
     ['I2', A3('Yod eritmasi', 'Iodine solution', 'Раствор иода')], ['starch', A3('Kraxmal kleysteri', 'Starch paste', 'Крахмальный клейстер')],
     ['C6H12O6', A3('Glyukoza eritmasi', 'Glucose solution', 'Раствор глюкозы')], ['C3H5(OH)3', A3('Glitserin', 'Glycerol', 'Глицерин')], ['MnO2', A3('Marganes(IV) oksid', 'Manganese(IV) oxide', 'Оксид марганца(IV)')]]
-    .forEach(([id, n]) => RG.push({ id, t: 'other', n, solid: id === 'MnO2' }));
+    .forEach(([id, n]) => RG.push({ id, t: 'other', n, solid: id === 'MnO2' || id === 'KMnO4s' }));
   const RGI = Object.fromEntries(RG.map((r) => [r.id, r]));
-  const DISP = { NH4OH: 'NH₃·H₂O', starch: '(C₆H₁₀O₅)ₙ', cuGly: 'Cu-glitserat' }, disp = (id) => DISP[id] || pretty(id);
+  const DISP = { NH4OH: 'NH₃·H₂O', starch: '(C₆H₁₀O₅)ₙ', cuGly: 'Cu-glitserat', H2O2c: 'H₂O₂ 30%', KMnO4s: 'KMnO₄ (kr.)' }, disp = (id) => DISP[id] || pretty(id);
   // a pour is 1 portion; strongly coloured reagents are used as a few drops of a dilute solution
   const DOSE = { KMnO4: 0.2, I2: 0.3, Na2SO3: 0.5 };
   const ACT = ['Li', 'K', 'Ba', 'Sr', 'Ca', 'Na', 'Mg', 'Al', 'Mn', 'Cr', 'Zn', 'Fe', 'Co', 'Ni', 'Sn', 'Pb', 'H', 'Cu', 'Hg', 'Ag', 'Pt', 'Au'];
-  const MION = { Na: 'Na', Mg: 'Mg', Al: 'Al', Zn: 'Zn', Fe: 'Fe2', Cu: 'Cu' }, metalOf = (c) => ION[c][0];
+  const MION = { Na: 'Na', K: 'K', Li: 'Li', Ca: 'Ca', Mg: 'Mg', Al: 'Al', Zn: 'Zn', Fe: 'Fe2', Cu: 'Cu' }, metalOf = (c) => ION[c][0];
   const FLAME = { Na: ['#ffc21a', 'sariq', 'yellow', 'жёлтый'], K: ['#b07cff', 'binafsha', 'violet', 'фиолетовый'], Ca: ['#ff5a36', 'g\'isht-qizil', 'brick red', 'кирпично-красный'], Ba: ['#9be36b', 'sarg\'ish-yashil', 'yellow-green', 'жёлто-зелёный'],
     Cu: ['#2ee6a0', 'yashil', 'green', 'зелёный'], Li: ['#ff2a6a', 'qip-qizil', 'crimson', 'малиновый'], Sr: ['#ff2020', 'qizil', 'red', 'красный'] };
 
@@ -182,6 +184,27 @@
       safety: 'В настоящей лаборатории надевайте очки и перчатки, не направляйте пробирку на людей. Это безопасный виртуальный опыт.' }
   };
   const LI = { uz: 0, en: 1, ru: 2 };
+  const L10N = {
+    broken: ['Probirka singan — tozalang (yangi probirka oling).', 'The tube is broken — empty it (take a new tube).', 'Пробирка разбита — вымойте (возьмите новую).'],
+    mixed: ['Bir idishdagi aralashma ikkinchisiga quyildi', 'The contents were poured into another vessel', 'Содержимое перелито в другой сосуд'],
+    naFire: ['Natriy suv ustida eriydi, shar bo\'lib aylanadi; ajralgan vodorod sariq alanga bilan yonib ketishi mumkin.', 'Sodium melts into a ball that races over the water; the hydrogen can catch fire with a yellow flame.', 'Натрий плавится в шарик и бегает по воде; водород может вспыхнуть жёлтым пламенем.'],
+    kFire: ['Kaliy suv bilan juda shiddatli reaksiyaga kirishadi: binafsha alanga va kichik portlash! Ishqoriy metallar kerosin ostida saqlanadi.', 'Potassium reacts violently: a lilac flame and a small explosion! Alkali metals are kept under paraffin oil.', 'Калий реагирует бурно: фиолетовое пламя и небольшой взрыв! Щелочные металлы хранят под керосином.'],
+    liCalm: ['Litiy suvda tinchgina, sekin vishillab eriydi — ishqoriy metallar ichida eng sustidir.', 'Lithium fizzes calmly and slowly — the mildest of the alkali metals.', 'Литий спокойно и медленно шипит — самый «тихий» из щелочных металлов.'],
+    caCalm: ['Kalsiy suv bilan bir tekis reaksiyaga kirishadi; kam eriydigan Ca(OH)₂ eritmani loyqalatadi.', 'Calcium reacts steadily; poorly soluble Ca(OH)₂ makes the water cloudy.', 'Кальций реагирует ровно; малорастворимый Ca(OH)₂ мутит воду.'],
+    pop: ['Vodorod "pop" ovozi bilan portladi', 'Hydrogen burns with a "pop"', 'Водород сгорел с хлопком'],
+    popNote: ['Vodorodning havo bilan aralashmasi ("qaldiroq gaz") alangadan portlaydi. Shuning uchun vodorod bilan ishlaganda avval uning tozaligi tekshiriladi.', 'A mixture of hydrogen and air ("oxyhydrogen") explodes in a flame — so hydrogen is always tested for purity first.', 'Смесь водорода с воздухом («гремучий газ») взрывается от пламени — поэтому водород сначала проверяют на чистоту.'],
+    foam: ['"Fil tish pastasi": ko\'pik probirkadan otilib chiqdi', '"Elephant toothpaste": foam shoots out of the tube', '«Зубная паста для слона»: пена вырвалась из пробирки'],
+    foamNote: ['KI katalizatori konsentrlangan H₂O₂ ni bir zumda parchalaydi; ajralgan O₂ ko\'pik hosil qiladi, aralashma qiziydi. Himoya ko\'zoynagi shart!', 'KI makes concentrated H₂O₂ decompose at once; the oxygen whips up foam and the mixture gets hot. Goggles are a must!', 'KI мгновенно разлагает концентрированный H₂O₂; кислород вспенивает смесь, она горячая. Очки обязательны!'],
+    ignWait: ['KMnO₄ kristallari glitserin bilan aralashdi — bir necha soniyadan keyin nimadir sodir bo\'ladi…', 'KMnO₄ crystals meet glycerol — something happens in a few seconds…', 'Кристаллы KMnO₄ смешались с глицерином — через несколько секунд что-то произойдёт…'],
+    ign: ['O\'z-o\'zidan alangalanish! Aralashma binafsha-oq alanga bilan yonib ketdi', 'Spontaneous ignition! The mixture bursts into a lilac-white flame', 'Самовоспламенение! Смесь вспыхнула фиолетово-белым пламенем'],
+    ignNote: ['Kuchli oksidlovchi (KMnO₄) glitserinni oksidlaydi, issiqlik shunchalik ko\'p ajraladiki, aralashma o\'zi alangalanadi. Oksidlovchilarni organik moddalardan alohida saqlang!', 'The strong oxidiser oxidises glycerol so fast that the heat sets it on fire. Keep oxidisers away from organic substances!', 'Сильный окислитель так быстро окисляет глицерин, что смесь сама воспламеняется. Храните окислители отдельно от органики!'],
+    mg: ['Magniy ko\'zni qamashtiruvchi oq nur bilan yonmoqda', 'Magnesium burns with a blinding white light', 'Магний горит ослепительно белым светом'],
+    mgNote: ['Yonayotgan magniyga to\'g\'ridan-to\'g\'ri qaramang — nuri ko\'zga zarar yetkazadi. Oq kukun — MgO.', 'Do not look straight at burning magnesium — the light can hurt your eyes. The white powder is MgO.', 'Не смотрите прямо на горящий магний — свет вреден для глаз. Белый порошок — MgO.'],
+    boom: ['PORTLASH! Ammoniy nitrat qizdirilganda portladi, probirka sindi', 'EXPLOSION! Ammonium nitrate exploded on heating and the tube shattered', 'ВЗРЫВ! Нитрат аммония взорвался при нагревании, пробирка разбита'],
+    boomNote: ['Ammoniy nitrat kuchli qizdirilganda yoki qattiq siqilganda portlaydi (o\'g\'it omborlaridagi baxtsiz hodisalar shundan). Hech qachon uni yopiq idishda qizdirmang!', 'Ammonium nitrate can explode when strongly heated or confined (this is behind real warehouse disasters). Never heat it in a closed vessel!', 'Нитрат аммония взрывается при сильном нагреве или в замкнутом объёме (так случались реальные катастрофы на складах). Никогда не нагревайте его в закрытом сосуде!'],
+    h2o2Mn: ['Konsentrlangan H₂O₂ MnO₂ ustida shiddatli qaynab, bug\' va kislorod chiqardi', 'Concentrated H₂O₂ boils violently on MnO₂, giving off steam and oxygen', 'Концентрированный H₂O₂ бурно вскипает на MnO₂ с паром и кислородом']
+  };
+  const raise = (type, color, size) => st.events.push({ type, color, size: size || 1, t0: Date.now() });
   // a colour word for a hex colour, so the log can say "blue precipitate"
   function cname(hex) { const v = parseInt(hex.slice(1), 16), r = v >> 16, g = (v >> 8) & 255, b = v & 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
     if (l > 215 && mx - mn < 40) return 'white'; if (l < 45) return 'black'; if (mx - mn < 25) return 'grey';
@@ -234,7 +257,8 @@
 
   // ---------- engine ----------
   let st, host, ctx = { lang: 'uz' }, T = S.uz, timers = [];
-  const fresh = () => ({ vol: 0, sol: [], solids: [], ind: null, heated: false, temp: 20, boiling: false, flags: {}, gas: null, gasT: 0, gasSrc: null, mirror: false, ring: false, hg: false, cloud: null, cloudT: 0, flame: null, log: [] });
+  const SOLIDCOL = { MnO2: '#2a2522', H2SiO3: '#eef4f2', KMnO4s: '#3c0848' };
+  const fresh = () => ({ events: [], broken: false, lastDec: 0, vol: 0, sol: [], solids: [], ind: null, heated: false, temp: 20, boiling: false, flags: {}, gas: null, gasT: 0, gasSrc: null, mirror: false, ring: false, hg: false, cloud: null, cloudT: 0, flame: null, log: [] });
   const L = () => LI[ctx.lang] || 0;
   const fmt = (s, o) => s.replace(/\{(\w)\}/g, (m, k) => o[k]);
   const findSol = (f) => st.sol.find((x) => x.f === f && x.n > 1e-6);
@@ -340,8 +364,9 @@
   function metalStep() {
     for (const m of st.solids.filter((s) => s.kind === 'metal')) {
       const M = m.f;
-      if (M === 'Na') { if (!st.vol) continue; addSol('NaOH', 'Na', 'OH', m.n); m.n = 0; gasOn('H2', 'na'); st.flags.na = Date.now();
-        log({ icon: '💥', title: fmt(T.gas, { f: 'H₂' }), eq: '2Na + 2H₂O → 2NaOH + H₂↑', note: ['Natriy suv ustida suzib, erib shar bo\'lib aylanadi va vishillaydi. ', 'Sodium floats, melts into a ball and fizzes around the surface. ', 'Натрий плавает, плавится в шарик и шипя бегает по поверхности. '][L()] + T.tests.H2 }); return true; }
+      if (['Na', 'K', 'Li', 'Ca'].includes(M)) { if (!st.vol) continue; const hy = M === 'Ca' ? 'Ca(OH)2' : M + 'OH'; addSol(hy, M, 'OH', m.n); m.n = 0; gasOn('H2', M === 'Na' || M === 'K' ? 'na' : 'bottom');
+        if (M === 'Na' || M === 'K') st.flags.na = Date.now(); if (M === 'Na') raise('fire', '#ffc21a', 0.55); if (M === 'K') { raise('fire', '#b07cff', 0.8); raise('pop', '#c8a0ff', 0.7); }
+        log({ icon: M === 'K' ? '💥' : M === 'Na' ? '🔥' : '🫧', title: fmt(T.gas, { f: 'H₂' }), eq: M === 'Ca' ? 'Ca + 2H₂O → Ca(OH)₂ + H₂↑' : '2' + M + ' + 2H₂O → 2' + M + 'OH + H₂↑', note: L10N[{ Na: 'naFire', K: 'kFire', Li: 'liCalm', Ca: 'caCalm' }[M]][L()] }); return true; }
       for (const x of st.sol) {
         if (x.c === 'H' && x.a === 'NO3' && HNO3EQ[M]) { const h = HNO3EQ[M], ext = Math.min(m.n, x.n * h[3]); m.n -= ext; x.n -= ext / h[3]; addSol(h[1], h[2], 'NO3', ext); gasOn('NO', M);
           log({ icon: '🟤', title: fmt(T.gas, { f: 'NO' }), eq: h[0], note: T.tests.NO }); return true; }
@@ -388,6 +413,10 @@
     if (fe3 && scn) { const R = [fe3.f, 'KSCN'], P = ['Fe(SCN)3', salt('K', fe3.a)], k = balance(R, P);
       if (k) { const ext = Math.min(fe3.n / k[0], scn.n / k[1]); use(fe3, k[0] * ext); use(scn, k[1] * ext); addSol('Fe(SCN)3', null, null, k[2] * ext); addSol(P[1], 'K', fe3.a, k[3] * ext);
         log({ icon: '🩸', title: T.colour + ' — ' + T.cn.red, eq: eqStr(R, P, k), ion: 'Fe³⁺ + 3SCN⁻ → Fe(SCN)₃' }); return true; } }
+    const hc = has('H2O2c');
+    if (hc && has('KI')) { use(hc, hc.n); gasOn('O2'); raise('foam', '#fff6e0', 1); cloudOn('#ffffff'); log({ icon: '🫧', title: L10N.foam[L()], eq: '2H₂O₂ —KI→ 2H₂O + O₂↑', note: L10N.foamNote[L()] }); return true; }
+    if (hc && (solid('MnO2') || st.temp >= 70)) { use(hc, hc.n); gasOn('O2'); cloudOn('#ffffff'); log({ icon: '♨️', title: L10N.h2o2Mn[L()], eq: '2H₂O₂ —MnO₂→ 2H₂O + O₂↑', note: T.tests.O2 }); return true; }
+    if (st.solids.some((x) => x.f === 'KMnO4s' && x.n > 1e-6) && has('C3H5(OH)3') && !st.flags.ign) { st.flags.ign = Date.now() + 4200; log({ icon: '⏳', title: L10N.ignWait[L()] }); return true; }
     if (has('H2O2') && (solid('MnO2') || st.temp >= 70)) { const h = has('H2O2'); use(h, h.n); gasOn('O2'); log({ icon: '🫧', title: fmt(T.gas, { f: 'O₂' }), eq: solid('MnO2') ? '2H₂O₂ —MnO₂→ 2H₂O + O₂↑' : '2H₂O₂ —t→ 2H₂O + O₂↑', note: T.tests.O2 }); return true; }
     if (has('I2') && has('starch') && !st.flags.starch) { st.flags.starch = 1; log({ icon: '🟦', title: T.colour, eq: 'I₂ + (C₆H₁₀O₅)ₙ → ' + ['to\'q ko\'k birikma', 'deep-blue complex', 'тёмно-синее соединение'][L()] }); return true; }
     // ammonia complexes and amphoteric hydroxides: only after every matching cation has precipitated
@@ -450,7 +479,9 @@
         if (['Ca', 'Sr', 'Ba', 'Li', 'Na', 'K'].includes(s.c)) { if (t >= 590 && !st.flags['nd' + s.f]) { st.flags['nd' + s.f] = 1; log({ icon: 'ℹ️', title: fmt(T.noDecomp, { f: pretty(s.f) }) }); } continue; }
         if (t >= 300) { const prod = s.c === 'Ag' ? 'Ag2O' : s.c === 'NH4' ? null : oxide(s.c); if (!prod) continue; const k = balance([s.f], [prod, 'CO2']); if (!k) continue; gasOn('CO2');
           return done(fmt(T.decomp, { f: pretty(s.f) }), eqStr([s.f], [prod, 'CO2'], k, { CO2: '↑' }, 't'), [[prod, 'crystal', OCOL[prod] || '#ddd']]); } }
-      if (s.a === 'NO3' && s.c && dry && t >= (s.c === 'NH4' ? 200 : 300)) {
+      if (s.f === 'NH4NO3' && dry && t >= 240 && s.n >= 0.4) { raise('explosion', '#ffb347', 1.4); st.broken = true; st.solids = []; st.sol = []; st.vol = 0; st.heated = false; cloudOn('#8a8a90');
+        log({ icon: '💥', title: L10N.boom[L()], eq: '2NH₄NO₃ —t→ 2N₂↑ + O₂↑ + 4H₂O↑', note: L10N.boomNote[L()] }); return true; }
+      if (s.a === 'NO3' && s.c && dry && t >= (s.c === 'NH4' ? 260 : 300)) {
         let P; if (s.c === 'NH4') P = ['N2O', 'H2O']; else if (s.c === 'Na' || s.c === 'K') P = [salt(s.c, 'NO3').replace('NO3', 'NO2'), 'O2']; else if (s.c === 'Ag' || s.c === 'Hg') P = [metalOf(s.c), 'NO2', 'O2']; else P = [oxide(s.c), 'NO2', 'O2'];
         const k = balance([s.f], P); if (!k) continue; const solidP = P[0] !== 'N2O' ? P[0] : null; gasOn(P.includes('NO2') ? 'NO2' : P[0] === 'N2O' ? 'N2O' : 'O2'); if (s.c === 'Hg') st.hg = true;
         return done(fmt(T.decomp, { f: pretty(s.f) }), eqStr([s.f], P, k, { NO2: '↑', O2: '↑', N2O: '↑', H2O: '↑' }, 't'), solidP && s.c !== 'Hg' ? [[solidP, 'crystal', OCOL[solidP] || '#f4f4f0']] : [], Object.assign(() => {}, { note: P.includes('NO2') ? T.tests.NO2 : P[0] === 'N2O' ? T.tests.N2O : T.tests.O2 })); }
@@ -475,7 +506,13 @@
         else { dryOut(); changed = true; } }
     } else if (st.boiling && st.temp < 99) st.boiling = false;
     if (st.temp >= 60) { const n = st.log.length; react(); if (st.log.length !== n) changed = true; }
-    if (st.heated && Date.now() - lastDec > 1400) { lastDec = Date.now(); if (decomp()) { tidy(); changed = true; } }
+    if (st.heated && Date.now() - (st.lastDec || 0) > 1400) { st.lastDec = Date.now(); if (decomp()) { tidy(); changed = true; } }
+    if (st.flags.ign && Date.now() >= st.flags.ign) { st.flags.ign = 0; raise('fire', '#c9a0ff', 1.2); cloudOn('#9a9aa0'); st.temp = Math.max(st.temp, 300);
+      st.solids.forEach((x) => { if (x.f === 'KMnO4s') x.n = 0; }); st.sol.forEach((x) => { if (x.f === 'C3H5(OH)3') x.n = 0; }); addSolid('MnO2', 'crystal', '#2a2522', 0.6); tidy();
+      log({ icon: '🔥', title: L10N.ign[L()], eq: '14KMnO₄ + 4C₃H₅(OH)₃ → 7K₂CO₃ + 7Mn₂O₃ + 5CO₂↑ + 16H₂O', note: L10N.ignNote[L()] }); changed = true; }
+    const mgm = st.solids.find((x) => x.kind === 'metal' && x.f === 'Mg' && x.n > 1e-6);
+    if (mgm && st.heated && !st.vol && st.temp >= 550) { mgm.n = 0; raise('bright', '#ffffff', 1); cloudOn('#f2f2f2'); addSolid('MgO', 'crystal', '#f6f6f4', 0.8); tidy();
+      log({ icon: '✨', title: L10N.mg[L()], eq: '2Mg + O₂ → 2MgO', note: L10N.mgNote[L()] }); changed = true; }
     return changed;
   }
 
@@ -484,8 +521,9 @@
     if (st.vol >= 8 && !r.solid && r.t !== 'ind') { log({ icon: '⚠️', title: T.full }); return render(); }
     const before = st.log.length;
     log({ icon: '➕', title: fmt(T.added, { x: r.n[L()] + (r.t === 'ind' ? '' : ' (' + disp(r.id) + ')') }), muted: true });
-    if (r.t === 'metal') addSolid(id, 'metal', '', id === 'Na' ? 1 : 4);
-    else if (r.solid) addSolid(id, 'solid', PCOL[(r.a || '') + ':' + r.c] || (r.id === 'MnO2' ? OCOL.MnO2 : r.id === 'H2SiO3' ? OCOL.H2SiO3 : '#f3f3ef'), 1, r.c, r.a, texOf(r.id, r.a, r.c));
+    if (st.broken) { log({ icon: '⚠️', title: L10N.broken[L()] }); return render(); }
+    if (r.t === 'metal') addSolid(id, 'metal', '', ['Na', 'K', 'Li', 'Ca'].includes(id) ? 1 : 4);
+    else if (r.solid) addSolid(id, 'solid', PCOL[(r.a || '') + ':' + r.c] || SOLIDCOL[id] || '#f3f3ef', 1, r.c, r.a, texOf(r.id, r.a, r.c));
     else if (r.t === 'ind') st.ind = id;
     else { st.vol++; addSol(id, r.c, r.a, DOSE[id] || 1); if (st.solids.some((s) => s.kind === 'crystal')) st.solids.forEach((s) => { if (s.kind === 'crystal' && s.c && sol(s.c, s.a) === 'R') { s.n = 0; addSol(Object.keys(HYD).find((k) => HYD[k][0] === s.f) || s.f, s.c, s.a, 0.5); } }); }
     react();
@@ -496,15 +534,17 @@
   }
   function heat() { st.heated = !st.heated; log({ icon: st.heated ? '🔥' : '🧊', title: st.heated ? T.heatOn : T.heatOff, muted: true }); render(); }
   function flame() {
+    const S0 = st;
+    if (st.gas === 'H2' && Date.now() - st.gasT < 9000) { raise('pop', '#ffd27a', 0.8); st.gas = null; log({ icon: '💥', title: L10N.pop[L()], eq: '2H₂ + O₂ → 2H₂O', note: L10N.popNote[L()] }); }
     const ions = [...st.sol.map((x) => x.c), ...st.solids.map((s) => s.c || (s.kind === 'metal' ? s.f : null))].filter(Boolean).map((c) => (CI[c] != null ? metalOf(c) : c));
     const k = ['Na', 'Li', 'Sr', 'Ca', 'Ba', 'Cu', 'K'].find((x) => ions.includes(x));
-    st.flame = k ? FLAME[k][0] : '#4dd2ff'; setTimeout(() => { st.flame = null; draw(); }, 3500);
+    st.flame = k ? FLAME[k][0] : '#4dd2ff'; setTimeout(() => { S0.flame = null; draw(); }, 3500);
     log(k ? { icon: '🔥', title: fmt(T.flameRes, { c: FLAME[k][1 + L()], i: isym(k === 'Cu' ? 'Cu' : k) }) } : { icon: '🔥', title: T.flameNone }); render();
   }
   function clear() { runTok++; timers.forEach(clearTimeout); timers = []; busy = Promise.resolve(); st = fresh(); stepUI(null); render(); }
   // how a reagent gets into the tube: poured from a bottle, a spatula of powder, a piece with tweezers, or drops
   const actKind = (id) => { const r = RGI[id]; return r.t === 'metal' ? 'metal' : r.solid ? 'powder' : r.t === 'ind' || DOSE[id] ? 'drops' : 'pour'; };
-  const actColour = (id) => { const r = RGI[id]; return r.t === 'ind' ? { php: '#f4f4f4', litmus: '#7b4fbf', mo: '#f39c12' }[id] : r.solid ? (PCOL[(r.a || '') + ':' + r.c] || (id === 'MnO2' ? OCOL.MnO2 : '#efefe8')) : (solCol({ f: id, c: r.c }) || '#d6e9ff'); };
+  const actColour = (id) => { const r = RGI[id]; if (SOLIDCOL[id]) return SOLIDCOL[id]; return r.t === 'ind' ? { php: '#f4f4f4', litmus: '#7b4fbf', mo: '#f39c12' }[id] : r.solid ? (PCOL[(r.a || '') + ':' + r.c] || (id === 'MnO2' ? OCOL.MnO2 : '#efefe8')) : (solCol({ f: id, c: r.c }) || '#d6e9ff'); };
   const wait = (ms) => new Promise((res) => timers.push(setTimeout(res, ms)));
   let busy = Promise.resolve(), runTok = 0;
   // the reagent goes in at 80% of the animation, then the hand moves away
@@ -658,7 +698,31 @@
       powders: st.solids.filter((s) => s.kind === 'solid').map((s) => ({ color: s.color || '#eeeeee', big: s.f === 'CaCO3' })), metals,
       gas: st.gas ? Math.max(0, 1 - (now - st.gasT) / 6500) : 0, gasSrc: st.gasSrc, cloud: st.cloud && now - st.cloudT < 7000 ? st.cloud : null,
       mirror: st.mirror, ring: st.ring, hg: st.hg, naBall: na, naAge: na ? (now - st.flags.na) / 1000 : 0, flameTest: st.flame,
-      act: st.act ? Object.assign({}, st.act, { t0p: performance.now() - (now - st.act.t0) }) : null };
+      act: st.act ? Object.assign({}, st.act, { t0p: performance.now() - (now - st.act.t0) }) : null,
+      events: st.events.filter((e) => now - e.t0 < 5000), broken: st.broken, temp: st.temp };
+  }
+  // a short card about a reagent for the room: what it is, how it dissolves, its colour and its hazards
+  function describe(id) {
+    const r = RGI[id]; if (!r) return null; const li = L(), W = (u, e, ru) => [u, e, ru][li];
+    const cls = r.t === 'acid' ? (STRONG.includes(r.a) ? W('Kuchli kislota', 'Strong acid', 'Сильная кислота') : W('Kuchsiz kislota', 'Weak acid', 'Слабая кислота'))
+      : r.t === 'base' ? (r.grp === 'alk' ? (r.c === 'NH4' ? W('Kuchsiz asos (ammiak eritmasi)', 'Weak base (ammonia solution)', 'Слабое основание (раствор аммиака)') : W('Ishqor (eriydigan kuchli asos)', 'Alkali (soluble strong base)', 'Щёлочь (растворимое сильное основание)')) : W('Erimaydigan asos', 'Insoluble base', 'Нерастворимое основание'))
+        : r.t === 'salt' ? W('Tuz', 'Salt', 'Соль') : r.t === 'metal' ? W('Metall', 'Metal', 'Металл') : r.t === 'ind' ? W('Indikator', 'Indicator', 'Индикатор') : W('Boshqa modda', 'Other substance', 'Другое вещество');
+    const solw = r.code === 'N' ? W('suvda erimaydi', 'insoluble in water', 'нерастворим в воде') : r.code === 'M' ? W('suvda kam eriydi', 'slightly soluble', 'малорастворим') : r.t === 'metal' ? '' : r.solid ? W('qattiq modda', 'solid', 'твёрдое вещество') : W('suvdagi eritma', 'aqueous solution', 'водный раствор');
+    const c = r.t === 'metal' ? null : r.solid ? (PCOL[(r.a || '') + ':' + r.c] || SOLIDCOL[id] || '#f3f3ef') : solCol({ f: id, c: r.c });
+    const colw = c ? T.cn[cname(c)] : r.t === 'metal' ? W('kumushrang / metall yaltiroq', 'silvery / metallic', 'серебристый / металлический') : W('rangsiz', 'colourless', 'бесцветный');
+    const hz = [];
+    if (r.t === 'acid' && STRONG.includes(r.a)) hz.push(W('O\'yuvchi: teri va ko\'zni kuydiradi', 'Corrosive: burns skin and eyes', 'Едкая: обжигает кожу и глаза'));
+    if (id === 'HF') hz.push(W('Juda zaharli, shishani yemiradi', 'Very toxic, etches glass', 'Очень ядовита, разъедает стекло'));
+    if (r.t === 'base' && r.grp === 'alk' && r.c !== 'NH4') hz.push(W('O\'yuvchi ishqor: terini yemiradi', 'Caustic: attacks skin', 'Едкая щёлочь: разъедает кожу'));
+    if (id === 'NH4OH' || id === 'H2S' || id === 'H2SO3') hz.push(W('O\'tkir hidli bug\' — nafas olmang', 'Pungent vapour — do not breathe it', 'Едкий запах — не вдыхайте'));
+    if (['Pb', 'Hg', 'Cr', 'Ni', 'Co'].includes(r.c) || (r.c === 'Ba' && r.code === 'R')) hz.push(W('Zaharli (og\'ir metall birikmasi)', 'Toxic (heavy-metal compound)', 'Ядовито (соединение тяжёлого металла)'));
+    if (['KMnO4', 'KMnO4s', 'HNO3', 'H2O2c'].includes(id) || r.a === 'NO3' && r.c === 'NH4') hz.push(W('Kuchli oksidlovchi — organik moddalardan uzoq tuting', 'Strong oxidiser — keep away from organic matter', 'Сильный окислитель — держите подальше от органики'));
+    if (['Na', 'K', 'Li', 'Ca'].includes(id)) hz.push(W('Suv bilan shiddatli reaksiyaga kirishadi (kerosin ostida saqlanadi)', 'Reacts violently with water (kept under paraffin oil)', 'Бурно реагирует с водой (хранится под керосином)'));
+    if (id === 'NH4NO3') hz.push(W('Kuchli qizdirilganda portlashi mumkin', 'Can explode when strongly heated', 'При сильном нагревании может взорваться'));
+    if (r.a === 'F' && r.t === 'salt') hz.push(W('Ftoridlar zaharli', 'Fluorides are toxic', 'Фториды ядовиты'));
+    if (r.a === 'S' && r.t === 'salt') hz.push(W('Kislota bilan zaharli H₂S chiqaradi', 'Gives poisonous H₂S with acids', 'С кислотами выделяет ядовитый H₂S'));
+    const ions = r.c && r.a && r.t !== 'metal' && r.t !== 'ind' ? isym(r.c) + ' + ' + isym(r.a) : '';
+    return { name: r.n[li], formula: disp(id), cls, sol: solw, colour: colw, colourHex: c, ions, hazards: hz, kind: actKind(id) };
   }
   let view3d = null;
   function draw() { const t = host && host.querySelector('.lb-tube'); if (t && !view3d) t.innerHTML = tubeSVG(); const th = host && host.querySelector('.lb-t'); if (th) th.textContent = '🌡️ ' + Math.round(st.temp) + ' °C'; }
@@ -711,7 +775,7 @@
       + '<div class="lb-in" style="min-height:18px;text-align:center;font:12px IBM Plex Mono,monospace;color:var(--muted)"></div>'
       + '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">' + btn('lb-heat', '🔥 ' + T.heat, 'rgba(255,138,58,.5)') + btn('lb-flame', '🕯️ ' + T.flame) + btn('lb-clear', '🧽 ' + T.clear) + '</div>'
       + '<div style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5">⚠️ ' + T.safety + '</div></div>'
-      + '<div class="lb-col" style="display:flex;flex-direction:column;gap:12px"><div><div style="font-weight:700;color:var(--text);margin-bottom:8px">📋 ' + T.presets + '</div>'
+      + '<div class="lb-col" style="display:flex;flex-direction:column;gap:12px">' + (window.PTROOM && ctx.THREE ? '<button class="lb-room" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(77,210,255,.6);background:linear-gradient(135deg,rgba(77,210,255,.22),rgba(155,107,255,.22));color:var(--text);font:700 14px Space Grotesk,sans-serif;cursor:pointer;text-align:left">🥽 ' + ROOM[L()][0] + '<div style="font-weight:500;font-size:12px;color:var(--body);margin-top:3px">' + ROOM[L()][1] + '</div></button>' : '') + '<div><div style="font-weight:700;color:var(--text);margin-bottom:8px">📋 ' + T.presets + '</div>'
       + '<select class="lb-pre" style="width:100%;background:var(--input);border:1px solid var(--line);border-radius:10px;color:var(--text);font:13px Space Grotesk,sans-serif;padding:9px 10px">' + PRESETS.map((p, i) => '<option value="' + i + '">' + (i + 1) + '. ' + p[0][L()] + '</option>').join('') + '</select>'
       + '<button class="lb-run" style="margin-top:8px;width:100%;padding:9px;border-radius:10px;border:1px solid rgba(46,204,150,.55);background:rgba(46,204,150,.15);color:var(--green);font:700 13px Space Grotesk,sans-serif;cursor:pointer">▶ ' + T.run + '</button></div>'
       + '<div style="font-weight:700;color:var(--text)">🔬 ' + T.log + '</div><div class="lb-log" style="display:flex;flex-direction:column;gap:8px"></div></div></div>';
@@ -722,19 +786,33 @@
     host.querySelector('.lb-clear').addEventListener('click', clear);
     host.querySelector('.lb-st-stop').addEventListener('click', () => { runTok++; timers.forEach(clearTimeout); timers = []; st.act = null; if (st.heated) heat(); stepUI(null); render(); });
     host.querySelector('.lb-run').addEventListener('click', () => runPreset(+host.querySelector('.lb-pre').value));
+    const rb = host.querySelector('.lb-room'); if (rb) rb.addEventListener('click', enterRoom);
     // the 3D bench when Three.js is on the page, the flat drawing otherwise
     if (view3d) { view3d.dispose(); view3d = null; }
     if (ctx.THREE && window.PTLAB3D) { try { view3d = window.PTLAB3D.create(host.querySelector('.lb-tube'), { THREE: ctx.THREE, orbit: ctx.orbit, light: ctx.light, getVM: vm }); } catch (e) { console.error('lab3d', e); view3d = null; } }
     render();
   }
+  // the free 3D laboratory takes over the same host until its exit button brings the simple bench back
+  const ROOM = [['3D laboratoriyaga kirish', 'Haqiqiy xonadek: javondan moddani olib, probirka, stakan yoki kolbaga o‘zingiz soling'], ['Enter the 3D laboratory', 'Like a real room: take substances off the shelf and add them to tubes, a beaker or a flask yourself'], ['Войти в 3D лабораторию', 'Как настоящая комната: берите вещества с полки и сами добавляйте в пробирки, стакан или колбу']];
+  let inRoom = false;
+  function enterRoom() { const h = host, c = ctx; window.PTLAB.unmount(); inRoom = true; window.PTROOM.mount(h, c, () => { window.PTROOM.unmount(); inRoom = false; window.PTLAB.mount(h, c); }); }
   let tick = 0, last = 0;
   function loop() { const now = Date.now(), dt = Math.min(0.5, (now - last) / 1000); last = now; if (!st) return; const ch = step(dt); if (ch) render(); else if (animating()) draw(); }
   window.PTLAB = {
-    mount(h, c) { host = h; ctx = c; T = S[c.lang] || S.uz; if (!st) st = fresh(); build(); clearInterval(tick); last = Date.now(); tick = setInterval(loop, 120); },
-    setCtx(c) { ctx = c; T = S[c.lang] || S.uz; if (host) build(); },
-    unmount() { timers.forEach(clearTimeout); timers = []; clearInterval(tick); if (view3d) { view3d.dispose(); view3d = null; } host = null; },
+    mount(h, c) { if (inRoom) { window.PTROOM.unmount(); inRoom = false; } host = h; ctx = c; T = S[c.lang] || S.uz; if (!st) st = fresh(); build(); clearInterval(tick); last = Date.now(); tick = setInterval(loop, 120); },
+    setCtx(c) { ctx = c; T = S[c.lang] || S.uz; if (inRoom) return window.PTROOM.setCtx(c); if (host) build(); },
+    unmount() { if (inRoom) { window.PTROOM.unmount(); inRoom = false; } timers.forEach(clearTimeout); timers = []; clearInterval(tick); if (view3d) { view3d.dispose(); view3d = null; } host = null; },
     // for testing: run reagent ids ('heat' heats for the given seconds) and return the log, oldest first
     _test(ids, secs) { st = fresh(); ids.forEach((x) => { if (x === 'heat') { st.heated = true; for (let i = 0; i < (secs || 40) / 0.12; i++) { lastDec = 0; step(0.12); } } else add(x); }); return st.log.slice().reverse(); },
+    engine: {
+      fresh, withState(s, fn) { const prev = st; st = s; try { return fn(); } finally { st = prev; } },
+      add: (s, id) => window.PTLAB.engine.withState(s, () => add(id)), heat: (s) => window.PTLAB.engine.withState(s, () => heat()), flame: (s) => window.PTLAB.engine.withState(s, () => flame()),
+      step: (s, dt) => window.PTLAB.engine.withState(s, () => step(dt)), vm: (s) => window.PTLAB.engine.withState(s, () => vm()), medium: (s) => window.PTLAB.engine.withState(s, () => medium()),
+      mix(a, b) { window.PTLAB.engine.withState(b, () => { a.sol.forEach((x) => addSol(x.f, x.c, x.a, x.n)); a.solids.filter((x) => x.kind !== 'metal').forEach((x) => addSolid(x.f, x.kind === 'crystal' ? 'solid' : x.kind, x.color, x.n, x.c, x.a, x.tex));
+        st.vol = Math.min(8, st.vol + a.vol); if (a.ind) st.ind = a.ind; log({ icon: '🫗', title: L10N.mixed[L()] }); react(); }); },
+      actKind, actColour, disp, name: (id) => (RGI[id] ? RGI[id].n[L()] : id), reagents: () => RG, setLang(l) { ctx = Object.assign({}, ctx, { lang: l }); T = S[l] || S.uz; },
+      describe
+    },
     _tube: () => tubeSVG(), _state: () => st, _reagents: () => RG.map((r) => [r.id, r.t, r.grp || '', r.code || '', r.n[0]]),
     balance
   };
