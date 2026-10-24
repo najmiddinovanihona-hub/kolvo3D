@@ -1025,7 +1025,7 @@ class Component extends DCLogic {
   openLab(){ this._go('lab'); }
   closeLab(){ this._back(); }
   _loadLab(){
-    if(!this._labP) this._labP=new Promise(res=>{ const el=document.createElement("script"); el.src="lab.js?v=10"; el.onload=el.onerror=()=>res(); document.head.appendChild(el); }).then(()=>{ if(!window.PTLAB) this._labP=null; });
+    if(!this._labP) this._labP=new Promise(res=>{ const el=document.createElement("script"); el.src="lab.js?v=11"; el.onload=el.onerror=()=>res(); document.head.appendChild(el); }).then(()=>{ if(!window.PTLAB) this._labP=null; });
     return this._labP;
   }
   // (re)draw the bench in the current language and theme; the tube contents survive a language switch

@@ -132,7 +132,7 @@
 
   // ---------- strings ----------
   const S = {
-    uz: { shelf: 'Reaktivlar javoni', groups: { acid: 'Kislotalar', alk: 'Ishqorlar (eriydigan asoslar)', ins: 'Erimaydigan asoslar', salt: 'Tuzlar', spec: 'Boshqa tuzlar', metal: 'Metallar', ind: 'Indikatorlar', other: 'Boshqalar' },
+    uz: { step: { pour: '{n}-qadam. Probirkaga {x} eritmasidan 2–3 ml quyamiz.', powder: '{n}-qadam. Shpatel bilan ozgina {x} olib, probirkaga solamiz.', metal: '{n}-qadam. Pinset bilan {x} ni probirkaga ehtiyotkorlik bilan tushiramiz.', drops: '{n}-qadam. Tomizgich bilan 2–3 tomchi {x} tomizamiz.', heat: '{n}-qadam. Probirkani qisqichda ushlab, spirt lampasi alangasida asta qizdiramiz.', flame: '{n}-qadam. Toza sim halqani eritmaga botirib, gorelka alangasiga tutamiz.', intro: 'Tajriba boshlanmoqda. Har bir qadamni kuzatib boring.', obs: 'Kuzatuv', none: 'Ko\'rinadigan o\'zgarish yo\'q.', done: 'Tajriba tugadi. Tenglamalar va xulosa — kuzatuvlar jurnalida.', stop: 'To\'xtatish', wait: 'Kuzatamiz…' }, shelf: 'Reaktivlar javoni', groups: { acid: 'Kislotalar', alk: 'Ishqorlar (eriydigan asoslar)', ins: 'Erimaydigan asoslar', salt: 'Tuzlar', spec: 'Boshqa tuzlar', metal: 'Metallar', ind: 'Indikatorlar', other: 'Boshqalar' },
       find: 'Reaktiv qidirish…', count: '{n} ta reaktiv', insol: 'erimaydi', slight: 'kam eriydi', heat: 'Qizdirish', stop: 'Qizdirishni to\'xtatish', flame: 'Alangada sinash', clear: 'Probirkani tozalash',
       log: 'Kuzatuvlar', presets: 'Tayyor tajribalar', empty: 'Javondan reaktiv tanlang — u probirkaga quyiladi. Tayyor tajribalardan birini ham ishga tushirishingiz mumkin.',
       medium: { acid: 'Muhit: kislotali', base: 'Muhit: ishqoriy', neutral: 'Muhit: neytral', none: 'Probirka bo\'sh' }, full: 'Probirka to\'ldi — tozalang.',
@@ -148,7 +148,7 @@
       tests: { H2: 'Yonib turgan cho\'p yaqinlashtirilsa, "pop" ovozi bilan yonadi.', O2: 'Cho\'g\'langan cho\'p alangalanib ketadi.', CO2: 'Ohakli suvni loyqalatadi, yonishni to\'xtatadi.', NH3: 'O\'tkir hid; ho\'llangan qizil lakmus qog\'oz ko\'karadi.',
         H2S: 'Palag\'da tuxum hidi — zaharli!', SO2: 'O\'tkir, bo\'g\'uvchi hid.', NO: 'Rangsiz gaz probirka og\'zida havodagi O₂ bilan qo\'ng\'ir NO₂ ga aylanadi.', NO2: 'Qo\'ng\'ir, o\'tkir hidli zaharli gaz.', N2O: '"Kuldiruvchi gaz" — cho\'g\'langan cho\'pni alangalantiradi.', HX: 'Ho\'l havoda oq tuman hosil qiladi.' },
       safety: 'Haqiqiy laboratoriyada himoya ko\'zoynagi va qo\'lqop kiying, probirka og\'zini o\'zingizga qaratmang. Bu — xavfsiz virtual tajriba.' },
-    en: { shelf: 'Reagent shelf', groups: { acid: 'Acids', alk: 'Alkalis (soluble bases)', ins: 'Insoluble bases', salt: 'Salts', spec: 'Other salts', metal: 'Metals', ind: 'Indicators', other: 'Others' },
+    en: { step: { pour: 'Step {n}. Pour 2–3 ml of {x} solution into the test tube.', powder: 'Step {n}. Take a little {x} on a spatula and tip it into the tube.', metal: 'Step {n}. Use tweezers to lower {x} carefully into the tube.', drops: 'Step {n}. Add 2–3 drops of {x} with a dropper.', heat: 'Step {n}. Hold the tube in a holder and warm it gently in the spirit-lamp flame.', flame: 'Step {n}. Dip a clean wire loop into the solution and hold it in the burner flame.', intro: 'The experiment is starting. Watch every step.', obs: 'Observation', none: 'No visible change.', done: 'The experiment is over. Equations and conclusions are in the observation log.', stop: 'Stop', wait: 'Watching…' }, shelf: 'Reagent shelf', groups: { acid: 'Acids', alk: 'Alkalis (soluble bases)', ins: 'Insoluble bases', salt: 'Salts', spec: 'Other salts', metal: 'Metals', ind: 'Indicators', other: 'Others' },
       find: 'Find a reagent…', count: '{n} reagents', insol: 'insoluble', slight: 'slightly soluble', heat: 'Heat', stop: 'Stop heating', flame: 'Flame test', clear: 'Empty the test tube',
       log: 'Observations', presets: 'Ready-made experiments', empty: 'Pick a reagent on the shelf — it is poured into the test tube. You can also run one of the ready-made experiments.',
       medium: { acid: 'Medium: acidic', base: 'Medium: alkaline', neutral: 'Medium: neutral', none: 'The tube is empty' }, full: 'The test tube is full — empty it.',
@@ -164,7 +164,7 @@
       tests: { H2: 'A burning splint makes it burn with a "pop".', O2: 'A glowing splint bursts into flame.', CO2: 'Turns limewater milky and puts out a flame.', NH3: 'Sharp smell; damp red litmus paper turns blue.',
         H2S: 'Smell of rotten eggs — poisonous!', SO2: 'Sharp, choking smell.', NO: 'The colourless gas turns into brown NO₂ with air at the mouth of the tube.', NO2: 'Brown, sharp-smelling poisonous gas.', N2O: '"Laughing gas" — relights a glowing splint.', HX: 'Forms white fumes in moist air.' },
       safety: 'In a real lab wear safety glasses and gloves and never point the tube at anyone. This is a safe virtual experiment.' },
-    ru: { shelf: 'Полка с реактивами', groups: { acid: 'Кислоты', alk: 'Щёлочи (растворимые основания)', ins: 'Нерастворимые основания', salt: 'Соли', spec: 'Другие соли', metal: 'Металлы', ind: 'Индикаторы', other: 'Другие' },
+    ru: { step: { pour: 'Шаг {n}. Наливаем в пробирку 2–3 мл раствора: {x}.', powder: 'Шаг {n}. Берём шпателем немного вещества ({x}) и высыпаем в пробирку.', metal: 'Шаг {n}. Пинцетом осторожно опускаем в пробирку: {x}.', drops: 'Шаг {n}. Пипеткой добавляем 2–3 капли: {x}.', heat: 'Шаг {n}. Держим пробирку в держателе и осторожно нагреваем в пламени спиртовки.', flame: 'Шаг {n}. Чистую проволочную петлю смачиваем раствором и вносим в пламя горелки.', intro: 'Опыт начинается. Следите за каждым шагом.', obs: 'Наблюдение', none: 'Видимых изменений нет.', done: 'Опыт закончен. Уравнения и выводы — в журнале наблюдений.', stop: 'Остановить', wait: 'Наблюдаем…' }, shelf: 'Полка с реактивами', groups: { acid: 'Кислоты', alk: 'Щёлочи (растворимые основания)', ins: 'Нерастворимые основания', salt: 'Соли', spec: 'Другие соли', metal: 'Металлы', ind: 'Индикаторы', other: 'Другие' },
       find: 'Найти реактив…', count: 'реактивов: {n}', insol: 'нерастворим', slight: 'малорастворим', heat: 'Нагреть', stop: 'Прекратить нагрев', flame: 'Окраска пламени', clear: 'Вымыть пробирку',
       log: 'Наблюдения', presets: 'Готовые опыты', empty: 'Выберите реактив на полке — он наливается в пробирку. Можно также запустить один из готовых опытов.',
       medium: { acid: 'Среда: кислая', base: 'Среда: щелочная', neutral: 'Среда: нейтральная', none: 'Пробирка пуста' }, full: 'Пробирка заполнена — вымойте её.',
@@ -501,10 +501,37 @@
     st.flame = k ? FLAME[k][0] : '#4dd2ff'; setTimeout(() => { st.flame = null; draw(); }, 3500);
     log(k ? { icon: '🔥', title: fmt(T.flameRes, { c: FLAME[k][1 + L()], i: isym(k === 'Cu' ? 'Cu' : k) }) } : { icon: '🔥', title: T.flameNone }); render();
   }
-  function clear() { st = fresh(); render(); }
-  function runPreset(i) {
-    clear(); timers.forEach(clearTimeout); timers = [];
-    PRESETS[i][1].forEach((s, k) => timers.push(setTimeout(() => (s === 'heat' ? (!st.heated && heat()) : s === 'flame' ? flame() : add(s)), 450 + k * 800)));
+  function clear() { runTok++; timers.forEach(clearTimeout); timers = []; busy = Promise.resolve(); st = fresh(); stepUI(null); render(); }
+  // how a reagent gets into the tube: poured from a bottle, a spatula of powder, a piece with tweezers, or drops
+  const actKind = (id) => { const r = RGI[id]; return r.t === 'metal' ? 'metal' : r.solid ? 'powder' : r.t === 'ind' || DOSE[id] ? 'drops' : 'pour'; };
+  const actColour = (id) => { const r = RGI[id]; return r.t === 'ind' ? { php: '#f4f4f4', litmus: '#7b4fbf', mo: '#f39c12' }[id] : r.solid ? (PCOL[(r.a || '') + ':' + r.c] || (id === 'MnO2' ? OCOL.MnO2 : '#efefe8')) : (solCol({ f: id, c: r.c }) || '#d6e9ff'); };
+  const wait = (ms) => new Promise((res) => timers.push(setTimeout(res, ms)));
+  let busy = Promise.resolve(), runTok = 0;
+  // the reagent goes in at 80% of the animation, then the hand moves away
+  function addAnimated(id, dur) { return new Promise((res) => { st.act = { kind: actKind(id), id, col: actColour(id), label: RGI[id].t === 'ind' ? '' : disp(id), t0: Date.now(), dur };
+    timers.push(setTimeout(() => add(id), dur * 0.8)); timers.push(setTimeout(() => { st.act = null; draw(); res(); }, dur)); }); }
+  const queueAdd = (id) => { busy = busy.then(() => addAnimated(id, 1500)); };
+  function stepUI(o) { const el = host && host.querySelector('.lb-step'); if (!el) return; if (!o) { el.style.display = 'none'; return; }
+    el.style.display = 'block'; el.querySelector('.lb-st-t').textContent = o.title || ''; el.querySelector('.lb-st-n').textContent = o.n ? o.k + ' / ' + o.n : '';
+    el.querySelector('.lb-st-bar').style.width = (o.n ? Math.round(o.k / o.n * 100) : 0) + '%'; el.querySelector('.lb-st-x').textContent = o.text || '';
+    const ob = el.querySelector('.lb-st-o'); ob.innerHTML = o.obs ? '<b>' + T.step.obs + ':</b> ' + o.obs : ''; ob.style.display = o.obs ? 'block' : 'none'; }
+  const fresh_ = (before) => st.log.slice(0, Math.max(0, st.log.length - before)).filter((e) => !e.muted && e.icon !== '·').reverse();
+  async function runPreset(i) {
+    clear(); const tok = runTok, P = PRESETS[i], steps = P[1], title = P[0][L()];
+    const alive = () => tok === runTok && host;
+    stepUI({ title, k: 0, n: steps.length, text: T.step.intro }); await wait(1600);
+    for (let k = 0; k < steps.length; k++) { if (!alive()) return; const s = steps[k], before = st.log.length, base = { title, k: k + 1, n: steps.length };
+      if (s === 'heat') { const text = fmt(T.step.heat, { n: k + 1 }); stepUI(Object.assign({ text, obs: T.step.wait }, base)); if (!st.heated) heat();
+        let seen = st.log.length, quiet = 0; for (let t = 0; t < 70 && alive(); t++) { await wait(1000); const nw = fresh_(seen); seen = st.log.length;
+          if (nw.length) { quiet = 0; stepUI(Object.assign({ text, obs: nw.map((e) => e.title).join(' → ') }, base)); } else quiet++;
+          if (quiet >= 7 && t >= 9) break; }
+        if (alive() && st.heated) heat(); continue; }
+      if (s === 'flame') { const text = fmt(T.step.flame, { n: k + 1 }); stepUI(Object.assign({ text }, base)); await wait(1400); if (!alive()) return; flame();
+        stepUI(Object.assign({ text, obs: fresh_(before).map((e) => e.title).join(' → ') }, base)); await wait(4200); continue; }
+      const r = RGI[s], text = fmt(T.step[actKind(s)], { n: k + 1, x: r.n[L()] + (r.t === 'ind' ? '' : ' (' + disp(s) + ')') });
+      stepUI(Object.assign({ text }, base)); await wait(900); if (!alive()) return; await addAnimated(s, 2600); await wait(800); if (!alive()) return;
+      const nw = fresh_(before); stepUI(Object.assign({ text, obs: nw.length ? nw.map((e) => e.title).join(' → ') : T.step.none }, base)); await wait(nw.length ? 4200 : 2600); }
+    if (alive()) stepUI({ title, k: steps.length, n: steps.length, text: T.step.done });
   }
 
   // ---------- drawing ----------
@@ -592,16 +619,34 @@
       + (st.heated ? '<g class="lb-f"><path d="M120 422 c-18 -14 -10 -36 0 -50 c10 14 18 36 0 50z" fill="url(#lbFl)"/><path d="M120 420 c-6 -6 -4 -16 0 -22 c4 6 6 16 0 22z" fill="#cfefff" opacity=".85"/></g><ellipse cx="120" cy="' + (BOT + 2) + '" rx="26" ry="6" fill="#ff8a3a" opacity=".25" filter="url(#lbBlur)"/>' : '');
     const holder = '<rect x="58" y="56" width="104" height="14" rx="4" fill="#8a5a2b"/><rect x="58" y="56" width="104" height="4" rx="2" fill="#b07a44"/><rect x="20" y="58" width="46" height="10" rx="3" fill="#7a4e24"/>';
     const flameTest = st.flame ? '<g class="lb-f"><path d="M205 330 c-26 -26 -10 -70 0 -96 c10 26 26 70 0 96z" fill="' + st.flame + '" opacity=".88"/><path d="M205 328 c-8 -8 -4 -22 0 -30 c4 8 8 22 0 30z" fill="#fff" opacity=".5"/></g><path d="M178 250 L196 300" stroke="#c8ccd2" stroke-width="2"/><circle cx="197" cy="303" r="4" fill="none" stroke="#c8ccd2" stroke-width="1.6"/>' : '';
-    return '<svg viewBox="0 0 240 510" style="width:100%;max-width:250px;height:auto;display:block;margin:0 auto"><defs>' + defs + '</defs>'
+    return '<svg viewBox="-20 -110 290 620" style="height:100%;width:auto;max-width:100%;display:block"><defs>' + defs + '</defs>'
       + '<style>.lb-b{animation:lbB 1.6s linear infinite}@keyframes lbB{0%{transform:translateY(0);opacity:0}10%{opacity:.9}100%{transform:translateY(calc(var(--h) * -1));opacity:0}}'
       + '.lb-f{transform-origin:120px 422px;animation:lbF .18s ease-in-out infinite alternate}@keyframes lbF{to{transform:scale(1.06,.9) skewX(2deg)}}.lb-c{animation:lbC 3.5s ease-out infinite}@keyframes lbC{from{transform:translateY(16px);opacity:0}35%{opacity:1}to{transform:translateY(-16px);opacity:0}}'
       + '.lb-s{animation:lbS 1.8s linear infinite}@keyframes lbS{from{transform:translateY(10px);opacity:0}30%{opacity:.8}to{transform:translateY(-34px);opacity:0}}.lb-tw{animation:lbT 1.6s ease-in-out infinite}@keyframes lbT{50%{opacity:.15}}</style>'
       + lamp + '<g clip-path="url(#lbIn)">' + inner + '</g>'
       + '<path d="M' + X0 + ' ' + TOP + ' V' + (BOT - 38) + ' A38 38 0 0 0 ' + X1 + ' ' + (BOT - 38) + ' V' + TOP + '" fill="url(#lbGl)" style="stroke:var(--text);stroke-opacity:.75;stroke-width:2.2"/>'
       + '<path d="M' + (X0 + 6) + ' ' + (TOP + 30) + ' V' + (BOT - 50) + '" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/><path d="M' + (X1 - 7) + ' ' + (TOP + 40) + ' V' + (BOT - 70) + '" stroke="#fff" stroke-opacity=".14" stroke-width="2" stroke-linecap="round"/>'
-      + '<ellipse cx="120" cy="' + TOP + '" rx="' + ((X1 - X0) / 2 + 5) + '" ry="5" style="fill:none;stroke:var(--text);stroke-opacity:.8;stroke-width:2.4"/>' + holder + out + flameTest + '</svg>';
+      + '<ellipse cx="120" cy="' + TOP + '" rx="' + ((X1 - X0) / 2 + 5) + '" ry="5" style="fill:none;stroke:var(--text);stroke-opacity:.8;stroke-width:2.4"/>' + holder + out + flameTest + actorSVG(top, H) + '</svg>';
   }
-  function animating() { const now = Date.now(); return st.heated || st.temp > 21 || (st.gas && now - st.gasT < 6500) || (st.cloud && now - st.cloudT < 7000) || st.flame || (st.flags.na && now - st.flags.na < 4500) || st.solids.some((s) => s.kind === 'ppt' && now - (s.t0 || 0) < 3300); }
+  // the hand that adds a reagent: a tilting bottle and its stream, a spatula, tweezers or a dropper
+  function actorSVG(top, H) {
+    const a = st.act; if (!a) return ''; const p = Math.min(1, (Date.now() - a.t0) / a.dur), ease = (x) => x * x * (3 - 2 * x), lerp = (u, v, t) => u + (v - u) * t;
+    const inP = ease(Math.min(1, p / 0.28)), outP = ease(Math.max(0, (p - 0.82) / 0.18)), k = inP * (1 - outP), surf = H > 0 ? top + 6 : BOT - 8;
+    if (a.kind === 'pour') { const x = lerp(232, 150, k), y = lerp(-30, -14, k), ang = lerp(0, -116, k), flow = p > 0.3 && p < 0.82, lvl = p > 0.3 ? Math.min(1, (p - 0.3) / 0.5) : 0;
+      const bottleG = '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')"><path d="M-5 0 h10 v10 q12 4 14 16 v46 q0 6 -6 6 h-26 q-6 0 -6 -6 v-46 q2 -12 14 -16z" fill="rgba(220,236,255,.18)" style="stroke:var(--text);stroke-opacity:.7;stroke-width:1.6"/>'
+        + '<path d="M-17 ' + (40 + 18 * lvl).toFixed(1) + ' h34 v' + (32 - 18 * lvl).toFixed(1) + ' q0 4 -4 4 h-26 q-4 0 -4 -4z" fill="' + a.col + '" opacity=".75"/><rect x="-14" y="30" width="28" height="18" rx="2" fill="#f6f2e6"/><text x="0" y="43" text-anchor="middle" style="font:700 8px IBM Plex Mono,monospace;fill:#222">' + a.label + '</text></g>';
+      const stream = flow ? '<path d="M' + x.toFixed(1) + ' ' + y.toFixed(1) + ' Q 128 ' + (y + 12).toFixed(1) + ' 121 ' + (TOP + 4) + ' L121 ' + surf.toFixed(1) + '" style="fill:none;stroke:' + a.col + ';stroke-width:3.4;stroke-linecap:round;opacity:.85"/>' : '';
+      return stream + bottleG; }
+    if (a.kind === 'powder') { const x = lerp(250, 128, k), y = lerp(-60, 18, k), ang = lerp(-20, 28, Math.max(0, Math.min(1, (p - 0.3) / 0.25))) * (1 - outP);
+      const fall = p > 0.4 && p < 0.85 ? Array.from({ length: 14 }, (_, i) => { const t = ((p - 0.4) / 0.45 * 1.6 + i / 14) % 1; return '<circle cx="' + (118 + (i % 5) * 1.6).toFixed(1) + '" cy="' + (26 + t * (surf - 26)).toFixed(1) + '" r="1.8" fill="' + a.col + '"/>'; }).join('') : '';
+      return fall + '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')"><rect x="0" y="-2" width="120" height="4" rx="2" fill="#c5ccd4"/><ellipse cx="-4" cy="0" rx="12" ry="5" fill="#c5ccd4"/>' + (p < 0.55 ? '<ellipse cx="-4" cy="-4" rx="9" ry="4" fill="' + a.col + '"/>' : '') + '</g>'; }
+    if (a.kind === 'metal') { const y = lerp(-90, 10, k), open = p > 0.45, dropY = open ? Math.min(surf - 6, 10 + (p - 0.45) / 0.3 * (surf - 10)) : y + 26;
+      return '<g transform="translate(120 ' + y.toFixed(1) + ')"><path d="M-3 -70 L' + (open ? -9 : -4) + ' 24 M3 -70 L' + (open ? 9 : 4) + ' 24" style="stroke:#c5ccd4;stroke-width:3;stroke-linecap:round"/></g>'
+        + (p < 0.85 ? '<circle cx="120" cy="' + dropY.toFixed(1) + '" r="6" fill="' + ({ Cu: '#c4682c', Fe: '#7d838c', Zn: '#9aa3ad', Mg: '#d9dde2', Al: '#cfd5dc', Na: '#e8e4d4' }[a.id] || '#aaa') + '"/>' : ''); }
+    const y = lerp(-100, -40, k), drops = p > 0.32 && p < 0.85 ? [0, 1, 2].map((i) => { const t = (p - 0.32) / 0.5 - i * 0.28; return t > 0 && t < 1 ? '<ellipse cx="120" cy="' + (y + 52 + t * (surf - y - 52)).toFixed(1) + '" rx="2.6" ry="3.4" fill="' + a.col + '" stroke="#fff" stroke-opacity=".5" stroke-width=".6"/>' : ''; }).join('') : '';
+    return drops + '<g transform="translate(120 ' + y.toFixed(1) + ')"><path d="M-4 0 v40 l4 10 l4 -10 v-40z" fill="rgba(220,236,255,.25)" style="stroke:var(--text);stroke-opacity:.6"/><rect x="-7" y="-26" width="14" height="28" rx="7" fill="#2a2a2e"/></g>';
+  }
+  function animating() { const now = Date.now(); return !!st.act || st.heated || st.temp > 21 || (st.gas && now - st.gasT < 6500) || (st.cloud && now - st.cloudT < 7000) || st.flame || (st.flags.na && now - st.flags.na < 4500) || st.solids.some((s) => s.kind === 'ppt' && now - (s.t0 || 0) < 3300); }
   function draw() { const t = host && host.querySelector('.lb-tube'); if (t) t.innerHTML = tubeSVG(); const th = host && host.querySelector('.lb-t'); if (th) th.textContent = '🌡️ ' + Math.round(st.temp) + ' °C'; }
   function render() {
     if (!host) return;
@@ -644,7 +689,11 @@
       + '<div class="lb-wrap"><div class="lb-col"><div style="font-weight:700;color:var(--text);margin-bottom:8px">🧴 ' + T.shelf + '</div>'
       + '<input class="lb-q" placeholder="' + T.find + '" style="width:100%;box-sizing:border-box;margin-bottom:12px;background:var(--input);border:1px solid var(--line);border-radius:10px;color:var(--text);font:13px Space Grotesk,sans-serif;padding:9px 12px;outline:none"><div class="lb-shelf">' + shelf('') + '</div></div>'
       + '<div class="lb-col lb-bench" style="display:flex;flex-direction:column;align-items:stretch;gap:10px"><div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600"><span class="lb-md"></span><span class="lb-t" style="font-family:IBM Plex Mono,monospace;color:var(--muted)"></span></div>'
-      + '<div class="lb-tube" style="flex:1;min-height:340px;display:flex;align-items:center"></div>'
+      + '<div class="lb-step" style="display:none;padding:10px 12px;border-radius:12px;background:rgba(46,204,150,.08);border:1px solid rgba(46,204,150,.4)"><div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--green)"><span class="lb-st-t"></span><span class="lb-st-n"></span></div>'
+      + '<div style="height:4px;border-radius:2px;background:var(--line);margin:7px 0 8px;overflow:hidden"><div class="lb-st-bar" style="height:100%;width:0;background:#2ecc96;transition:width .5s"></div></div>'
+      + '<div class="lb-st-x" style="font-size:14px;line-height:1.5;color:var(--text)"></div><div class="lb-st-o" style="display:none;margin-top:6px;font-size:13px;line-height:1.5;color:var(--body)"></div>'
+      + '<button class="lb-st-stop" style="margin-top:8px;padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:var(--btn);color:var(--text);font:600 12px Space Grotesk,sans-serif;cursor:pointer">⏸ ' + T.step.stop + '</button></div>'
+      + '<div class="lb-tube" style="height:min(56vh,520px);min-height:300px;display:flex;justify-content:center;overflow:hidden"></div>'
       + '<div class="lb-in" style="min-height:18px;text-align:center;font:12px IBM Plex Mono,monospace;color:var(--muted)"></div>'
       + '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">' + btn('lb-heat', '🔥 ' + T.heat, 'rgba(255,138,58,.5)') + btn('lb-flame', '🕯️ ' + T.flame) + btn('lb-clear', '🧽 ' + T.clear) + '</div>'
       + '<div style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5">⚠️ ' + T.safety + '</div></div>'
@@ -652,11 +701,12 @@
       + '<select class="lb-pre" style="width:100%;background:var(--input);border:1px solid var(--line);border-radius:10px;color:var(--text);font:13px Space Grotesk,sans-serif;padding:9px 10px">' + PRESETS.map((p, i) => '<option value="' + i + '">' + (i + 1) + '. ' + p[0][L()] + '</option>').join('') + '</select>'
       + '<button class="lb-run" style="margin-top:8px;width:100%;padding:9px;border-radius:10px;border:1px solid rgba(46,204,150,.55);background:rgba(46,204,150,.15);color:var(--green);font:700 13px Space Grotesk,sans-serif;cursor:pointer">▶ ' + T.run + '</button></div>'
       + '<div style="font-weight:700;color:var(--text)">🔬 ' + T.log + '</div><div class="lb-log" style="display:flex;flex-direction:column;gap:8px"></div></div></div>';
-    host.querySelector('.lb-shelf').addEventListener('click', (e) => { const b = e.target.closest('button[data-r]'); if (b) add(b.dataset.r); });
+    host.querySelector('.lb-shelf').addEventListener('click', (e) => { const b = e.target.closest('button[data-r]'); if (b) queueAdd(b.dataset.r); });
     host.querySelector('.lb-q').addEventListener('input', (e) => { host.querySelector('.lb-shelf').innerHTML = shelf(e.target.value); });
     host.querySelector('.lb-heat').addEventListener('click', heat);
     host.querySelector('.lb-flame').addEventListener('click', flame);
-    host.querySelector('.lb-clear').addEventListener('click', () => { timers.forEach(clearTimeout); timers = []; clear(); });
+    host.querySelector('.lb-clear').addEventListener('click', clear);
+    host.querySelector('.lb-st-stop').addEventListener('click', () => { runTok++; timers.forEach(clearTimeout); timers = []; st.act = null; if (st.heated) heat(); stepUI(null); render(); });
     host.querySelector('.lb-run').addEventListener('click', () => runPreset(+host.querySelector('.lb-pre').value));
     render();
   }
