@@ -10,19 +10,19 @@
       empty: 'Idish bo\'sh', contents: 'Tarkibi', temp: 'Harorat', cls: 'Sinfi', ions: 'Ionlari', sol: 'Eruvchanligi', colour: 'Rangi', hazards: 'Xavfi', none: 'Maxsus xavfi yo\'q (lekin ehtiyot bo\'ling)', find: 'Modda qidirish…',
       vessels: ['1-probirka', '2-probirka', '3-probirka', '4-probirka', 'Kimyoviy stakan', 'Konussimon kolba'], medium: { acid: 'kislotali', base: 'ishqoriy', neutral: 'neytral', none: '—' },
       groups: { acid: 'Kislotalar', base: 'Asoslar', salt: 'Tuzlar', metal: 'Metallar', ind: 'Indikatorlar', other: 'Boshqalar' }, danger: 'XAVF!', ionic: 'Qisqa ionli', selected: 'Tanlangan modda', drag: 'Aylantirish: sudrang · Yaqinlashtirish: g\'ildirak',
-      selfPour: 'Idishni o\'ziga quyib bo\'lmaydi.', nothingToPour: 'Bu idish bo\'sh — quyadigan narsa yo\'q.' },
+      fMain: 'Asosiy', fColour: 'Rangli', fDanger: 'Xavfli', fFind: 'Javondan qidirish', fCount: 'ta modda', selfPour: 'Idishni o\'ziga quyib bo\'lmaydi.', nothingToPour: 'Bu idish bo\'sh — quyadigan narsa yo\'q.' },
     en: { title: '3D laboratory — free experiment', back: 'Simple mode', catalog: 'Catalogue', heat: 'Heat', unheat: 'Stop heating', flame: 'Flame test', pour: 'Pour into another vessel', wash: 'Wash the vessel', cancel: 'Cancel',
       hintStart: 'Pick a bottle on the shelf or a substance in the catalogue.', hintReagent: 'Now click a vessel — {x} will be added to it.', hintVessel: 'Pick a substance on the shelf or use one of the actions below.', hintPour: 'Which vessel do we pour into? Click it.',
       empty: 'The vessel is empty', contents: 'Contents', temp: 'Temperature', cls: 'Class', ions: 'Ions', sol: 'Solubility', colour: 'Colour', hazards: 'Hazards', none: 'No special hazard (still be careful)', find: 'Find a substance…',
       vessels: ['Test tube 1', 'Test tube 2', 'Test tube 3', 'Test tube 4', 'Beaker', 'Conical flask'], medium: { acid: 'acidic', base: 'alkaline', neutral: 'neutral', none: '—' },
       groups: { acid: 'Acids', base: 'Bases', salt: 'Salts', metal: 'Metals', ind: 'Indicators', other: 'Others' }, danger: 'DANGER!', ionic: 'Short ionic', selected: 'Selected substance', drag: 'Rotate: drag · Zoom: wheel',
-      selfPour: 'A vessel cannot be poured into itself.', nothingToPour: 'This vessel is empty — nothing to pour.' },
+      fMain: 'Main', fColour: 'Coloured', fDanger: 'Hazardous', fFind: 'Search the shelf', fCount: 'substances', selfPour: 'A vessel cannot be poured into itself.', nothingToPour: 'This vessel is empty — nothing to pour.' },
     ru: { title: '3D лаборатория — свободный опыт', back: 'Простой режим', catalog: 'Каталог', heat: 'Нагреть', unheat: 'Прекратить нагрев', flame: 'Внести в пламя', pour: 'Перелить в другой сосуд', wash: 'Вымыть сосуд', cancel: 'Отмена',
       hintStart: 'Выберите склянку на полке или вещество в каталоге.', hintReagent: 'Теперь щёлкните по сосуду — туда добавится {x}.', hintVessel: 'Выберите вещество на полке или одно из действий ниже.', hintPour: 'В какой сосуд переливаем? Щёлкните по нему.',
       empty: 'Сосуд пуст', contents: 'Содержимое', temp: 'Температура', cls: 'Класс', ions: 'Ионы', sol: 'Растворимость', colour: 'Цвет', hazards: 'Опасность', none: 'Особой опасности нет (но будьте осторожны)', find: 'Найти вещество…',
       vessels: ['Пробирка 1', 'Пробирка 2', 'Пробирка 3', 'Пробирка 4', 'Химический стакан', 'Коническая колба'], medium: { acid: 'кислая', base: 'щелочная', neutral: 'нейтральная', none: '—' },
       groups: { acid: 'Кислоты', base: 'Основания', salt: 'Соли', metal: 'Металлы', ind: 'Индикаторы', other: 'Другие' }, danger: 'ОПАСНО!', ionic: 'Сокращённое ионное', selected: 'Выбранное вещество', drag: 'Вращение: перетащите · Зум: колесо',
-      selfPour: 'Нельзя перелить сосуд сам в себя.', nothingToPour: 'Сосуд пуст — переливать нечего.' }
+      fMain: 'Основные', fColour: 'Цветные', fDanger: 'Опасные', fFind: 'Поиск на полке', fCount: 'веществ', selfPour: 'Нельзя перелить сосуд сам в себя.', nothingToPour: 'Сосуд пуст — переливать нечего.' }
   };
   const SHELF = ['HCl', 'H2SO4', 'HNO3', 'CH3COOH', 'NaOH', 'KOH', 'Ca(OH)2', 'NH4OH', 'H2O', 'H2O2', 'H2O2c', 'php', 'litmus', 'mo', 'NaCl', 'BaCl2', 'AgNO3', 'CuSO4', 'FeCl3', 'FeSO4',
     'KI', 'Pb(NO3)2', 'Na2CO3', 'Na2SO4', 'Na2S', 'KSCN', 'KMnO4', 'AlCl3', 'NH4Cl', 'ZnSO4', 'C3H5(OH)3', 'C6H12O6', 'Na', 'K', 'Li', 'Ca', 'Mg', 'Zn', 'Fe', 'Cu', 'CaCO3', 'MnO2', 'KMnO4s', 'NH4NO3'];
@@ -41,26 +41,90 @@
       wood: new THREE.MeshStandardMaterial({ color: lin('#9a6a3a'), roughness: 0.65 }), brass: new THREE.MeshStandardMaterial({ color: lin('#c9a24a'), metalness: 0.9, roughness: 0.3 })
     };
   }
-  function labelTex(text, sub) { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 160; const g = cv.getContext('2d'); g.fillStyle = '#f7f3e6'; g.fillRect(0, 0, 256, 160); g.strokeStyle = '#b8923a'; g.lineWidth = 6; g.strokeRect(6, 6, 244, 148);
-    g.fillStyle = '#16161a'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = 'bold 50px IBM Plex Mono, monospace'; g.fillText(text, 128, 68, 232); if (sub) { g.font = '22px Space Grotesk, sans-serif'; g.fillStyle = '#5a5a60'; g.fillText(sub, 128, 122, 232); }
-    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t; }
-  // a reagent container: a liquid bottle, a powder jar, a metal jar under oil, or a dropper bottle
+  // real reagent bottles: brown glass for light-sensitive solutions, the substance's true colour inside, a paper label with a class stripe
+  const AMBER = ['HNO3', 'AgNO3', 'KMnO4', 'H2O2', 'H2O2c', 'KI', 'I2', 'HI', 'HBr', 'NaBr', 'KBr', 'litmus', 'mo', 'php'];
+  const CLS = { acid: '#c8322f', base: '#2a62c4', salt: '#2b8a57', metal: '#5f6a76', ind: '#7d46c4', other: '#b07a1e' };
+  const METCOL = { Cu: '#b8622a', Fe: '#7d838b', Zn: '#a3abb4', Mg: '#d6dbe0', Al: '#cdd3d9', Na: '#d9d3c0', K: '#d2cab6', Li: '#c9c9c1', Ca: '#cfcfc6' };
+  let colourCache = {};
+  // the colour a substance really has, or null when it is colourless / white
+  function trueColour(id) {
+    if (colourCache[id] !== undefined) return colourCache[id]; const d = E.describe(id), h = d && d.colourHex; let out = null;
+    if (h) { const c = new THREE.Color(h), mx = Math.max(c.r, c.g, c.b), mn = Math.min(c.r, c.g, c.b); if (mx - mn > 0.12 || mx < 0.55) out = h; }
+    return (colourCache[id] = out);
+  }
+  function labelTex(id) {
+    const r = E.reagents().find((x) => x.id === id) || {}, cv = document.createElement('canvas'); cv.width = 256; cv.height = 192; const g = cv.getContext('2d');
+    const pg = g.createLinearGradient(0, 0, 0, 192); pg.addColorStop(0, '#f1ebda'); pg.addColorStop(1, '#e2d9c2'); g.fillStyle = pg; g.fillRect(0, 0, 256, 192);
+    for (let i = 0; i < 700; i++) { g.fillStyle = 'rgba(90,70,40,' + (Math.random() * 0.06) + ')'; g.fillRect(Math.random() * 256, Math.random() * 192, 1.5, 1.5); }
+    g.fillStyle = CLS[r.t] || CLS.other; g.fillRect(0, 0, 256, 30); g.fillStyle = '#fff'; g.font = '600 15px Space Grotesk, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText((T.groups[r.t] || '').toUpperCase(), 128, 16);
+    g.fillStyle = '#17171a'; g.font = 'bold 40px IBM Plex Mono, monospace'; g.fillText(E.disp(id).replace(/<[^>]+>/g, ''), 128, 78, 236);
+    g.fillStyle = '#4a4740'; g.font = '17px Space Grotesk, sans-serif'; const nm = r.n ? r.n[L()] : ''; g.fillText(nm.length > 26 ? nm.slice(0, 25) + '…' : nm, 128, 120, 240);
+    g.strokeStyle = 'rgba(60,50,30,.35)'; g.lineWidth = 1; g.beginPath(); g.moveTo(20, 142); g.lineTo(236, 142); g.stroke();
+    g.fillStyle = '#6d685c'; g.font = '13px IBM Plex Mono, monospace'; g.fillText(r.t === 'metal' ? 'Kolvo · 99.9%' : r.solid ? 'Kolvo · ч.д.а. · 250 g' : 'Kolvo · 0.1 M · 500 ml', 128, 164);
+    const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
+  }
+  const lathe = (pts, n) => new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x, y)), n || 40);
   function makeBottle(id) {
-    const kind = E.actKind(id), col = E.actColour(id), g = new THREE.Group(), name = E.disp(id), glassM = new THREE.MeshPhysicalMaterial({ color: lin(kind === 'drops' && id !== 'php' ? '#7a4a20' : '#eef7ff'), roughness: 0.04, transparent: true, opacity: kind === 'drops' ? 0.55 : 0.22, clearcoat: 1, envMapIntensity: 2.5, depthWrite: false, side: THREE.DoubleSide });
-    if (kind === 'pour' || kind === 'drops') { const h = kind === 'drops' ? 0.8 : 1.1, r = kind === 'drops' ? 0.22 : 0.3;
-      g.add(new THREE.Mesh(new THREE.LatheGeometry([[0.001, 0], [r, 0], [r + 0.02, 0.03], [r + 0.02, h], [r * 0.45, h + 0.15], [r * 0.4, h + 0.3]].map(([x, y]) => new THREE.Vector2(x, y)), 32), glassM));
-      const lq = new THREE.Mesh(new THREE.CylinderGeometry(r - 0.01, r - 0.01, h * 0.7, 24), new THREE.MeshPhysicalMaterial({ color: lin(col), transparent: true, opacity: 0.75, roughness: 0.05 })); lq.position.y = h * 0.35 + 0.01; g.add(lq);
-      const cap = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.48, r * 0.48, 0.16, 20), new THREE.MeshStandardMaterial({ color: lin(kind === 'drops' ? '#222' : '#2e86de'), roughness: 0.5 })); cap.position.y = h + 0.36; g.add(cap);
-      if (kind === 'drops') { const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 10), new THREE.MeshStandardMaterial({ color: lin('#1a1a1e') })); bulb.scale.y = 1.5; bulb.position.y = h + 0.55; g.add(bulb); }
-      const lab = new THREE.Mesh(new THREE.CylinderGeometry(r + 0.03, r + 0.03, h * 0.45, 24, 1, true, -0.95, 1.9), new THREE.MeshStandardMaterial({ map: labelTex(name), roughness: 0.8 })); lab.position.y = h * 0.5; g.add(lab); }
-    else { const oil = ['Na', 'K', 'Li', 'Ca'].includes(id), r = 0.34, h = 0.7;
-      g.add(new THREE.Mesh(new THREE.LatheGeometry([[0.001, 0], [r, 0], [r + 0.02, 0.03], [r + 0.02, h], [r - 0.02, h + 0.04]].map(([x, y]) => new THREE.Vector2(x, y)), 32), glassM));
-      if (oil) { const o = new THREE.Mesh(new THREE.CylinderGeometry(r - 0.01, r - 0.01, h * 0.75, 24), new THREE.MeshPhysicalMaterial({ color: lin('#f3e2a0'), transparent: true, opacity: 0.4 })); o.position.y = h * 0.38; g.add(o); }
-      for (let i = 0; i < (kind === 'metal' ? 6 : 40); i++) { const p = new THREE.Mesh(kind === 'metal' ? new THREE.IcosahedronGeometry(0.07, 0) : new THREE.IcosahedronGeometry(0.035, 0), new THREE.MeshStandardMaterial({ color: lin(kind === 'metal' ? ({ Cu: '#c46a2c', Fe: '#8b9198', Zn: '#9aa3ad', Mg: '#dfe3e8', Na: '#e2dccb', K: '#d9d2c2', Li: '#cfcfc9', Ca: '#d8d8d2' }[id] || '#aaa') : col), metalness: kind === 'metal' ? 0.6 : 0, roughness: 0.6 }));
-        p.position.set((rnd(i + id.length) - 0.5) * 0.4, 0.06 + rnd(i * 3) * (kind === 'metal' ? 0.15 : 0.12), (rnd(i * 7) - 0.5) * 0.4); g.add(p); }
-      const lid = new THREE.Mesh(new THREE.CylinderGeometry(r + 0.04, r + 0.04, 0.12, 24), new THREE.MeshStandardMaterial({ color: lin('#3a3a40'), roughness: 0.5 })); lid.position.y = h + 0.06; g.add(lid);
-      const lab = new THREE.Mesh(new THREE.CylinderGeometry(r + 0.03, r + 0.03, 0.32, 24, 1, true, -0.95, 1.9), new THREE.MeshStandardMaterial({ map: labelTex(name), roughness: 0.8 })); lab.position.y = 0.42; g.add(lab); }
+    const kind = E.actKind(id), r0 = E.reagents().find((x) => x.id === id) || {}, g = new THREE.Group(), tc = trueColour(id), amber = AMBER.includes(id);
+    const glassM = new THREE.MeshPhysicalMaterial({ color: lin(amber ? '#8a4a12' : '#f2f8fa'), roughness: 0.06, transparent: true, opacity: amber ? 0.62 : 0.08, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: amber ? 1.8 : 1.1, depthWrite: false, side: THREE.DoubleSide });
+    const label = (rad, h, y) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h, 32, 1, true, -0.8, 1.6), new THREE.MeshStandardMaterial({ map: labelTex(id), roughness: 0.9 })); m.position.y = y; g.add(m); };
+    if (kind === 'pour' || kind === 'drops') {
+      const small = kind === 'drops', r = small ? 0.2 : 0.29, h = small ? 0.62 : 0.95;
+      const prof = [[0.001, 0], [r - 0.03, 0], [r, 0.03], [r, h], [r * 0.9, h + 0.07], [r * 0.5, h + 0.17], [r * 0.4, h + 0.2], [r * 0.4, h + 0.3], [r * 0.46, h + 0.32]];
+      g.add(new THREE.Mesh(lathe(prof), glassM));
+      // the liquid inside, a little below the shoulder, with a flat surface
+      const fill = h * 0.72, lq = new THREE.Mesh(lathe([[0.001, 0.015], [r - 0.025, 0.015], [r - 0.012, 0.04], [r - 0.012, fill], [0.001, fill]], 32),
+        new THREE.MeshPhysicalMaterial({ color: lin(tc || '#e9f2f6'), transparent: true, opacity: tc ? 0.86 : 0.14, roughness: 0.1, clearcoat: 0.6, depthWrite: false }));
+      lq.renderOrder = 1; g.add(lq);
+      if (small) { // dropper: glass pipette in a black rubber bulb
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.5, r * 0.5, 0.1, 20), new THREE.MeshStandardMaterial({ color: lin('#1c1c1f'), roughness: 0.55 })); cap.position.y = h + 0.33; g.add(cap);
+        const bulb = new THREE.Mesh(lathe([[0.001, 0], [0.075, 0], [0.085, 0.08], [0.07, 0.2], [0.001, 0.24]], 20), new THREE.MeshStandardMaterial({ color: lin('#2a2224'), roughness: 0.7 })); bulb.position.y = h + 0.38; g.add(bulb);
+      } else if (r0.t === 'acid') { // ground-glass stopper
+        const st = new THREE.Mesh(lathe([[0.001, 0], [r * 0.38, 0], [r * 0.42, 0.12], [r * 0.3, 0.16], [r * 0.3, 0.2], [r * 0.75, 0.22], [r * 0.75, 0.3], [0.001, 0.31]], 24), glassM); st.position.y = h + 0.24; g.add(st);
+      } else { const cap = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.5, r * 0.5, 0.16, 24), new THREE.MeshStandardMaterial({ color: lin('#232327'), roughness: 0.6 })); cap.position.y = h + 0.36; g.add(cap); }
+      label(r + 0.006, h * 0.5, h * 0.45);
+    } else { // wide-mouth jar for powders and metals
+      const r = 0.31, h = 0.66, oil = ['Na', 'K', 'Li', 'Ca'].includes(id);
+      g.add(new THREE.Mesh(lathe([[0.001, 0], [r - 0.03, 0], [r, 0.03], [r, h], [r * 0.92, h + 0.05], [r * 0.92, h + 0.1]]), glassM));
+      const col = kind === 'metal' ? METCOL[id] || '#999' : tc || E.actColour(id) || '#efefe8', fillH = kind === 'metal' ? 0 : h * 0.55;
+      if (fillH) { // packed powder or crystals with a lumpy top
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(r - 0.015, r - 0.015, fillH, 28), new THREE.MeshStandardMaterial({ color: lin(col), roughness: 0.95 })); body.position.y = fillH / 2 + 0.015; g.add(body);
+        const top = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), new THREE.MeshStandardMaterial({ color: lin(col), roughness: 0.8 }), 70), d = new THREE.Object3D();
+        for (let i = 0; i < 70; i++) { const a = rnd(i * 3 + id.length) * 6.283, rr = (r - 0.04) * Math.sqrt(rnd(i * 5 + 1)); d.position.set(Math.cos(a) * rr, fillH + 0.015 + rnd(i * 7) * 0.025, Math.sin(a) * rr); d.rotation.set(i, i * 2, i * 3); d.scale.setScalar(0.018 + rnd(i * 11) * 0.02); d.updateMatrix(); top.setMatrixAt(i, d.matrix); }
+        g.add(top);
+      } else {
+        if (oil) { const o = new THREE.Mesh(new THREE.CylinderGeometry(r - 0.015, r - 0.015, h * 0.7, 28), new THREE.MeshPhysicalMaterial({ color: lin('#e8cf7a'), transparent: true, opacity: 0.35, roughness: 0.05, depthWrite: false })); o.position.y = h * 0.36; g.add(o); }
+        const mm = new THREE.MeshStandardMaterial({ color: lin(col), metalness: oil ? 0.35 : 0.85, roughness: oil ? 0.55 : 0.32 });
+        for (let i = 0; i < (id === 'Mg' ? 1 : 7); i++) {
+          const m = id === 'Mg' ? new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.012, 6, 60, 6.283 * 3), mm) : id === 'Fe' ? new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.4, 8), mm)
+            : new THREE.Mesh(oil ? new THREE.BoxGeometry(0.11, 0.08, 0.09) : new THREE.IcosahedronGeometry(0.055, 1), mm);
+          if (id === 'Mg') { m.rotation.x = Math.PI / 2; m.scale.z = 4; m.position.y = 0.2; } else { m.position.set((rnd(i * 3 + 1) - 0.5) * 0.36, 0.06 + rnd(i * 5) * 0.12, (rnd(i * 7 + 2) - 0.5) * 0.36); m.rotation.set(i, i * 1.3, i * 0.7); }
+          g.add(m);
+        }
+      }
+      const lid = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.96, r * 0.96, 0.13, 32), new THREE.MeshStandardMaterial({ color: lin('#1f1f23'), roughness: 0.55 })); lid.position.y = h + 0.16; g.add(lid);
+      label(r + 0.006, 0.3, 0.36);
+    }
     g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.userData.rid = id; } }); g.userData.rid = id; return g;
+  }
+  // ---------- the shelf: a filter by class / colour / hazard and a search decide which bottles stand on it ----------
+  let filt = 'main', query = '', page = 0;
+  const PER = 44;
+  function shelfList() {
+    const all = E.reagents(), qq = query.toLowerCase().replace(/['‘’ʻ]/g, '');
+    if (qq) return all.filter((r) => (r.id + ' ' + r.n.join(' ')).toLowerCase().replace(/['‘’ʻ]/g, '').includes(qq)).map((r) => r.id);
+    if (filt === 'main') return SHELF.filter((id) => all.some((r) => r.id === id));
+    if (filt === 'colour') return all.filter((r) => trueColour(r.id) && r.t !== 'metal').map((r) => r.id);
+    if (filt === 'danger') return all.filter((r) => { const d = E.describe(r.id); return d && d.hazards.length; }).map((r) => r.id);
+    if (filt === 'salt') return all.filter((r) => r.t === 'salt' || r.t === 'other').map((r) => r.id);
+    return all.filter((r) => r.t === filt).map((r) => r.id);
+  }
+  function fillShelf() {
+    bottles.forEach((b) => { scene.remove(b); b.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); if (o.material.map) o.material.map.dispose(); } }); }); bottles = [];
+    const list = shelfList(), pages = Math.max(1, Math.ceil(list.length / PER)); page = Math.min(page, pages - 1);
+    list.slice(page * PER, page * PER + PER).forEach((id, i) => { const row = Math.floor(i / 22), col = i % 22, b = makeBottle(id); b.position.set(-8.0 + col * 0.76, row ? 5.62 : 3.62, -3.0); b.userData.y0 = b.position.y; if (id === sel.reagent) b.position.y += 0.18; scene.add(b); bottles.push(b); });
+    const info = host && host.querySelector('.rm-f-info'); if (info) info.innerHTML = '<b>' + list.length + '</b> ' + T.fCount + (pages > 1 ? ' · <button data-pg="-1">‹</button> ' + (page + 1) + '/' + pages + ' <button data-pg="1">›</button>' : '');
+    host && host.querySelectorAll('.rm-f button[data-f]').forEach((b) => { const on = !query && b.dataset.f === filt; b.style.background = on ? b.dataset.c : 'rgba(10,14,28,.66)'; b.style.color = on ? '#fff' : '#dfe6f5'; });
   }
   function spiritLamp() { const g = new THREE.Group(); const body = new THREE.Mesh(new THREE.LatheGeometry([[0.001, 0], [0.5, 0], [0.56, 0.06], [0.58, 0.34], [0.44, 0.62], [0.16, 0.7], [0.15, 0.76]].map(([a, b]) => new THREE.Vector2(a, b)), 40), new THREE.MeshPhysicalMaterial({ color: lin('#e8f4ff'), transparent: true, opacity: 0.3, roughness: 0.05, clearcoat: 1, envMapIntensity: 2.5, depthWrite: false }));
     const alc = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.5, 0.28, 32), new THREE.MeshPhysicalMaterial({ color: lin('#cfe4ff'), transparent: true, opacity: 0.4 })); alc.position.y = 0.15;
@@ -195,7 +259,7 @@
     const wt = new THREE.CanvasTexture(tcv); wt.wrapS = wt.wrapT = THREE.RepeatWrapping; wt.repeat.set(10, 5); wt.encoding = THREE.sRGBEncoding; const wall = new THREE.Mesh(new THREE.PlaneGeometry(30, 15), new THREE.MeshStandardMaterial({ map: wt, roughness: 0.8 })); wall.position.set(0, 6.5, -3.6); wall.receiveShadow = true; scene.add(wall);
     // the shelf with labelled bottles
     [3.55, 5.55].forEach((y) => { const b = new THREE.Mesh(new THREE.BoxGeometry(17, 0.12, 1.0), M.wood); b.position.set(0, y, -3.0); b.castShadow = b.receiveShadow = true; scene.add(b); });
-    const per = 22; SHELF.forEach((id, i) => { const row = Math.floor(i / per), col = i % per; const b = makeBottle(id); b.position.set(-8.0 + col * 0.76, row ? 5.62 : 3.62, -3.0); scene.add(b); bottles.push(b); });
+    fillShelf();
     // the test-tube rack, two tripods with lamps, the central lamp for tubes, the burner
     const rack = new THREE.Group(); const rb = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.12, 1.0), M.wood); rb.position.y = 0.06; const rt = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.1, 1.0), M.wood); rt.position.y = 1.6; [-1.75, 1.75].forEach((x) => { const s = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.6, 1.0), M.wood); s.position.set(x, 0.8, 0); rack.add(s); });
     rack.add(rb, rt); rack.position.set(-5.0, 0, 0.6); rack.traverse((o) => { if (o.isMesh) { o.castShadow = o.receiveShadow = true; } }); scene.add(rack);
@@ -266,7 +330,7 @@
   }
   function toolbar() {
     const b = host.querySelector('.rm-tools'); if (!b) return; const v = sel.vessel, dis = !v;
-    const btn = (k, t, c) => '<button data-a="' + k + '"' + (dis && k !== 'cat' && k !== 'back' ? ' disabled' : '') + ' style="padding:9px 12px;border-radius:10px;border:1px solid ' + (c || 'var(--line)') + ';background:var(--btn);color:var(--text);font:600 13px Space Grotesk,sans-serif;cursor:pointer;opacity:' + (dis && k !== 'cat' && k !== 'back' ? 0.45 : 1) + '">' + t + '</button>';
+    const btn = (k, t, c) => '<button data-a="' + k + '"' + (dis && !['cat', 'back', 'cancel'].includes(k) ? ' disabled' : '') + ' style="padding:9px 12px;border-radius:10px;border:1px solid ' + (c || 'var(--line)') + ';background:var(--btn);color:var(--text);font:600 13px Space Grotesk,sans-serif;cursor:pointer;opacity:' + (dis && !['cat', 'back', 'cancel'].includes(k) ? 0.45 : 1) + '">' + t + '</button>';
     b.innerHTML = btn('cat', '📚 ' + T.catalog, 'rgba(77,210,255,.5)') + btn('heat', '🔥 ' + (v && v.s.heated ? T.unheat : T.heat), 'rgba(255,138,58,.5)') + btn('flame', '🕯️ ' + T.flame) + btn('pour', '🫗 ' + T.pour) + btn('wash', '🧽 ' + T.wash)
       + (sel.reagent || sel.mode ? btn('cancel', '✋ ' + T.cancel) : '') + btn('back', '↩ ' + T.back);
   }
@@ -293,11 +357,16 @@
     host.innerHTML = '<style>@media (max-width:640px){.rm{min-height:78vh!important}.rm-card{left:12px!important;width:auto!important;top:auto!important;bottom:160px;max-height:34%!important}.rm-hint{max-width:none!important;right:12px}.rm-cat{width:auto!important;right:12px}}</style><div class="rm" style="position:relative;width:100%;height:100%;min-height:520px;overflow:hidden;background:radial-gradient(900px 600px at 50% 30%,#2a3350,#0b0f1c 75%)">'
       + '<div class="rm-3d" style="position:absolute;inset:0"></div>'
       + '<div class="rm-hint" style="position:absolute;left:14px;top:12px;max-width:min(560px,70%);padding:8px 12px;border-radius:10px;background:rgba(10,14,28,.72);border:1px solid rgba(255,255,255,.12);color:#e9eef8;font:600 13px Space Grotesk,sans-serif;backdrop-filter:blur(6px)"></div>'
-      + '<div class="rm-card" style="display:none;position:absolute;right:12px;top:12px;max-height:calc(100% - 120px);width:min(340px,44%);box-sizing:border-box;overflow:auto;padding:12px 14px;border-radius:14px;background:' + (ctx.light ? 'rgba(255,255,255,.96)' : 'rgba(16,21,38,.94)') + ';backdrop-filter:blur(8px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.3)"></div>'
-      + '<div class="rm-cat" style="display:none;position:absolute;left:12px;top:56px;bottom:110px;width:min(330px,46%);box-sizing:border-box;overflow:auto;padding:12px;border-radius:14px;background:' + (ctx.light ? 'rgba(255,255,255,.96)' : 'rgba(16,21,38,.94)') + ';backdrop-filter:blur(8px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.3)"><input class="rm-q" placeholder="' + T.find + '" style="width:100%;box-sizing:border-box;margin-bottom:10px;background:var(--input);border:1px solid var(--line);border-radius:10px;color:var(--text);font:13px Space Grotesk,sans-serif;padding:8px 11px;outline:none"><div class="rm-cat-list"></div></div>'
+      + '<div class="rm-card" style="display:none;position:absolute;right:12px;top:96px;max-height:calc(100% - 210px);width:min(340px,44%);box-sizing:border-box;overflow:auto;padding:12px 14px;border-radius:14px;background:' + (ctx.light ? 'rgba(255,255,255,.96)' : 'rgba(16,21,38,.94)') + ';backdrop-filter:blur(8px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.3)"></div>'
+      + '<div class="rm-cat" style="display:none;position:absolute;left:12px;top:96px;bottom:110px;width:min(330px,46%);box-sizing:border-box;overflow:auto;padding:12px;border-radius:14px;background:' + (ctx.light ? 'rgba(255,255,255,.96)' : 'rgba(16,21,38,.94)') + ';backdrop-filter:blur(8px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.3)"><input class="rm-q" placeholder="' + T.find + '" style="width:100%;box-sizing:border-box;margin-bottom:10px;background:var(--input);border:1px solid var(--line);border-radius:10px;color:var(--text);font:13px Space Grotesk,sans-serif;padding:8px 11px;outline:none"><div class="rm-cat-list"></div></div>'
       + '<div class="rm-tools" style="position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>'
       + '<div class="rm-alert" style="position:absolute;left:50%;bottom:118px;z-index:3;transform:translate(-50%,-10px);opacity:0;transition:.4s;max-width:min(560px,80%);padding:10px 14px;border-radius:12px;background:rgba(200,30,40,.92);color:#fff;font:700 14px Space Grotesk,sans-serif;box-shadow:0 10px 30px rgba(200,30,40,.4);pointer-events:none"></div>'
-      + '<div style="position:absolute;left:14px;top:50px;font:11px IBM Plex Mono,monospace;color:rgba(210,222,246,.7);pointer-events:none">' + T.drag + '</div></div>';
+      + '<div class="rm-f" style="position:absolute;left:12px;top:54px;right:12px;display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px;align-items:center;padding-bottom:2px">'
+      + [['main', '⭐ ' + T.fMain, '#3b4a6b'], ['acid', T.groups.acid, CLS.acid], ['base', T.groups.base, CLS.base], ['salt', T.groups.salt, CLS.salt], ['metal', T.groups.metal, CLS.metal], ['ind', T.groups.ind, CLS.ind], ['colour', '🎨 ' + T.fColour, '#c2410c'], ['danger', '⚠️ ' + T.fDanger, '#b91c1c']]
+        .map(([k, t, c]) => '<button data-f="' + k + '" data-c="' + c + '" style="flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(10,14,28,.66);color:#dfe6f5;font:600 12px Space Grotesk,sans-serif;cursor:pointer;backdrop-filter:blur(6px)"><span style="width:9px;height:9px;border-radius:50%;background:' + c + '"></span>' + t + '</button>').join('')
+      + '<input class="rm-fq" placeholder="🔎 ' + T.fFind + '" style="flex:0 0 150px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(10,14,28,.66);color:#eef2fa;font:12px Space Grotesk,sans-serif;outline:none">'
+      + '<span class="rm-f-info" style="flex:0 0 auto;white-space:nowrap;font:12px Space Grotesk,sans-serif;color:#cfd8ea"></span></div>'
+      + '<style>.rm-f-info button{border:1px solid rgba(255,255,255,.2);background:rgba(10,14,28,.7);color:#fff;border-radius:6px;padding:1px 7px;cursor:pointer}@media (max-width:640px){.rm-f{right:12px!important}}</style></div>';
     buildScene(host.querySelector('.rm-3d'));
     const ro = new ResizeObserver(place); ro.observe(host.querySelector('.rm-3d')); host._ro = ro; place();
     let down = null; renderer.domElement.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
@@ -309,6 +378,9 @@
       if (!v) return; if (a === 'heat') heatToggle(v); if (a === 'flame') flameTest(v); if (a === 'wash') wash(v); if (a === 'pour') { sel.reagent = null; sel.mode = 'pour'; renderCard(); toolbar(); } });
     host.querySelector('.rm-cat-list').addEventListener('click', (e) => { const b = e.target.closest('button[data-r]'); if (b) { chooseReagent(b.dataset.r); host.querySelector('.rm-cat').style.display = 'none'; } });
     host.querySelector('.rm-q').addEventListener('input', (e) => catalogue(e.target.value));
+    host.querySelector('.rm-f').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.f) { filt = b.dataset.f; query = ''; page = 0; host.querySelector('.rm-fq').value = ''; } if (b.dataset.pg) page += +b.dataset.pg; fillShelf(); });
+    let qt = 0; host.querySelector('.rm-fq').addEventListener('input', (e) => { clearTimeout(qt); qt = setTimeout(() => { query = e.target.value.trim(); page = 0; fillShelf(); }, 250); });
+
     renderCard(); toolbar();
     let last = performance.now();
     const frame = (now) => { if (!alive) return; raf = requestAnimationFrame(frame); try { draw(now); } catch (e) { console.error('labroom', e); } };
@@ -327,8 +399,8 @@
     let lt = Date.now(); tick = setInterval(() => { const t = Date.now(), dt = Math.min(0.5, (t - lt) / 1000); lt = t; let ch = false; vessels.forEach((v) => { const n = v.s.log.length; E.step(v.s, dt); if (v.s.broken && v.s.heated) { E.heat(v.s); if (v === sel.vessel) toolbar(); } if (v.s.log.length !== n && v === sel.vessel) ch = true; }); if (ch && !sel.reagent) renderCard(); if (sel.vessel && !sel.reagent) { const tEl = host.querySelector('.rm-card span'); if (tEl) tEl.textContent = '🌡️ ' + Math.round(sel.vessel.s.temp) + ' °C'; } }, 150);
   }
   window.PTROOM = {
-    mount(h, c, exit) { THREE = c.THREE; E = window.PTLAB.engine; host = h; ctx = c; onExit = exit; T = S[c.lang] || S.uz; E.setLang(c.lang); mats(); vessels = []; bottles = []; sel = { reagent: null, vessel: null, mode: null }; anim = null; alive = true; build(); },
-    setCtx(c) { ctx = Object.assign(ctx || {}, c); T = S[ctx.lang] || S.uz; E.setLang(ctx.lang); if (host) { renderCard(); toolbar(); } },
+    mount(h, c, exit) { THREE = c.THREE; E = window.PTLAB.engine; host = h; ctx = c; onExit = exit; T = S[c.lang] || S.uz; E.setLang(c.lang); mats(); vessels = []; bottles = []; colourCache = {}; filt = 'main'; query = ''; page = 0; sel = { reagent: null, vessel: null, mode: null }; anim = null; alive = true; build(); },
+    setCtx(c) { ctx = Object.assign(ctx || {}, c); T = S[ctx.lang] || S.uz; E.setLang(ctx.lang); if (host) { colourCache = {}; renderCard(); toolbar(); fillShelf(); } },
     // for testing: choose a reagent and click a vessel, or run an action on a vessel
     _pick(rid, vi) { if (rid) chooseReagent(rid); if (vi != null) onPick(vessels[vi].hit); }, _vessels: () => vessels,
     unmount() { alive = false; cancelAnimationFrame(raf); clearInterval(tick); if (host && host._ro) host._ro.disconnect(); if (fx) fx.clear(); if (renderer) { renderer.dispose(); try { renderer.forceContextLoss(); } catch (e) {} } renderer = null; scene = null; if (host) host.innerHTML = ''; host = null; }
