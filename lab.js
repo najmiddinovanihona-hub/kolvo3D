@@ -766,7 +766,7 @@
       + '@media (max-width:980px){.lb-wrap{grid-template-columns:1fr;height:auto}.lb-col{overflow:visible}.lb-bench{order:-1}}.lb-wrap button:hover{filter:brightness(1.12)}.lb-wrap summary::marker{color:var(--green)}</style>'
       + '<div class="lb-wrap"><div class="lb-col"><div style="font-weight:700;color:var(--text);margin-bottom:8px">🧴 ' + T.shelf + '</div>'
       + '<input class="lb-q" placeholder="' + T.find + '" style="width:100%;box-sizing:border-box;margin-bottom:12px;background:var(--input);border:1px solid var(--line);border-radius:10px;color:var(--text);font:13px Space Grotesk,sans-serif;padding:9px 12px;outline:none"><div class="lb-shelf">' + shelf('') + '</div></div>'
-      + '<div class="lb-col lb-bench" style="display:flex;flex-direction:column;align-items:stretch;gap:10px"><div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600"><span class="lb-md"></span><span class="lb-t" style="font-family:IBM Plex Mono,monospace;color:var(--muted)"></span></div>'
+      + '<div class="lb-col lb-bench" style="display:flex;flex-direction:column;align-items:stretch;gap:10px">' + tipHTML() + '<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600"><span class="lb-md"></span><span class="lb-t" style="font-family:IBM Plex Mono,monospace;color:var(--muted)"></span></div>'
       + '<div class="lb-step" style="display:none;padding:10px 12px;border-radius:12px;background:rgba(46,204,150,.08);border:1px solid rgba(46,204,150,.4)"><div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--green)"><span class="lb-st-t"></span><span class="lb-st-n"></span></div>'
       + '<div style="height:4px;border-radius:2px;background:var(--line);margin:7px 0 8px;overflow:hidden"><div class="lb-st-bar" style="height:100%;width:0;background:#2ecc96;transition:width .5s"></div></div>'
       + '<div class="lb-st-x" style="font-size:14px;line-height:1.5;color:var(--text)"></div><div class="lb-st-o" style="display:none;margin-top:6px;font-size:13px;line-height:1.5;color:var(--body)"></div>'
@@ -787,6 +787,8 @@
     host.querySelector('.lb-st-stop').addEventListener('click', () => { runTok++; timers.forEach(clearTimeout); timers = []; st.act = null; if (st.heated) heat(); stepUI(null); render(); });
     host.querySelector('.lb-run').addEventListener('click', () => runPreset(+host.querySelector('.lb-pre').value));
     const rb = host.querySelector('.lb-room'); if (rb) rb.addEventListener('click', enterRoom);
+    const tp = host.querySelector('.lb-tip'); if (tp) tp.addEventListener('click', (e) => { const b = e.target.closest('button[data-tip]'); if (!b) return; try { localStorage.setItem('kv-lab-tip', '1'); } catch (er) {} const k = b.dataset.tip; tp.remove();
+      if (k === 'run') runPreset(0); if (k === 'room') enterRoom(); });
     // the 3D bench when Three.js is on the page, the flat drawing otherwise
     if (view3d) { view3d.dispose(); view3d = null; }
     if (ctx.THREE && window.PTLAB3D) { try { view3d = window.PTLAB3D.create(host.querySelector('.lb-tube'), { THREE: ctx.THREE, orbit: ctx.orbit, light: ctx.light, getVM: vm }); } catch (e) { console.error('lab3d', e); view3d = null; } }
@@ -795,6 +797,14 @@
   // the free 3D laboratory takes over the same host until its exit button brings the simple bench back
   const ROOM = [['3D laboratoriyaga kirish', 'Haqiqiy xonadek: javondan moddani olib, probirka, stakan yoki kolbaga o‘zingiz soling'], ['Enter the 3D laboratory', 'Like a real room: take substances off the shelf and add them to tubes, a beaker or a flask yourself'], ['Войти в 3D лабораторию', 'Как настоящая комната: берите вещества с полки и сами добавляйте в пробирки, стакан или колбу']];
   let inRoom = false;
+  // a first-visit tip: three ways to start
+  const TIP = [['Birinchi marta kirdingizmi? Mana 3 ta yo‘l:', '<b>1.</b> Chapdagi javondan istalgan reaktivni bosing — u probirkaga quyiladi, natija o‘ngda yoziladi.', '<b>2.</b> O‘ngdagi <b>Tayyor tajribalar</b>dan birini tanlab ▶ bosing — har qadam sekin ko‘rsatiladi.', '<b>3.</b> <b>🥽 3D laboratoriya</b>da ilova sizga qadam-baqadam yo‘l ko‘rsatadi.', '▶ Birinchi tajribani ko‘rish', '🥽 3D laboratoriya', 'Tushunarli'],
+    ['First time here? Three ways to start:', '<b>1.</b> Click any reagent on the left shelf — it is poured into the tube and the result appears on the right.', '<b>2.</b> Pick one of the <b>Ready experiments</b> on the right and press ▶ — every step is shown slowly.', '<b>3.</b> In the <b>🥽 3D laboratory</b> the app guides you step by step.', '▶ Watch the first experiment', '🥽 3D laboratory', 'Got it'],
+    ['Впервые здесь? Три способа начать:', '<b>1.</b> Нажмите любой реактив на полке слева — он нальётся в пробирку, результат появится справа.', '<b>2.</b> Выберите один из <b>Готовых опытов</b> справа и нажмите ▶ — каждый шаг покажется медленно.', '<b>3.</b> В <b>🥽 3D лаборатории</b> приложение ведёт вас шаг за шагом.', '▶ Посмотреть первый опыт', '🥽 3D лаборатория', 'Понятно']];
+  function tipHTML() { let seen = false; try { seen = localStorage.getItem('kv-lab-tip') === '1'; } catch (e) {} if (seen) return ''; const t = TIP[L()], b = (k, x, c) => '<button data-tip="' + k + '" style="padding:7px 11px;border-radius:9px;border:1px solid ' + c + ';background:var(--btn);color:var(--text);font:600 12.5px Space Grotesk,sans-serif;cursor:pointer">' + x + '</button>';
+    return '<div class="lb-tip" style="padding:12px 14px;border-radius:12px;background:rgba(77,210,255,.1);border:1px solid rgba(77,210,255,.45)"><div style="font-weight:700;font-size:14px;color:var(--text)">👋 ' + t[0] + '</div>'
+      + [t[1], t[2], t[3]].map((x) => '<div style="margin-top:6px;font-size:13px;line-height:1.5;color:var(--body)">' + x + '</div>').join('')
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">' + b('run', t[4], 'rgba(46,204,150,.6)') + (window.PTROOM && ctx.THREE ? b('room', t[5], 'rgba(77,210,255,.6)') : '') + b('ok', t[6], 'var(--line)') + '</div></div>'; }
   function enterRoom() { const h = host, c = ctx; window.PTLAB.unmount(); inRoom = true; window.PTROOM.mount(h, c, () => { window.PTROOM.unmount(); inRoom = false; window.PTLAB.mount(h, c); }); }
   let tick = 0, last = 0;
   function loop() { const now = Date.now(), dt = Math.min(0.5, (now - last) / 1000); last = now; if (!st) return; const ch = step(dt); if (ch) render(); else if (animating()) draw(); }

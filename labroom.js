@@ -242,7 +242,7 @@
     else { a.tool.position.copy(at(new THREE.Vector3(0, 0.2, 0))); const open = p > 0.45; ['-1', '1'].forEach((s) => { a.tool.getObjectByName('arm' + s).position.x = (open ? 0.09 : 0.05) * +s; });
       const pc = a.tool.getObjectByName('piece'); if (open && pc && pc.parent === a.tool) { const w = new THREE.Vector3(); pc.getWorldPosition(w); a.tool.remove(pc); pc.position.copy(w); scene.add(pc); a.falls.push({ m: pc, vy: 0 }); } }
     a.falls.forEach((f) => { f.vy -= 0.012; f.m.position.y = Math.max(surf, f.m.position.y + f.vy); if (f.m.position.y <= surf + 1e-3) { scene.remove(f.m); f.done = true; } }); a.falls = a.falls.filter((f) => !f.done);
-    if (!a.added && p >= 0.8) { a.added = true; E.add(a.v.s, a.id); sel.vessel = a.v; dropReagent(); }
+    if (!a.added && p >= 0.8) { a.added = true; E.add(a.v.s, a.id); sel.vessel = a.v; dropReagent(); guideEvent('add', a.id, a.v); }
     if (p >= 1) { scene.remove(a.tool); a.falls.forEach((f) => scene.remove(f.m)); if (a.stream) scene.remove(a.stream); anim = null; }
   }
 
@@ -437,8 +437,8 @@
   function heatToggle(v) {
     const on = !v.s.heated;
     if (v.kind === 'tube' && on) vessels.filter((o) => o.kind === 'tube' && o !== v && o.s.heated).forEach((o) => { E.heat(o.s); o.target = o.home.clone(); });
-    E.heat(v.s); if (v.kind === 'tube') v.target = on ? new THREE.Vector3(-1.6, 1.55, 0.6) : v.home.clone(); renderCard(); toolbar(); }
-  function flameTest(v) { E.flame(v.s); renderCard(); }
+    E.heat(v.s); if (v.kind === 'tube') v.target = on ? new THREE.Vector3(-1.6, 1.55, 0.6) : v.home.clone(); renderCard(); toolbar(); if (on) guideEvent('heat', v); }
+  function flameTest(v) { E.flame(v.s); renderCard(); guideEvent('flame', v); }
   function wash(v) { v.s = E.fresh(); v.seen = new Set(); v.key = {}; Object.values(v.parts).forEach((p) => { if (p && p.isObject3D) v.content.remove(p); }); (v.parts.ppt || []).forEach((m) => v.content.remove(m)); (v.parts.puffs || []).forEach((s) => scene.remove(s)); v.parts = {}; v.target = v.home.clone(); renderCard(); toolbar(); }
   function pourInto(a, b) {
     if (a === b) return hint(T.selfPour); if (!a.s.vol && !a.s.solids.length) return hint(T.nothingToPour);
@@ -451,10 +451,153 @@
     if (v.stream) { scene.remove(v.stream); v.stream = null; }
     if (p > 0.32 && p < 0.8) { const m = new THREE.Vector3(0, v.prof.H, 0); v.g.localToWorld(m); const tm = P.to.g.position.clone().add(new THREE.Vector3(0, P.to.prof.H, 0)), surf = P.to.g.position.y + Math.max(0.1, levelFor(P.to, P.to.s.vol)), c = (v.vm && v.vm.liqCol) || '#cfe6ff';
       v.stream = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([m, new THREE.Vector3((m.x + tm.x) / 2, m.y - 0.1, tm.z), new THREE.Vector3(tm.x, tm.y - 0.1, tm.z), new THREE.Vector3(tm.x, surf, tm.z)]), 30, 0.03, 8, false), new THREE.MeshPhysicalMaterial({ color: lin(c), transparent: true, opacity: 0.7, depthWrite: false })); scene.add(v.stream); }
-    if (!P.done && p >= 0.8) { P.done = true; E.mix(v.s, P.to.s); const keepHeat = false; v.s = E.fresh(); v.key = {}; sel.vessel = P.to; renderCard(); }
+    if (!P.done && p >= 0.8) { P.done = true; E.mix(v.s, P.to.s); const keepHeat = false; v.s = E.fresh(); v.key = {}; sel.vessel = P.to; renderCard(); guideEvent('pour', v, P.to); }
     if (p >= 1) { v.pour = null; v.g.rotation.z = 0; v.g.position.copy(v.target || v.home); }
   }
 
+  // ---------- the guide: a first-visit tour and step-by-step experiments with 3D pointers ----------
+  // a quest's steps: ['add', reagent, slot] · ['heat', slot] · ['flame', slot] · ['pour', from, to]; slots A/B are test tubes, C the beaker, D the flask
+  const QUESTS = [
+    { id: 'blue', icon: '🔵', lvl: 1, steps: [['add', 'CuSO4', 'A'], ['add', 'NaOH', 'A']],
+      t: ['Ko‘k cho‘kma hosil qilish', 'Make a blue precipitate', 'Получить синий осадок'], see: ['Ikki tiniq eritmadan quyuq ko‘k “bulut” paydo bo‘ladi', 'Two clear solutions give a deep blue cloud', 'Из двух прозрачных растворов выпадает синее “облако”'],
+      why: ['Mis ionlari gidroksid ionlari bilan birikib, suvda erimaydigan mis(II) gidroksidni hosil qildi: Cu²⁺ + 2OH⁻ → Cu(OH)₂↓', 'Copper ions joined hydroxide ions and formed insoluble copper(II) hydroxide: Cu²⁺ + 2OH⁻ → Cu(OH)₂↓', 'Ионы меди соединились с гидроксид-ионами и образовали нерастворимый гидроксид меди(II): Cu²⁺ + 2OH⁻ → Cu(OH)₂↓'] },
+    { id: 'ind', icon: '🌸', lvl: 1, steps: [['add', 'NaOH', 'A'], ['add', 'php', 'A'], ['add', 'HCl', 'A']],
+      t: ['Indikator rangini o‘zgartirish', 'Change an indicator’s colour', 'Изменить цвет индикатора'], see: ['Ishqor pushti rangga bo‘yaladi, kislota qo‘shilganda rang yo‘qoladi', 'The alkali turns pink, then the acid takes the colour away', 'Щёлочь окрашивается в малиновый, кислота обесцвечивает её'],
+      why: ['Fenolftalein faqat ishqoriy muhitda pushti. Kislota ishqorni neytrallaydi (H⁺ + OH⁻ → H₂O), muhit neytral bo‘lgach rang yo‘qoladi.', 'Phenolphthalein is pink only in alkali. The acid neutralises it (H⁺ + OH⁻ → H₂O), so the colour fades.', 'Фенолфталеин малиновый только в щелочной среде. Кислота нейтрализует щёлочь (H⁺ + OH⁻ → H₂O), и окраска исчезает.'] },
+    { id: 'white', icon: '⚪', lvl: 1, steps: [['add', 'AgNO3', 'A'], ['add', 'NaCl', 'A']],
+      t: ['Oq “pishloqsimon” cho‘kma', 'A white curdy precipitate', 'Белый творожистый осадок'], see: ['Oq ipir-ipir cho‘kma tushadi — bu xlorid ionini aniqlash usuli', 'A white curdy solid appears — the test for chloride', 'Выпадает белый творожистый осадок — качественная реакция на хлорид'],
+      why: ['Kumush ionlari xlorid ionlari bilan erimaydigan kumush xloridni beradi: Ag⁺ + Cl⁻ → AgCl↓', 'Silver ions and chloride ions form insoluble silver chloride: Ag⁺ + Cl⁻ → AgCl↓', 'Ионы серебра и хлорид-ионы дают нерастворимый хлорид серебра: Ag⁺ + Cl⁻ → AgCl↓'] },
+    { id: 'gas', icon: '🫧', lvl: 1, steps: [['add', 'Na2CO3', 'A'], ['add', 'HCl', 'A']],
+      t: ['Gaz pufakchalari chiqarish', 'Make gas bubbles', 'Получить пузырьки газа'], see: ['Eritma “qaynayotgandek” ko‘piradi — karbonat angidrid ajraladi', 'The solution fizzes as carbon dioxide escapes', 'Раствор вскипает — выделяется углекислый газ'],
+      why: ['Kislota karbonatni parchalaydi: CO₃²⁻ + 2H⁺ → CO₂↑ + H₂O. Bu soda va sirka qo‘shilganda ham ko‘rinadi.', 'The acid breaks down the carbonate: CO₃²⁻ + 2H⁺ → CO₂↑ + H₂O — the same fizz as soda with vinegar.', 'Кислота разрушает карбонат: CO₃²⁻ + 2H⁺ → CO₂↑ + H₂O — как сода с уксусом.'] },
+    { id: 'flame', icon: '🕯️', lvl: 1, steps: [['add', 'NaCl', 'A'], ['flame', 'A']],
+      t: ['Alanga rangini sinash', 'A flame test', 'Окрашивание пламени'], see: ['Gorelka alangasi yorqin sariq rangga kiradi', 'The burner flame turns bright yellow', 'Пламя горелки становится ярко-жёлтым'],
+      why: ['Natriy atomlari qizib, sariq nur chiqaradi. Har bir metall alangani o‘z rangiga bo‘yaydi: K — binafsha, Cu — yashil, Ca — g‘isht-qizil.', 'Hot sodium atoms give off yellow light. Each metal has its own flame colour: K violet, Cu green, Ca brick red.', 'Нагретые атомы натрия испускают жёлтый свет. У каждого металла свой цвет: K — фиолетовый, Cu — зелёный, Ca — кирпично-красный.'] },
+    { id: 'heat', icon: '🔥', lvl: 2, steps: [['add', 'CuSO4', 'A'], ['add', 'NaOH', 'A'], ['heat', 'A']],
+      t: ['Qizdirib qora modda olish', 'Heat it to a black solid', 'Нагреванием получить чёрное вещество'], see: ['Ko‘k cho‘kma qizdirilganda asta-sekin qorayadi', 'The blue precipitate slowly turns black as it heats', 'Синий осадок при нагревании постепенно чернеет'],
+      why: ['Mis(II) gidroksid qizdirilganda parchalanadi: Cu(OH)₂ → CuO + H₂O. Mis(II) oksid — qora modda. Bir oz kuting — rang o‘zgarishi ko‘rinadi.', 'Copper(II) hydroxide decomposes on heating: Cu(OH)₂ → CuO + H₂O, and copper(II) oxide is black. Wait a little to see it.', 'Гидроксид меди(II) при нагревании разлагается: Cu(OH)₂ → CuO + H₂O; оксид меди(II) чёрный. Подождите немного.'] },
+    { id: 'pour', icon: '🫗', lvl: 2, steps: [['add', 'FeCl3', 'A'], ['add', 'NaOH', 'B'], ['pour', 'A', 'B']],
+      t: ['Idishdan idishga quyish', 'Pour one vessel into another', 'Перелить один сосуд в другой'], see: ['Sariq va tiniq eritma qo‘shilib, qo‘ng‘ir cho‘kma beradi', 'A yellow and a clear solution meet and give a brown solid', 'Жёлтый и прозрачный растворы дают бурый осадок'],
+      why: ['Temir(III) ionlari gidroksid bilan qo‘ng‘ir temir(III) gidroksid hosil qiladi: Fe³⁺ + 3OH⁻ → Fe(OH)₃↓', 'Iron(III) ions and hydroxide form brown iron(III) hydroxide: Fe³⁺ + 3OH⁻ → Fe(OH)₃↓', 'Ионы железа(III) с гидроксидом дают бурый гидроксид железа(III): Fe³⁺ + 3OH⁻ → Fe(OH)₃↓'] },
+    { id: 'k', icon: '💥', lvl: 3, steps: [['add', 'H2O', 'C'], ['add', 'php', 'C'], ['add', 'K', 'C']],
+      t: ['Kaliy va suv (xavfli!)', 'Potassium and water (dangerous!)', 'Калий и вода (опасно!)'], see: ['Kaliy suvda yugurib, binafsha alanga bilan yonadi, suv pushti rangga kiradi', 'Potassium skates on the water, burns with a violet flame, and the water turns pink', 'Калий бегает по воде, горит фиолетовым пламенем, вода краснеет'],
+      why: ['Kaliy suv bilan shiddatli reaksiyaga kirishadi: 2K + 2H₂O → 2KOH + H₂↑. Ajralgan issiqlik vodorodni yondiradi, hosil bo‘lgan ishqor fenolftaleinni pushti qiladi. Haqiqiy laboratoriyada buni faqat o‘qituvchi ko‘rsatadi!', 'Potassium reacts violently: 2K + 2H₂O → 2KOH + H₂↑. The heat ignites the hydrogen, and the alkali turns phenolphthalein pink. In a real lab only a teacher demonstrates this!', 'Калий бурно реагирует: 2K + 2H₂O → 2KOH + H₂↑. Теплота поджигает водород, щёлочь окрашивает фенолфталеин. В настоящей лаборатории это показывает только учитель!'] },
+    { id: 'foam', icon: '🧪', lvl: 3, steps: [['add', 'H2O2c', 'D'], ['add', 'KI', 'D']],
+      t: ['“Fil tish pastasi”', '“Elephant toothpaste”', '“Зубная паста для слона”'], see: ['Kolbadan ko‘pik ustuni otilib chiqadi', 'A column of foam shoots out of the flask', 'Из колбы вырывается столб пены'],
+      why: ['Yodid ionlari vodorod peroksidning parchalanishini tezlashtiradi (katalizator): 2H₂O₂ → 2H₂O + O₂↑. Kislorod juda tez ajralib, ko‘pik hosil qiladi.', 'Iodide ions speed up the breakdown of hydrogen peroxide (a catalyst): 2H₂O₂ → 2H₂O + O₂↑. The oxygen rushes out as foam.', 'Иодид-ионы ускоряют разложение пероксида водорода (катализатор): 2H₂O₂ → 2H₂O + O₂↑. Кислород быстро выделяется в виде пены.'] }
+  ];
+  const G = {
+    uz: { ideas: 'Nima qilsam bo‘ladi?', help: 'Yordam', pickTitle: 'Tajriba tanlang', pickSub: 'Birini bosing — har qadamni ko‘rsatib boraman.', lvl: ['', 'oson', 'o‘rta', 'xavfli'], done: 'bajarildi', step: 'qadam', stop: 'To‘xtatish',
+      sBottle: 'Javondan <b>{x}</b> shishasini bosing — yashil o‘q ko‘rsatib turibdi.', sVessel: 'Endi <b>{v}</b>ni bosing — modda unga solinadi.', sSel: 'Avval <b>{v}</b>ni bosing.', sHeat: 'Pastdagi <b>🔥 Qizdirish</b> tugmasini bosing.', sFlame: 'Pastdagi <b>🕯️ Alangaga tutish</b> tugmasini bosing.',
+      sPour: 'Pastdagi <b>🫗 Boshqa idishga quyish</b> tugmasini bosing.', sPourTo: 'Endi <b>{v}</b>ni bosing — aralashma unga quyiladi.', see: 'Nima ko‘rasiz', why: 'Nega shunday bo‘ldi?', bravo: 'Ajoyib! Tajriba bajarildi', next: 'Keyingi tajriba', list: 'Ro‘yxat', close: 'Yopish', washed: '{v} tozalandi.',
+      tour: [['🥽', 'Xush kelibsiz, 3D laboratoriyaga!', 'Bu yerda haqiqiy laboratoriyadagidek o‘zingiz tajriba o‘tkazasiz: javondagi moddalarni idishlarga solasiz, qizdirasiz, aralashtirasiz va nima bo‘lishini ko‘rasiz.'],
+        ['🧴', 'Qanday ishlaydi?', '<b>1.</b> Javondagi shishani bosing — modda haqida ma’lumot chiqadi.<br><b>2.</b> So‘ng probirka, stakan yoki kolbani bosing — modda unga solinadi.<br><b>3.</b> Pastdagi tugmalar: qizdirish, alangaga tutish, quyish, yuvish.<br><b>4.</b> Sichqoncha bilan sudrab aylantiring, g‘ildirak bilan yaqinlashtiring.'],
+        ['💡', 'Nimadan boshlay?', 'Tayyor tajribalardan birini tanlang — ilova har qadamda qaysi shisha va qaysi idishni bosish kerakligini ko‘rsatib boradi. Istalgan payt <b>💡 Nima qilsam bo‘ladi?</b> tugmasini bosing.']],
+      tNext: 'Keyingisi', tStart: 'Birinchi tajribani boshlash', tSkip: 'O‘zim harakat qilaman' },
+    en: { ideas: 'What can I do?', help: 'Help', pickTitle: 'Choose an experiment', pickSub: 'Click one — I will show every step.', lvl: ['', 'easy', 'medium', 'dangerous'], done: 'done', step: 'step', stop: 'Stop',
+      sBottle: 'Click the <b>{x}</b> bottle on the shelf — the green arrow points at it.', sVessel: 'Now click <b>{v}</b> — the substance goes into it.', sSel: 'First click <b>{v}</b>.', sHeat: 'Press <b>🔥 Heat</b> below.', sFlame: 'Press <b>🕯️ Flame test</b> below.',
+      sPour: 'Press <b>🫗 Pour into another vessel</b> below.', sPourTo: 'Now click <b>{v}</b> — the mixture is poured into it.', see: 'What you will see', why: 'Why did it happen?', bravo: 'Well done! Experiment complete', next: 'Next experiment', list: 'List', close: 'Close', washed: '{v} was washed.',
+      tour: [['🥽', 'Welcome to the 3D laboratory!', 'Here you run experiments yourself, like in a real lab: put substances from the shelf into vessels, heat and mix them, and watch what happens.'],
+        ['🧴', 'How does it work?', '<b>1.</b> Click a bottle on the shelf to read about the substance.<br><b>2.</b> Then click a test tube, the beaker or the flask to add it.<br><b>3.</b> The buttons below heat, flame-test, pour and wash.<br><b>4.</b> Drag to rotate, use the wheel to zoom.'],
+        ['💡', 'Where do I start?', 'Pick a ready experiment — the app shows which bottle and which vessel to click at every step. Press <b>💡 What can I do?</b> at any time.']],
+      tNext: 'Next', tStart: 'Start the first experiment', tSkip: 'I’ll explore myself' },
+    ru: { ideas: 'Что можно сделать?', help: 'Помощь', pickTitle: 'Выберите опыт', pickSub: 'Нажмите на любой — я покажу каждый шаг.', lvl: ['', 'легко', 'средне', 'опасно'], done: 'выполнено', step: 'шаг', stop: 'Остановить',
+      sBottle: 'Нажмите склянку <b>{x}</b> на полке — на неё указывает зелёная стрелка.', sVessel: 'Теперь нажмите <b>{v}</b> — вещество попадёт туда.', sSel: 'Сначала нажмите <b>{v}</b>.', sHeat: 'Нажмите внизу <b>🔥 Нагреть</b>.', sFlame: 'Нажмите внизу <b>🕯️ Внести в пламя</b>.',
+      sPour: 'Нажмите внизу <b>🫗 Перелить в другой сосуд</b>.', sPourTo: 'Теперь нажмите <b>{v}</b> — смесь перельётся туда.', see: 'Что вы увидите', why: 'Почему так получилось?', bravo: 'Отлично! Опыт выполнен', next: 'Следующий опыт', list: 'Список', close: 'Закрыть', washed: '{v} вымыт.',
+      tour: [['🥽', 'Добро пожаловать в 3D лабораторию!', 'Здесь вы сами проводите опыты, как в настоящей лаборатории: берёте вещества с полки, наливаете в сосуды, нагреваете, смешиваете и смотрите, что произойдёт.'],
+        ['🧴', 'Как это работает?', '<b>1.</b> Нажмите склянку на полке — появятся сведения о веществе.<br><b>2.</b> Затем нажмите пробирку, стакан или колбу — вещество попадёт туда.<br><b>3.</b> Кнопки внизу: нагреть, внести в пламя, перелить, вымыть.<br><b>4.</b> Перетаскивайте, чтобы вращать; колесо — масштаб.'],
+        ['💡', 'С чего начать?', 'Выберите готовый опыт — приложение на каждом шаге покажет, какую склянку и какой сосуд нажать. Кнопка <b>💡 Что можно сделать?</b> доступна всегда.']],
+      tNext: 'Далее', tStart: 'Начать первый опыт', tSkip: 'Разберусь сам' }
+  };
+  let guide = null, pointer = null;
+  const GT = () => G[ctx.lang] || G.uz, fill = (t, o) => t.replace(/\{(\w)\}/g, (m, k) => o[k]);
+  const doneSet = () => { try { return new Set(JSON.parse(localStorage.getItem('kv-room-done') || '[]')); } catch (e) { return new Set(); } };
+  function markDone(id) { const d = doneSet(); d.add(id); try { localStorage.setItem('kv-room-done', JSON.stringify([...d])); } catch (e) {} }
+  function questPanel(show) {
+    const el = host.querySelector('.rm-quests'); if (!el) return; if (show === false || (show == null && el.style.display === 'block')) { el.style.display = 'none'; return; }
+    host.querySelector('.rm-cat').style.display = 'none'; const g = GT(), d = doneSet(), li = L();
+    el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:16px;color:#eef2fa">💡 ' + g.pickTitle + '</b><button data-qx style="border:none;background:none;color:#aab6cc;font-size:18px;cursor:pointer">✕</button></div><div style="font-size:12.5px;color:#aab6cc;margin:4px 0 10px">' + g.pickSub + '</div>'
+      + QUESTS.map((q) => '<button data-q="' + q.id + '" style="display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;margin-bottom:7px;padding:10px 11px;border-radius:12px;border:1px solid ' + (d.has(q.id) ? 'rgba(46,204,150,.5)' : 'rgba(255,255,255,.14)') + ';background:' + (d.has(q.id) ? 'rgba(46,204,150,.1)' : 'rgba(255,255,255,.05)') + ';color:#eef2fa;cursor:pointer;font-family:Space Grotesk,sans-serif">'
+        + '<span style="font-size:22px;line-height:1">' + q.icon + '</span><span style="min-width:0"><span style="display:block;font-weight:700;font-size:14px">' + q.t[li] + (d.has(q.id) ? ' <span style="color:#2ecc96;font-size:12px">✓ ' + g.done + '</span>' : '') + '</span>'
+        + '<span style="display:block;font-size:12px;color:#b9c4d8;margin-top:2px">' + q.see[li] + '</span><span style="display:inline-block;margin-top:5px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:' + ['', 'rgba(46,204,150,.18)', 'rgba(255,184,77,.18)', 'rgba(255,93,110,.2)'][q.lvl] + ';color:' + ['', '#5fe0b0', '#ffc773', '#ff8a96'][q.lvl] + '">' + g.lvl[q.lvl] + '</span></span></button>').join('');
+    el.style.display = 'block';
+  }
+  // give every slot a vessel, preferring empty ones; wash a vessel only when nothing empty is left
+  function startQuest(id) {
+    const q = QUESTS.find((x) => x.id === id); if (!q) return; questPanel(false); sel.reagent = null; sel.mode = null; dropReagent();
+    const slots = {}, used = new Set(), notes = [];
+    [...new Set(q.steps.flatMap((st) => st.slice(1).filter((x) => /^[A-D]$/.test(x))))].forEach((k) => {
+      const pool = k === 'C' ? [vessels[4]] : k === 'D' ? [vessels[5]] : vessels.slice(0, 4).filter((v) => !used.has(v));
+      let v = pool.find((x) => !x.s.vol && !x.s.solids.length && !x.s.broken) || pool[0]; if (v.s.vol || v.s.solids.length || v.s.broken) { wash(v); notes.push(fill(GT().washed, { v: vesselName(v) })); } used.add(v); slots[k] = v; });
+    guide = { q, slots, i: 0, notes, done: false }; renderGuide();
+  }
+  function stopQuest() { guide = null; renderGuide(); }
+  const curStep = () => (guide && !guide.done ? guide.q.steps[guide.i] : null);
+  // the shelf must show the bottle the step asks for
+  function ensureOnShelf(id) { const list = shelfList(), at = list.indexOf(id); if (at >= 0) { const pg = Math.floor(at / PER); if (pg !== page) { page = pg; fillShelf(); } return; }
+    filt = SHELF.includes(id) ? 'main' : filt; query = SHELF.includes(id) ? '' : id; const fq = host.querySelector('.rm-fq'); if (fq) fq.value = query; page = 0; fillShelf(); }
+  function guideEvent(type, a, b) {
+    const st = curStep(); if (!st) { if (type !== 'pick') return; return; }
+    const S2 = guide.slots, ok = (type === 'add' && st[0] === 'add' && a === st[1] && b === S2[st[2]]) || (type === 'heat' && st[0] === 'heat' && a === S2[st[1]]) || (type === 'flame' && st[0] === 'flame' && a === S2[st[1]]) || (type === 'pour' && st[0] === 'pour' && a === S2[st[1]] && b === S2[st[2]]);
+    if (ok) { guide.i++; guide.notes = []; if (guide.i >= guide.q.steps.length) { guide.done = true; markDone(guide.q.id); } }
+    renderGuide();
+  }
+  function renderGuide() {
+    const el = host && host.querySelector('.rm-guide'), h = host && host.querySelector('.rm-hint'); if (!el) return; if (h) h.style.display = guide ? 'none' : '';
+    host.querySelectorAll('.rm-tools button').forEach((b) => b.classList.remove('rm-pulse'));
+    if (!guide) { el.style.display = 'none'; return; }
+    const g = GT(), li = L(), q = guide.q, n = q.steps.length, dots = q.steps.map((x, i) => '<span style="width:' + (i === guide.i ? 18 : 8) + 'px;height:8px;border-radius:4px;background:' + (i < guide.i ? '#2ecc96' : i === guide.i ? '#4dd2ff' : 'rgba(255,255,255,.2)') + ';transition:.3s"></span>').join('');
+    let body;
+    if (guide.done) { body = '<div style="font-size:15px;font-weight:700;color:#5fe0b0">🎉 ' + g.bravo + '</div><div style="margin-top:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#aab6cc">' + g.why + '</div><div style="margin-top:3px;font-size:13.5px;line-height:1.55;color:#e6ecf7">' + q.why[li] + '</div>'
+      + '<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">' + (QUESTS.indexOf(q) < QUESTS.length - 1 ? '<button data-g="next" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(46,204,150,.6);background:rgba(46,204,150,.2);color:#eafff6;font:700 13px Space Grotesk,sans-serif;cursor:pointer">' + g.next + ' →</button>' : '') + '<button data-g="list" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#eef2fa;font:600 13px Space Grotesk,sans-serif;cursor:pointer">💡 ' + g.list + '</button><button data-g="stop" style="padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#eef2fa;font:600 13px Space Grotesk,sans-serif;cursor:pointer">' + g.close + '</button></div>'; }
+    else { const st = q.steps[guide.i], V = (k) => vesselName(guide.slots[k]); let t;
+      if (st[0] === 'add') t = sel.reagent === st[1] ? fill(g.sVessel, { v: V(st[2]) }) : fill(g.sBottle, { x: E.disp(st[1]) + ' (' + E.name(st[1]) + ')' });
+      else if (st[0] === 'pour') t = sel.mode === 'pour' && sel.vessel === guide.slots[st[1]] ? fill(g.sPourTo, { v: V(st[2]) }) : sel.vessel !== guide.slots[st[1]] ? fill(g.sSel, { v: V(st[1]) }) : g.sPour;
+      else t = sel.vessel !== guide.slots[st[1]] ? fill(g.sSel, { v: V(st[1]) }) : st[0] === 'heat' ? g.sHeat : g.sFlame;
+      const btnKey = st[0] === 'heat' && sel.vessel === guide.slots[st[1]] ? 'heat' : st[0] === 'flame' && sel.vessel === guide.slots[st[1]] ? 'flame' : st[0] === 'pour' && sel.vessel === guide.slots[st[1]] && sel.mode !== 'pour' ? 'pour' : null;
+      if (btnKey) { const b = host.querySelector('.rm-tools button[data-a="' + btnKey + '"]'); if (b) b.classList.add('rm-pulse'); }
+      if (st[0] === 'add' && sel.reagent !== st[1]) ensureOnShelf(st[1]);
+      body = '<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7fd8ff">' + (guide.i + 1) + '/' + n + ' ' + g.step + '</div><div style="margin-top:4px;font-size:14.5px;line-height:1.5;color:#f2f6fc">' + t + '</div>'
+        + (guide.notes.length ? '<div style="margin-top:6px;font-size:12px;color:#ffc773">🧽 ' + guide.notes.join(' ') + '</div>' : '')
+        + '<div style="margin-top:8px;font-size:12px;color:#aab6cc"><b style="color:#cfd8ea">' + g.see + ':</b> ' + q.see[li] + '</div>'; }
+    el.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:14px;color:#eef2fa">' + q.icon + ' ' + q.t[li] + '</b>' + (guide.done ? '' : '<button data-g="stop" style="border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#cfd8ea;border-radius:8px;padding:3px 8px;font:600 11.5px Space Grotesk,sans-serif;cursor:pointer">' + g.stop + '</button>') + '</div>'
+      + '<div style="display:flex;gap:4px;margin:7px 0 8px">' + dots + '</div>' + body;
+    el.style.display = 'block';
+  }
+  // the green arrow and halo over the bottle or vessel the current step needs
+  function guideFrame(now) {
+    if (!pointer) { pointer = new THREE.Group(); const m = new THREE.MeshBasicMaterial({ color: lin('#39e6a4') }); const cone = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.5, 20), m); cone.rotation.x = Math.PI; const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.5, 12), m); shaft.position.y = 0.5; const halo = glowSprite('#39e6a4', 1.9, 0.6); halo.position.y = -1.1; pointer.add(cone, shaft, halo); pointer.userData.halo = halo; scene.add(pointer); }
+    const st = curStep(); let at = null, onBottle = false; const pb = pointer.userData.bob; if (pb) { pb.position.y = pb.userData.y0 + (pb.userData.rid === sel.reagent ? 0.18 : 0); pointer.userData.bob = null; }
+    if (st && !anim) { if (st[0] === 'add' && sel.reagent !== st[1]) { const b = bottles.find((x) => x.userData.rid === st[1]); if (b) { at = b.position.clone().add(new THREE.Vector3(0, 1.5, 0.55)); onBottle = true; b.position.y = b.userData.y0 + 0.08 + Math.sin(now / 200) * 0.06; pointer.userData.bob = b; } }
+      else { const k = st[0] === 'add' ? st[2] : st[0] === 'pour' && sel.mode === 'pour' ? st[2] : st[1], v = guide.slots[k]; if (v && !(st[0] !== 'add' && st[0] !== 'pour' && sel.vessel === v) && !(st[0] === 'pour' && sel.vessel === v && sel.mode !== 'pour')) at = v.g.position.clone().add(new THREE.Vector3(0, v.prof.H + 0.9, 0)); } }
+    pointer.visible = !!at; if (at) { pointer.scale.setScalar(onBottle ? 0.6 : 1); pointer.userData.halo.position.y = onBottle ? -1.5 : -1.1; pointer.position.copy(at); pointer.position.y += Math.sin(now / 220) * 0.15; pointer.rotation.y = now / 600; }
+  }
+  function guideHTML() {
+    return '<style>@keyframes rmPulse{0%,100%{box-shadow:0 0 0 0 rgba(57,230,164,.7)}50%{box-shadow:0 0 0 6px rgba(57,230,164,0)}}.rm-pulse{animation:rmPulse 1.2s ease-in-out infinite;border-color:#39e6a4!important;background:rgba(57,230,164,.18)!important}</style>'
+      + '<div class="rm-guide" style="display:none;position:absolute;left:12px;bottom:128px;width:min(430px,52%);box-sizing:border-box;padding:12px 14px;border-radius:14px;background:rgba(12,18,34,.93);border:1px solid rgba(77,210,255,.45);box-shadow:0 12px 34px rgba(0,0,0,.4);backdrop-filter:blur(8px);font-family:Space Grotesk,sans-serif;z-index:2"></div>'
+      + '<div class="rm-quests" style="display:none;position:absolute;left:12px;top:96px;bottom:128px;width:min(380px,calc(100% - 24px));box-sizing:border-box;overflow:auto;padding:12px;border-radius:14px;background:rgba(12,18,34,.95);border:1px solid rgba(255,255,255,.14);box-shadow:0 12px 34px rgba(0,0,0,.4);z-index:3"></div>'
+      + '<div class="rm-tour" style="display:none;position:absolute;inset:0;z-index:5;background:rgba(4,8,20,.62);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px"></div>';
+  }
+  let tourI = 0;
+  function tour(show) {
+    const el = host.querySelector('.rm-tour'); if (!el) return; if (!show) { el.style.display = 'none'; try { localStorage.setItem('kv-room-tour', '1'); } catch (e) {} return; }
+    const g = GT(), sl = g.tour[tourI], last = tourI === g.tour.length - 1;
+    el.innerHTML = '<div style="width:min(460px,100%);padding:22px 22px 18px;border-radius:18px;background:rgba(14,20,38,.97);border:1px solid rgba(77,210,255,.4);box-shadow:0 20px 60px rgba(0,0,0,.5);font-family:Space Grotesk,sans-serif;color:#eef2fa">'
+      + '<div style="font-size:40px;line-height:1">' + sl[0] + '</div><div style="margin-top:10px;font-size:20px;font-weight:700">' + sl[1] + '</div><div style="margin-top:8px;font-size:14.5px;line-height:1.6;color:#c9d4e8">' + sl[2] + '</div>'
+      + '<div style="display:flex;gap:5px;margin:16px 0 14px">' + g.tour.map((x, i) => '<span style="width:' + (i === tourI ? 20 : 8) + 'px;height:8px;border-radius:4px;background:' + (i === tourI ? '#4dd2ff' : 'rgba(255,255,255,.22)') + '"></span>').join('') + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button data-t="skip" style="padding:9px 13px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#c9d4e8;font:600 13px Space Grotesk,sans-serif;cursor:pointer">' + g.tSkip + '</button>'
+      + '<button data-t="' + (last ? 'start' : 'next') + '" style="padding:9px 15px;border-radius:10px;border:none;background:linear-gradient(180deg,#4dd2ff,#2a8fdb);color:#04101e;font:700 13.5px Space Grotesk,sans-serif;cursor:pointer">' + (last ? '▶ ' + g.tStart : g.tNext + ' →') + '</button></div></div>';
+    el.style.display = 'flex';
+  }
+  function wireGuide() {
+    host.querySelector('.rm-quests').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.qx != null) return questPanel(false); if (b.dataset.q) startQuest(b.dataset.q); });
+    host.querySelector('.rm-guide').addEventListener('click', (e) => { const b = e.target.closest('button[data-g]'); if (!b) return; const a = b.dataset.g;
+      if (a === 'stop') stopQuest(); if (a === 'list') { stopQuest(); questPanel(true); } if (a === 'next') { const i = QUESTS.indexOf(guide.q); startQuest(QUESTS[i + 1].id); } });
+    host.querySelector('.rm-tour').addEventListener('click', (e) => { const b = e.target.closest('button[data-t]'); if (!b) return; const a = b.dataset.t; if (a === 'next') { tourI++; tour(true); } if (a === 'skip') tour(false); if (a === 'start') { tour(false); startQuest(QUESTS[0].id); } });
+  }
+  // the toolbar is rebuilt often; re-apply the pulse on the button the current step needs
+  function renderGuideKeepPulse() { if (guide && !guide.done) setTimeout(renderGuide, 0); }
+  function maybeTour() { let seen = false; try { seen = localStorage.getItem('kv-room-tour') === '1'; } catch (e) {} if (!seen) { tourI = 0; tour(true); } }
   // ---------- HTML overlay: hint, card, toolbar, catalogue, danger alert ----------
   function hint(t) { const h = host.querySelector('.rm-hint'); if (h) h.textContent = t; }
   function renderCard() {
@@ -477,9 +620,9 @@
   }
   function toolbar() {
     const b = host.querySelector('.rm-tools'); if (!b) return; const v = sel.vessel, dis = !v;
-    const btn = (k, t, c) => '<button data-a="' + k + '"' + (dis && !['cat', 'back', 'cancel'].includes(k) ? ' disabled' : '') + ' style="padding:9px 12px;border-radius:10px;border:1px solid ' + (c || 'var(--line)') + ';background:rgba(255,255,255,.08);color:#eef2fa;font:600 13px Space Grotesk,sans-serif;cursor:pointer;opacity:' + (dis && !['cat', 'back', 'cancel'].includes(k) ? 0.45 : 1) + '">' + t + '</button>';
-    b.innerHTML = btn('cat', '📚 ' + T.catalog, 'rgba(77,210,255,.5)') + btn('heat', '🔥 ' + (v && v.s.heated ? T.unheat : T.heat), 'rgba(255,138,58,.5)') + btn('flame', '🕯️ ' + T.flame) + btn('pour', '🫗 ' + T.pour) + btn('wash', '🧽 ' + T.wash)
-      + (sel.reagent || sel.mode ? btn('cancel', '✋ ' + T.cancel) : '') + btn('back', '↩ ' + T.back);
+    const btn = (k, t, c) => '<button data-a="' + k + '"' + (dis && !['cat', 'back', 'cancel', 'quest', 'help'].includes(k) ? ' disabled' : '') + ' style="padding:9px 12px;border-radius:10px;border:1px solid ' + (c || 'var(--line)') + ';background:rgba(255,255,255,.08);color:#eef2fa;font:600 13px Space Grotesk,sans-serif;cursor:pointer;opacity:' + (dis && !['cat', 'back', 'cancel', 'quest', 'help'].includes(k) ? 0.45 : 1) + '">' + t + '</button>';
+    b.innerHTML = btn('quest', '💡 ' + GT().ideas, 'rgba(57,230,164,.6)') + btn('cat', '📚 ' + T.catalog, 'rgba(77,210,255,.5)') + btn('heat', '🔥 ' + (v && v.s.heated ? T.unheat : T.heat), 'rgba(255,138,58,.5)') + btn('flame', '🕯️ ' + T.flame) + btn('pour', '🫗 ' + T.pour) + btn('wash', '🧽 ' + T.wash)
+      + (sel.reagent || sel.mode ? btn('cancel', '✋ ' + T.cancel) : '') + btn('help', '❓ ' + GT().help) + btn('back', '↩ ' + T.back); renderGuideKeepPulse();
   }
   function showAlert(v) { const a = host.querySelector('.rm-alert'), e = v.s.log.find((x) => !x.muted && (x.icon === '💥' || x.icon === '🔥' || x.icon === '✨')); if (!a || !e) return;
     a.innerHTML = '<b>⚠️ ' + T.danger + '</b> ' + e.title + (e.note ? '<div style="margin-top:4px;font-size:12.5px;font-weight:500">' + e.note + '</div>' : ''); a.style.opacity = 1; a.style.transform = 'translate(-50%,0)'; alertT = performance.now(); }
@@ -490,18 +633,18 @@
       return '<details' + (qq || t !== 'salt' ? ' open' : '') + ' style="margin-bottom:8px"><summary style="cursor:pointer;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">' + T.groups[t] + ' · ' + items.length + '</summary><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">'
         + items.map((r) => '<button data-r="' + r.id + '" title="' + esc(r.n[L()]) + '" style="padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--btn);color:var(--text);font:600 12px IBM Plex Mono,monospace;cursor:pointer">' + (r.t === 'ind' ? esc(r.n[L()]) : E.disp(r.id)) + '</button>').join('') + '</div></details>'; }).join(''); }
   function dropReagent() { sel.reagent = null; bottles.forEach((x) => { if (x.userData.y0 != null) x.position.y = x.userData.y0; }); renderCard(); toolbar(); }
-  function chooseReagent(id) { sel.reagent = id; sel.mode = null; renderCard(); toolbar(); bottles.forEach((b) => { b.position.y = (b.userData.y0 = b.userData.y0 == null ? b.position.y : b.userData.y0) + (b.userData.rid === id ? 0.18 : 0); }); }
+  function chooseReagent(id) { sel.reagent = id; sel.mode = null; renderCard(); toolbar(); renderGuide(); bottles.forEach((b) => { b.position.y = (b.userData.y0 = b.userData.y0 == null ? b.position.y : b.userData.y0) + (b.userData.rid === id ? 0.18 : 0); }); }
   function onPick(obj) {
     if (anim) return; let o = obj; while (o && o.userData.rid == null && o.userData.vessel == null && o.parent) o = o.parent;
     if (!o) return; if (o.userData.rid != null && o.userData.vessel == null) return chooseReagent(o.userData.rid);
     const v = vessels[o.userData.vessel]; if (!v || v.pour) return;
     if (sel.mode === 'pour' && sel.vessel) { pourInto(sel.vessel, v); return; }
     if (sel.reagent) { if (v.s.broken) { sel.vessel = v; renderCard(); return; } const b = bottles.find((x) => x.userData.rid === sel.reagent); const from = b ? b.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.6, 0.6)) : new THREE.Vector3(-8, 7, 2); sel.vessel = v; startAdd(v, sel.reagent, from); toolbar(); return; }
-    sel.vessel = v; renderCard(); toolbar(); }
+    sel.vessel = v; renderCard(); toolbar(); renderGuide(); }
 
   // ---------- mount ----------
   function build() {
-    host.innerHTML = '<style>@media (max-width:640px){.rm{min-height:78vh!important}.rm-card{left:12px!important;width:auto!important;top:auto!important;bottom:160px;max-height:34%!important}.rm-hint{max-width:none!important;right:12px}.rm-cat{width:auto!important;right:12px}}</style><div class="rm" style="position:relative;width:100%;height:100%;min-height:520px;overflow:hidden;background:radial-gradient(900px 600px at 50% 30%,#2a3350,#0b0f1c 75%)">'
+    host.innerHTML = '<style>@media (max-width:640px){.rm-guide{width:auto!important;right:12px}.rm{min-height:78vh!important}.rm-card{left:12px!important;width:auto!important;top:auto!important;bottom:160px;max-height:34%!important}.rm-hint{max-width:none!important;right:12px}.rm-cat{width:auto!important;right:12px}}</style><div class="rm" style="position:relative;width:100%;height:100%;min-height:520px;overflow:hidden;background:radial-gradient(900px 600px at 50% 30%,#2a3350,#0b0f1c 75%)">'
       + '<div class="rm-3d" style="position:absolute;inset:0"></div>'
       + '<div class="rm-hint" style="position:absolute;left:14px;top:12px;max-width:min(560px,70%);padding:8px 12px;border-radius:10px;background:rgba(10,14,28,.72);border:1px solid rgba(255,255,255,.12);color:#e9eef8;font:600 13px Space Grotesk,sans-serif;backdrop-filter:blur(6px)"></div>'
       + '<div class="rm-card" style="display:none;position:absolute;right:12px;top:96px;max-height:calc(100% - 210px);width:min(340px,44%);box-sizing:border-box;overflow:auto;padding:12px 14px;border-radius:14px;background:' + (ctx.light ? 'rgba(255,255,255,.96)' : 'rgba(16,21,38,.94)') + ';backdrop-filter:blur(8px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.3)"></div>'
@@ -515,14 +658,16 @@
       + '<span class="rm-f-info" style="flex:0 0 auto;white-space:nowrap;font:12px Space Grotesk,sans-serif;color:#cfd8ea"></span></div>'
       + '<style>.rm-f-info button{border:1px solid rgba(255,255,255,.2);background:rgba(10,14,28,.7);color:#fff;border-radius:6px;padding:1px 7px;cursor:pointer}@media (max-width:640px){.rm-f{right:12px!important}}</style></div>';
     buildScene(host.querySelector('.rm-3d'));
+    host.querySelector('.rm').insertAdjacentHTML('beforeend', guideHTML()); wireGuide();
     const ro = new ResizeObserver(place); ro.observe(host.querySelector('.rm-3d')); host._ro = ro; place();
     let down = null; renderer.domElement.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
     renderer.domElement.addEventListener('pointerup', (e) => { if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return; const r = renderer.domElement.getBoundingClientRect(), m = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       const rc = new THREE.Raycaster(); rc.setFromCamera(m, cam); const hits = rc.intersectObjects([...bottles, ...vessels.map((v) => v.hit)], true); if (hits.length) onPick(hits[0].object); });
     host.querySelector('.rm-tools').addEventListener('click', (e) => { const b = e.target.closest('button[data-a]'); if (!b || b.disabled) return; const a = b.dataset.a, v = sel.vessel;
       if (a === 'back') return onExit && onExit(); if (a === 'cat') { const c = host.querySelector('.rm-cat'); c.style.display = c.style.display === 'none' ? 'block' : 'none'; catalogue(host.querySelector('.rm-q').value); return; }
-      if (a === 'cancel') { sel.mode = null; dropReagent(); return; }
-      if (!v) return; if (a === 'heat') heatToggle(v); if (a === 'flame') flameTest(v); if (a === 'wash') wash(v); if (a === 'pour') { sel.reagent = null; sel.mode = 'pour'; renderCard(); toolbar(); } });
+      if (a === 'cancel') { sel.mode = null; dropReagent(); renderGuide(); return; }
+      if (a === 'quest') return questPanel(); if (a === 'help') { tourI = 0; return tour(true); }
+      if (!v) return; if (a === 'heat') heatToggle(v); if (a === 'flame') flameTest(v); if (a === 'wash') wash(v); if (a === 'pour') { sel.reagent = null; sel.mode = 'pour'; renderCard(); toolbar(); renderGuide(); } });
     host.querySelector('.rm-cat-list').addEventListener('click', (e) => { const b = e.target.closest('button[data-r]'); if (b) { chooseReagent(b.dataset.r); host.querySelector('.rm-cat').style.display = 'none'; } });
     host.querySelector('.rm-q').addEventListener('input', (e) => catalogue(e.target.value));
     host.querySelector('.rm-f').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.f) { filt = b.dataset.f; query = ''; page = 0; host.querySelector('.rm-fq').value = ''; } if (b.dataset.pg) page += +b.dataset.pg; fillShelf(); });
@@ -533,7 +678,7 @@
     const frame = (now) => { if (!alive) return; raf = requestAnimationFrame(frame); try { draw(now); } catch (e) { console.error('labroom', e); } };
     const draw = (now) => { const dt = Math.min(0.05, (now - last) / 1000); last = now;
       vessels.forEach((v) => { if (!v.pour && v.target) v.g.position.lerp(v.target, 0.08); stepPour(v, now); syncVessel(v, Date.now()); });
-      stepAnim(now);
+      stepAnim(now); guideFrame(now);
       // lamps: the central one serves the tube being heated, the others their tripods
       const tubeHot = vessels.some((v) => v.kind === 'tube' && v.s.heated); [[lamps.center, tubeHot], [lamps.b, vessels[4].s.heated], [lamps.f, vessels[5].s.heated]].forEach(([l, on]) => { l.userData.flame.visible = on; l.userData.light.intensity = on ? 1.3 + Math.sin(now / 60) * 0.25 : 0; if (on) { const s = 1 + Math.sin(now / 55 + l.id) * 0.07; l.userData.flame.scale.set(1 / s, s, 1 / s); } });
       const ft = vessels.map((v) => v.vm && v.vm.flameTest).find(Boolean); burner.userData.flame.material.color.copy(lin(ft || '#4da6ff')); burner.userData.flame.material.opacity = ft ? 0.8 : 0.5; burner.userData.light.color.copy(lin(ft || '#7fb8ff')); burner.userData.light.intensity = ft ? 1.6 : 0.6; burner.userData.flame.scale.y = 1 + Math.sin(now / 45) * 0.05; burner.userData.glow.material.color.copy(burner.userData.flame.material.color);
@@ -548,10 +693,10 @@
     let lt = Date.now(); tick = setInterval(() => { const t = Date.now(), dt = Math.min(0.5, (t - lt) / 1000); lt = t; let ch = false; vessels.forEach((v) => { const n = v.s.log.length; E.step(v.s, dt); if (v.s.broken && v.s.heated) { E.heat(v.s); if (v === sel.vessel) toolbar(); } if (v.s.log.length !== n && v === sel.vessel) ch = true; }); if (ch && !sel.reagent) renderCard(); if (sel.vessel && !sel.reagent) { const tEl = host.querySelector('.rm-card span'); if (tEl) tEl.textContent = '🌡️ ' + Math.round(sel.vessel.s.temp) + ' °C'; } }, 150);
   }
   window.PTROOM = {
-    mount(h, c, exit) { THREE = c.THREE; E = window.PTLAB.engine; host = h; ctx = c; onExit = exit; T = S[c.lang] || S.uz; E.setLang(c.lang); mats(); vessels = []; bottles = []; colourCache = {}; filt = 'main'; query = ''; page = 0; sel = { reagent: null, vessel: null, mode: null }; anim = null; alive = true; build(); },
-    setCtx(c) { ctx = Object.assign(ctx || {}, c); T = S[ctx.lang] || S.uz; E.setLang(ctx.lang); if (host) { colourCache = {}; renderCard(); toolbar(); fillShelf(); } },
+    mount(h, c, exit) { THREE = c.THREE; E = window.PTLAB.engine; host = h; ctx = c; onExit = exit; T = S[c.lang] || S.uz; E.setLang(c.lang); mats(); vessels = []; bottles = []; colourCache = {}; filt = 'main'; query = ''; page = 0; sel = { reagent: null, vessel: null, mode: null }; anim = null; alive = true; guide = null; pointer = null; build(); maybeTour(); },
+    setCtx(c) { ctx = Object.assign(ctx || {}, c); T = S[ctx.lang] || S.uz; E.setLang(ctx.lang); if (host) { colourCache = {}; renderCard(); toolbar(); fillShelf(); renderGuide(); if (host.querySelector('.rm-quests').style.display === 'block') questPanel(true); if (host.querySelector('.rm-tour').style.display === 'flex') tour(true); } },
     // for testing: choose a reagent and click a vessel, or run an action on a vessel
-    _pick(rid, vi) { if (rid) chooseReagent(rid); if (vi != null) onPick(vessels[vi].hit); }, _vessels: () => vessels,
+    _pick(rid, vi) { if (rid) chooseReagent(rid); if (vi != null) onPick(vessels[vi].hit); }, _vessels: () => vessels, _guide: () => guide, _quest: (id) => startQuest(id),
     unmount() { alive = false; cancelAnimationFrame(raf); clearInterval(tick); if (host && host._ro) host._ro.disconnect(); if (fx) fx.clear(); if (renderer) { renderer.dispose(); try { renderer.forceContextLoss(); } catch (e) {} } renderer = null; scene = null; if (host) host.innerHTML = ''; host = null; }
   };
 })();
